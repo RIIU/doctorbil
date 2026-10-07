@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>খরচ ক্যালকুলেটর | DoctorBill</title>
+<meta name="description" content="সমস্যা বেছে নিন — হাসপাতাল, সেবা, পরিমাণ ও অতিরিক্ত খরচ মিলিয়ে পুরো বিলের সম্ভাব্য পরিসর (নমুনা) আগেই দেখে নিন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/calculator.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="খরচ ক্যালকুলেটর | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="সমস্যা থেকে শুরু করুন — পুরো বিলের সম্ভাব্য পরিসর দেখুন। নমুনা ডেটা।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/calculator.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="page.calculator.h1">খরচ ক্যালকুলেটর</h1>
+      <p class="section-sub" data-i18n="calc.sub">সমস্যা বেছে ধাপে ধাপে হাসপাতাল, সেবা ও অতিরিক্ত খরচ মিলিয়ে পুরো বিলের সম্ভাব্য পরিসর দেখুন। সব মান নমুনা ডেটা।</p>
+
+      <ol class="steps" id="progress" aria-hidden="false"></ol>
+
+      <div class="grid mt-3" id="calc-layout" style="grid-template-columns:1fr">
+        <div class="card" id="calc-panel"></div>
+        <aside class="card" id="summary" aria-live="polite" style="align-self:start"></aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.addI18n({
+    bn: {
+      "calc.title": "খরচ ক্যালকুলেটর | DoctorBill",
+      "calc.sub": "সমস্যা বেছে ধাপে ধাপে হাসপাতাল, সেবা ও অতিরিক্ত খরচ মিলিয়ে পুরো বিলের সম্ভাব্য পরিসর দেখুন। সব মান নমুনা ডেটা।",
+      "calc.step.problem": "সমস্যা",
+      "calc.step.hospital": "হাসপাতাল",
+      "calc.step.extras": "অতিরিক্ত খরচ",
+      "calc.service": "সেবা",
+      "calc.qty": "পরিমাণ",
+      "calc.review": "হিসাব",
+      "calc.s0.title": "ধাপ ১: কী হয়েছে সেটি বেছে নিন",
+      "calc.s0.sub": "টেস্টের নাম না জানলেও চলবে। একটি সমস্যা বেছে নিলে প্রয়োজনীয় সেবা, ভর্তির দিন ও অতিরিক্ত খরচের ধরন আগে থেকেই যুক্ত হবে। নিজেও সাজাতে পারেন।",
+      "calc.s0.manual": "নিজে থেকে সেবা বাছুব",
+      "calc.s0.manual_sub": "তালিকায় নেই? শহর, হাসপাতাল আর সেবা নিজে বেছে হিসাব করুন।",
+      "calc.scenario.picked": "বেছে নিয়েছি: {name}",
+      "calc.s1.title": "ধাপ ২: শহর বা এলাকা",
+      "calc.s2.title": "ধাপ ৩: হাসপাতাল বেছে নিন",
+      "calc.s2.empty": "এই শহরে নমুনা হাসপাতাল নেই।",
+      "calc.s3.title": "ধাপ ৪: সেবা বেছে নিন",
+      "calc.s3.sub": "নির্বাচিত হাসপাতালের তালিকাভুক্ত সেবা, সাথে সমস্যার ধাপ থেকে যুক্ত সেবা। মূল্য না থাকলে “মূল্য নেই” দেখানো হয়। দেখানো দাম সবই নমুনা।",
+      "calc.s3.empty": "এই হাসপাতালের তালিকাভুক্ত সেবা নেই।",
+      "calc.s4.title": "ধাপ ৫: পরিমাণ",
+      "calc.s4.empty": "আগের ধাপ থেকে সেবা বেছে নিন।",
+      "calc.s6.title": "ধাপ ৬: অতিরিক্ত খরচ",
+      "calc.s6.sub": "ওয়ার্ড, নার্সিং, ওষুধ, অপারেশন, ভ্যাট — বিল বড় করে দেয় এই খরচগুলোই। প্রযোজ্যগুলোতে টিক দিন; সব রেঞ্জ নমুনা।",
+      "calc.days.label": "ভর্তির দিন সংখ্যা",
+      "calc.s5.title": "ধাপ ৭: সম্ভাব্য পুরো বিলের হিসাব",
+      "calc.sector.label": "কোন খরচের ধরন অনুযায়ী হিসাব",
+      "calc.sector.note": "বেসরকারি = তালিকাভুক্ত নমুনা মূল্য; সরকারি = আদর্শ সরকারি ফ্যাসিলিটির রেফারেন্স রেঞ্জ (নমুনা)। এটি কোনো নির্দিষ্ট সরকারি হাসপাতালের দাবি নয়।",
+      "calc.summary.title": "আনুমানিক হিসাব",
+      "calc.summary.empty": "এখনো কোনো সেবা বা অতিরিক্ত খরচ বেছে নেওয়া হয়নি।",
+      "calc.summary.no_price": "মূল্য নেই",
+      "calc.subtotal": "সেবানুযায়ী মাঝমানের সমষ্টি",
+      "calc.missing.head": "অসম্পূর্ণ হিসাব:",
+      "calc.missing.note": "{n} টি সেবার তালিকাভুক্ত মূল্য পাওয়া যায়নি ({list})। এগুলো শূন্য ধরা হয়নি — মোট খরচ এই কারণে আরও বেশি হতে পারে।",
+      "calc.disclaimer": "এই হিসাবটি তালিকাভুক্ত মূল্য ও নমুনা রেফারেন্স রেঞ্জভিত্তিক আনুমানিক পরিসর। হাসপাতালের চূড়ান্ত বিল, রোগীর অবস্থা, চিকিৎসকের পরামর্শ ও অতিরিক্ত সেবার কারণে প্রকৃত খরচ ভিন্ন হতে পারে।",
+      "calc.table.h": "সেবা অনুযায়ী বিস্তারিত",
+      "calc.th.unit_price": "একক মূল্য",
+      "calc.th.total": "মোট",
+      "calc.th.status": "অবস্থা",
+      "calc.none": "নেই",
+      "calc.incomplete": "অসম্পূর্ণ",
+      "calc.total_known": "জানা মূল্যের আনুমানিক মোট",
+      "calc.missing2.note": "{n} টি সেবার মূল্য পাওয়া যায়নি; এগুলো শূন্য ধরা হয়নি, তাই প্রকৃত মোট বেশি হবে।",
+      "calc.s5.empty": "কোনো সেবা বা অতিরিক্ত খরচ নির্বাচিত হয়নি।",
+      "calc.reset": "রিসেট",
+      "calc.edit": "নির্বাচন সম্পাদনা",
+      "calc.compare_link": "হাসপাতাল তুলনা",
+      "calc.next": "পরবর্তী",
+      "calc.prev": "পূর্ববর্তী",
+      "calc.toast.hospital": "একটি হাসপাতাল বেছে নিন",
+      "calc.toast.service": "অন্তত একটি সেবা বেছে নিন",
+      "calc.share.note": "এটি নমুনা ডেটাভিত্তিক আনুমানিক হিসাব — হাসপাতালের চূড়ান্ত বিল বা কোটেশন নয়।"
+    },
+    en: {
+      "calc.title": "Cost Calculator | DoctorBill",
+      "calc.sub": "Start from your problem and step through hospital, services and extras to see the likely range of the whole bill. All values are sample data.",
+      "calc.step.problem": "Problem",
+      "calc.step.hospital": "Hospital",
+      "calc.step.extras": "Extras",
+      "calc.service": "Service",
+      "calc.qty": "Quantity",
+      "calc.review": "Estimate",
+      "calc.s0.title": "Step 1: Choose what happened",
+      "calc.s0.sub": "No need to know test names. Picking a problem preloads the usual services, stay days and extra charges — or build it yourself.",
+      "calc.s0.manual": "Pick services myself",
+      "calc.s0.manual_sub": "Not in the list? Choose city, hospital and services yourself.",
+      "calc.scenario.picked": "Selected problem: {name}",
+      "calc.s1.title": "Step 2: City or area",
+      "calc.s2.title": "Step 3: Choose a hospital",
+      "calc.s2.empty": "No sample hospitals in this city.",
+      "calc.s3.title": "Step 4: Choose services",
+      "calc.s3.sub": "Services listed for the chosen hospital plus those preloaded from your problem. Missing prices show as “No price”. Prices shown are sample data.",
+      "calc.s3.empty": "No listed services for this hospital.",
+      "calc.s4.title": "Step 5: Quantity",
+      "calc.s4.empty": "Choose services from the previous step.",
+      "calc.s6.title": "Step 6: Extra charges",
+      "calc.s6.sub": "Ward, nursing, medicines, theatre, VAT — these are what usually inflate a bill. Tick what applies; every range is sample data.",
+      "calc.days.label": "Inpatient days",
+      "calc.s5.title": "Step 7: Likely full-bill estimate",
+      "calc.sector.label": "Which cost basis to use",
+      "calc.sector.note": "Private = listed sample prices; Government = reference range for a typical government facility (sample) — not a claim about any specific hospital.",
+      "calc.summary.title": "Indicative estimate",
+      "calc.summary.empty": "No service or extra charge has been selected yet.",
+      "calc.summary.no_price": "No price",
+      "calc.subtotal": "Sum of service midpoints",
+      "calc.missing.head": "Incomplete estimate:",
+      "calc.missing.note": "Listed prices were not found for {n} services ({list}). These are not counted as zero — the total cost may therefore be higher.",
+      "calc.disclaimer": "This is an indicative range based on listed prices and sample reference ranges. The actual cost may differ due to the hospital's final bill, the patient's condition, the doctor's consultation and additional services.",
+      "calc.table.h": "Per-service detail",
+      "calc.th.unit_price": "Unit price",
+      "calc.th.total": "Total",
+      "calc.th.status": "Status",
+      "calc.none": "None",
+      "calc.incomplete": "Incomplete",
+      "calc.total_known": "Indicative total at known prices",
+      "calc.missing2.note": "No price was found for {n} services; these are not counted as zero, so the actual total will be higher.",
+      "calc.s5.empty": "No service or extra charge has been selected.",
+      "calc.reset": "Reset",
+      "calc.edit": "Edit selection",
+      "calc.compare_link": "Compare hospitals",
+      "calc.next": "Next",
+      "calc.prev": "Previous",
+      "calc.toast.hospital": "Please choose a hospital",
+      "calc.toast.service": "Please choose at least one service",
+      "calc.share.note": "This is a sample-data estimate — not a final hospital bill or quote."
+    }
+  });
+  document.title = UI.t("calc.title");
+  UI.boot("calculator");
+  const STEPS = [UI.t("calc.step.problem"), UI.t("hospitals.city"), UI.t("calc.step.hospital"),
+    UI.t("calc.service"), UI.t("calc.qty"), UI.t("calc.step.extras"), UI.t("calc.review")];
+  let step = 0;
+  let maxReached = 0;
+  const state = { city: UI.getCity(), hospitalId: null, items: {}, extras: [], days: 0, scenarioId: null, sector: "private" };
+
+  function applyLayout() {
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    document.getElementById("calc-layout").style.gridTemplateColumns = wide ? "1.4fr 1fr" : "1fr";
+  }
+  window.addEventListener("resize", applyLayout); applyLayout();
+
+  function renderProgress() {
+    const prog = document.getElementById("progress");
+    prog.innerHTML = STEPS.map((s, i) => {
+      const done = i <= step;
+      const body = '<span style="width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:' +
+        (done ? "var(--brand-600)" : "var(--surface-2)") + ";color:" + (done ? "var(--on-brand)" : "var(--text-3)") + '">' + Fmt.bn(i + 1) + "</span>" +
+        '<span class="small">' + Fmt.escapeHtml(s) + "</span>";
+      const jumpable = i <= maxReached && i !== step;
+      return '<li class="row gap-8 items-center" style="display:inline-flex;margin-right:14px;color:' +
+        (done ? "var(--brand-700)" : "var(--text-3)") + '"' + (i === step ? ' aria-current="step"' : "") + ">" +
+        (jumpable ? '<button class="step-jump" type="button" data-goto="' + i + '">' + body + "</button>" : body) + "</li>";
+    }).join("");
+    prog.querySelectorAll("[data-goto]").forEach((b) =>
+      b.addEventListener("click", () => { step = Number(b.dataset.goto); render(); }));
+  }
+
+  function chosenItems() {
+    return Object.keys(state.items).filter((id) => state.items[id] > 0)
+      .map((id) => ({ svc: DB.serviceById(id), qty: state.items[id], rec: DB.prices.find((p) => p.hospital_id === state.hospitalId && p.service_id === id) }));
+  }
+
+  function serviceItems() {
+    return chosenItems().map((it) => ({ id: it.svc.id, qty: it.qty }));
+  }
+
+  function estimateNow() {
+    return UI.computeEstimate(serviceItems(), state.extras,
+      { hospitalId: state.hospitalId, sector: state.sector, days: state.days });
+  }
+
+  function valBand(l) {
+    return l.low === l.high ? (Fmt.taka(l.mid) || "—") : Fmt.taka(l.low) + "–" + Fmt.taka(l.high);
+  }
+
+  function applyScenario(sc) {
+    state.scenarioId = sc ? sc.id : null;
+    state.items = {};
+    if (sc) (sc.services || []).forEach((it) => { state.items[it.id] = Math.max(1, Number(it.qty) || 1); });
+    state.extras = sc ? (sc.extras || []).slice() : [];
+    state.days = sc ? (Number(sc.stay_days) || 0) : 0;
+  }
+
+  function scenarioRecap() {
+    if (!state.scenarioId) return "";
+    const sc = DB.scenarioById(state.scenarioId);
+    if (!sc) return "";
+    return '<p class="small muted mt-1">' + Fmt.escapeHtml(UI.t("calc.scenario.picked")).replace("{name}", Fmt.escapeHtml(UI.nameOf(sc))) + "</p>";
+  }
+
+  function renderSummary() {
+    const el = document.getElementById("summary");
+    const est = estimateNow();
+    el.innerHTML = '<h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("calc.summary.title")) + "</h3>";
+    if (!est.lines.length) {
+      el.insertAdjacentHTML("beforeend", '<p class="muted small">' + Fmt.escapeHtml(UI.t("calc.summary.empty")) + "</p>");
+    } else {
+      el.appendChild(UI.renderEstimate(est, {}));
+    }
+    el.insertAdjacentHTML("beforeend", '<div class="notice mt-3 small">' + Fmt.escapeHtml(UI.t("calc.disclaimer")) + "</div>");
+  }
+
+  function sectorToggle() {
+    return '<div class="mt-2"><div class="row gap-8 wrap items-center">' +
+      '<span class="small muted">' + Fmt.escapeHtml(UI.t("calc.sector.label")) + "</span>" +
+      '<button class="btn sm ' + (state.sector === "private" ? "secondary" : "ghost") + '" type="button" data-sector="private">' + Fmt.escapeHtml(UI.t("sh.private")) + "</button>" +
+      '<button class="btn sm ' + (state.sector === "govt" ? "secondary" : "ghost") + '" type="button" data-sector="govt">' + Fmt.escapeHtml(UI.t("sh.govt")) + "</button></div>" +
+      '<p class="small muted mt-1">' + Fmt.escapeHtml(UI.t(state.sector === "govt" ? "sh.govt_note" : "calc.sector.note")) + "</p></div>";
+  }
+  function bindSector(root) {
+    root.querySelectorAll("[data-sector]").forEach((b) => b.addEventListener("click", () => {
+      if (state.sector !== b.dataset.sector) { state.sector = b.dataset.sector; render(); }
+    }));
+  }
+
+  function hasPerDay() {
+    return state.extras.some((id) => { const x = DB.extraById(id); return x && x.type === "per_day"; });
+  }
+  function daysLabelHtml() {
+    return Fmt.escapeHtml(UI.t("calc.days.label")) + " (" +
+      Fmt.escapeHtml(UI.t("sh.days_n")).replace("{n}", Fmt.bn(state.days)) + ")";
+  }
+  function daysRow() {
+    if (!hasPerDay()) return "";
+    // A per-day charge needs at least one day, so the input never contradicts the maths.
+    if (state.days < 1) state.days = 1;
+    return '<div class="field mt-2" style="max-width:260px"><label for="c-days" id="c-days-label">' + daysLabelHtml() + "</label>" +
+      '<input class="input" id="c-days" type="number" min="1" step="1" value="' + Fmt.escapeHtml(String(state.days)) + '" style="min-height:44px"></div>';
+  }
+  function bindDays(root) {
+    const inp = root.querySelector("#c-days");
+    if (!inp) return;
+    inp.addEventListener("input", () => {
+      const v = Math.max(1, Number(inp.value) || 0);
+      state.days = v;
+      if (String(v) !== inp.value) inp.value = String(v);
+      const lb = root.querySelector("#c-days-label");
+      if (lb) lb.innerHTML = daysLabelHtml();
+      renderSummary();
+    });
+  }
+
+  function incomeRow(est) {
+    const inc = UI.getIncome();
+    return '<div class="income-row"><label class="small muted" for="c-income">' + Fmt.escapeHtml(UI.t("sh.income.label")) + "</label>" +
+      '<input class="input" id="c-income" type="number" min="0" step="500" value="' + (inc ? Fmt.escapeHtml(String(inc)) : "") + '" style="min-height:44px"></div>' +
+      '<div id="income-note">' + UI.incomeNote(est.mid) + "</div>";
+  }
+
+  function sharePayload(est) {
+    const sc = state.scenarioId ? DB.scenarioById(state.scenarioId) : null;
+    const hp = state.hospitalId ? DB.hospitalById(state.hospitalId) : null;
+    const subtitle = [hp ? UI.nameOf(hp) : "", state.sector === "govt" ? UI.t("sh.govt") : UI.t("sh.private")].filter(Boolean).join(" · ");
+    return {
+      title: sc ? UI.nameOf(sc) : UI.t("page.calculator.h1"),
+      subtitle: subtitle,
+      lines: est.lines.slice(0, 8).map((l) => ({
+        label: l.name + (l.qty > 1 ? " ×" + Fmt.bn(l.qty) : ""),
+        value: valBand(l)
+      })),
+      totalLabel: UI.t("sh.band.title"),
+      total: UI.bandText(est),
+      note: UI.t("calc.share.note")
+    };
+  }
+
+  function panel() {
+    const p = document.getElementById("calc-panel");
+    if (step === 0) {
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s0.title")) + "</h2>" +
+        '<p class="small muted">' + Fmt.escapeHtml(UI.t("calc.s0.sub")) + "</p>" +
+        '<div class="scenario-grid">' + DB.scenarios.map((sc) =>
+          '<button class="scenario' + (state.scenarioId === sc.id ? " on" : "") + '" type="button" data-sc="' + Fmt.escapeHtml(sc.id) + '">' +
+          "<b>" + Fmt.escapeHtml(UI.nameOf(sc)) + "</b><small>" + Fmt.escapeHtml(UI.isEn() ? sc.note_en : sc.note_bn) + "</small></button>").join("") +
+        '<button class="scenario" type="button" data-manual><b>' + Fmt.escapeHtml(UI.t("calc.s0.manual")) + "</b><small>" + Fmt.escapeHtml(UI.t("calc.s0.manual_sub")) + "</small></button>" +
+        "</div>";
+      p.querySelectorAll("[data-sc]").forEach((b) => b.addEventListener("click", () => {
+        applyScenario(DB.scenarioById(b.dataset.sc)); step = 1; render();
+      }));
+      p.querySelector("[data-manual]").addEventListener("click", () => { applyScenario(null); step = 1; render(); });
+    } else if (step === 1) {
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s1.title")) + "</h2>" + scenarioRecap() +
+        '<div class="field"><label for="c-city">' + Fmt.escapeHtml(UI.t("hospitals.city")) + '</label><select class="select" id="c-city">' +
+        DB.cities.map((c) => '<option value="' + Fmt.escapeHtml(c) + '"' + (c === state.city ? " selected" : "") + ">" + Fmt.escapeHtml(c) + "</option>").join("") +
+        "</select></div>" + nextBtn();
+      p.querySelector("#c-city").addEventListener("change", (e) => { state.city = e.target.value; UI.setCity(state.city); });
+    } else if (step === 2) {
+      const list = DB.hospitals.filter((h) => h.city === state.city);
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s2.title")) + "</h2>" + scenarioRecap() +
+        (list.length ? '<div class="stack mt-2">' + list.map((h) =>
+          '<label class="card tight" style="cursor:pointer;display:block">' +
+          '<label class="check"><input type="radio" name="hosp" value="' + Fmt.escapeHtml(h.id) + '"' + (state.hospitalId === h.id ? " checked" : "") + ">" +
+          "<span><strong>" + Fmt.escapeHtml(UI.nameOf(h)) + "</strong><div class='small muted'>" + Fmt.escapeHtml(h.area) + " · " + Fmt.escapeHtml(h.hospital_type) + "</div></span></label></label>").join("") + "</div>"
+          : '<div class="empty">' + Fmt.escapeHtml(UI.t("calc.s2.empty")) + "</div>") + prevNext();
+      p.querySelectorAll('input[name=hosp]').forEach((r) => r.addEventListener("change", () => {
+        state.hospitalId = r.value;
+        // Scenario preloads stay on hospital change; manual picks start fresh.
+        if (!state.scenarioId) state.items = {};
+      }));
+    } else if (step === 3) {
+      const recs = DB.pricesForHospital(state.hospitalId);
+      const bySvc = {};
+      recs.forEach((r) => { bySvc[r.service_id] = r; });
+      const ids = Object.keys(bySvc).filter((id) => DB.serviceById(id))
+        .concat(Object.keys(state.items).filter((id) => DB.serviceById(id) && !bySvc[id]));
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s3.title")) + "</h2>" + scenarioRecap() +
+        '<p class="small muted">' + Fmt.escapeHtml(UI.t("calc.s3.sub")) + "</p>" +
+        (ids.length ? '<div class="stack mt-2">' + ids.map((id) => {
+          const svc = DB.serviceById(id);
+          const rec = bySvc[id];
+          return '<label class="card tight" style="cursor:pointer"><label class="check"><input type="checkbox" data-svc="' + Fmt.escapeHtml(id) + '"' + (state.items[id] ? " checked" : "") + ">" +
+            "<span class='grow'><strong>" + Fmt.escapeHtml(UI.nameOf(svc)) + "</strong><div class='small muted'>" + Fmt.escapeHtml(svc.unit || "") + (rec ? " · " + Fmt.escapeHtml(Fmt.updated(rec.last_checked_at)) : "") + "</div></span>" +
+            "<span>" + (rec ? UI.priceText(rec) : '<span class="price-na">' + Fmt.escapeHtml(UI.t("calc.summary.no_price")) + "</span>") + "</span></label>" +
+            '<div class="badge-row">' + (rec ? UI.statusBadge(rec) : "") + UI.sampleBadge() + "</div></label>";
+        }).join("") + "</div>" : '<div class="empty">' + Fmt.escapeHtml(UI.t("calc.s3.empty")) + "</div>") + prevNext();
+      p.querySelectorAll("input[data-svc]").forEach((cb) => cb.addEventListener("change", () => {
+        if (cb.checked) state.items[cb.dataset.svc] = state.items[cb.dataset.svc] || 1; else delete state.items[cb.dataset.svc];
+        renderSummary();
+      }));
+    } else if (step === 4) {
+      const items = chosenItems();
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s4.title")) + "</h2>" +
+        (items.length ? '<div class="stack mt-2">' + items.map((it) =>
+          '<div class="card tight row between items-center"><div><strong>' + Fmt.escapeHtml(UI.nameOf(it.svc)) + "</strong><div class='small muted'>" + Fmt.escapeHtml(it.svc.unit || "") + "</div></div>" +
+          '<label class="row gap-8 items-center"><span class="small muted">' + Fmt.escapeHtml(UI.t("calc.qty")) + '</span><input class="input" type="number" min="1" value="' + Fmt.escapeHtml(String(it.qty)) + '" data-qty="' + Fmt.escapeHtml(it.svc.id) + '" style="width:90px;min-height:42px"></label></div>').join("") + "</div>"
+          : '<div class="empty">' + Fmt.escapeHtml(UI.t("calc.s4.empty")) + "</div>") + prevNext();
+      p.querySelectorAll("input[data-qty]").forEach((inp) => inp.addEventListener("input", () => {
+        state.items[inp.dataset.qty] = Math.max(1, Number(inp.value) || 1); renderSummary();
+      }));
+    } else if (step === 5) {
+      p.innerHTML = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s6.title")) + "</h2>" +
+        '<p class="small muted">' + Fmt.escapeHtml(UI.t("calc.s6.sub")) + "</p>" + sectorToggle() +
+        '<div id="ex-host"></div>' + '<div id="days-host">' + daysRow() + "</div>" + prevNext();
+      const host = p.querySelector("#ex-host");
+      host.appendChild(UI.extrasPicker(state.extras, (id, checked) => {
+        if (checked) { if (state.extras.indexOf(id) === -1) state.extras.push(id); }
+        else state.extras = state.extras.filter((x) => x !== id);
+        const dh = p.querySelector("#days-host");
+        if (dh) { dh.innerHTML = daysRow(); bindDays(p); }
+        renderSummary();
+      }, { sector: state.sector }));
+      bindSector(p); bindDays(p);
+    } else {
+      const est = estimateNow();
+      const svcLines = est.lines.filter((l) => l.kind === "service");
+      let html = '<h2 style="font-size:20px">' + Fmt.escapeHtml(UI.t("calc.s5.title")) + "</h2>";
+      if (!est.lines.length) {
+        html += '<div class="empty">' + Fmt.escapeHtml(UI.t("calc.s5.empty")) + "</div>";
+      } else {
+        html += sectorToggle() + '<div id="est-host" class="mt-2"></div>';
+        if (svcLines.length) {
+          html += '<h3 class="mt-3" style="font-size:17px">' + Fmt.escapeHtml(UI.t("calc.table.h")) + "</h3>" +
+            '<div class="table-wrap"><table class="data"><thead><tr><th>' + Fmt.escapeHtml(UI.t("calc.service")) +
+            "</th><th>" + Fmt.escapeHtml(UI.t("calc.qty")) +
+            "</th><th>" + Fmt.escapeHtml(UI.t("calc.th.total")) +
+            "</th><th>" + Fmt.escapeHtml(UI.t("calc.th.status")) + "</th></tr></thead><tbody>" +
+            svcLines.map((l) =>
+              "<tr><td style='white-space:normal'>" + Fmt.escapeHtml(l.name) +
+              (state.hospitalId && l.rec ? UI.feedbackBtn(state.hospitalId, l.id) : "") + "</td>" +
+              "<td>" + Fmt.bn(l.qty) + (l.unit ? "<div class='small muted'>" + Fmt.escapeHtml(l.unit) + "</div>" : "") + "</td>" +
+              "<td>" + Fmt.escapeHtml(valBand(l)) + "</td>" +
+              "<td>" + (l.rec ? UI.statusBadge(l.rec) + UI.staleNote(l.rec.last_checked_at) : UI.statusBadge({ verification_status: "unavailable" })) + "</td></tr>").join("") +
+            "</tbody></table></div>" +
+            '<div class="row between items-center mt-2"><span class="muted small">' + Fmt.escapeHtml(UI.t("calc.subtotal")) + "</span>" +
+            '<span class="price">' + Fmt.escapeHtml(Fmt.taka(svcLines.reduce((n, l) => n + l.mid, 0)) || "—") + "</span></div>";
+        }
+        if (est.missing.length) {
+          html += '<div class="notice warn mt-2">' + Fmt.escapeHtml(UI.t("calc.missing2.note")).replace("{n}", Fmt.bn(est.missing.length)) + "</div>";
+        }
+        html += incomeRow(est) +
+          '<h3 class="mt-3" style="font-size:17px">' + Fmt.escapeHtml(UI.t("sh.share.h")) + '</h3><div id="share-host"></div>' +
+          '<div class="notice mt-3 small">' + Fmt.escapeHtml(UI.t("calc.disclaimer")) + "</div>";
+      }
+      html += '<div class="row gap-8 wrap mt-3"><button class="btn secondary" type="button" data-reset>' + Fmt.escapeHtml(UI.t("calc.reset")) + "</button>" +
+        '<button class="btn ghost" type="button" data-back="3">' + Fmt.escapeHtml(UI.t("calc.edit")) + "</button>" +
+        '<a class="btn" href="compare.html">' + Fmt.escapeHtml(UI.t("calc.compare_link")) + "</a></div>" + prevBtn();
+      p.innerHTML = html;
+      if (est.lines.length) {
+        p.querySelector("#est-host").appendChild(UI.renderEstimate(est, {}));
+        UI.bindFeedback(p);
+        bindSector(p);
+        UI.renderShareCard(p.querySelector("#share-host"), sharePayload(est));
+        const inc = p.querySelector("#c-income");
+        if (inc) inc.addEventListener("input", () => {
+          UI.setIncome(inc.value);
+          const nh = p.querySelector("#income-note");
+          if (nh) nh.innerHTML = UI.incomeNote(estimateNow().mid);
+          renderSummary();
+        });
+      }
+      const rb = p.querySelector("[data-reset]");
+      if (rb) rb.addEventListener("click", () => { applyScenario(null); state.hospitalId = null; step = 0; maxReached = 0; render(); });
+      const eb = p.querySelector("[data-back]");
+      if (eb) eb.addEventListener("click", () => { step = Number(eb.dataset.back); render(); });
+    }
+    bindNav(p);
+    renderSummary();
+  }
+
+  function nextBtn() { return '<div class="row gap-8 mt-3"><button class="btn" type="button" data-next>' + Fmt.escapeHtml(UI.t("calc.next")) + "</button></div>"; }
+  function prevBtn() { return '<div class="row gap-8 mt-3"><button class="btn ghost" type="button" data-prev>' + Fmt.escapeHtml(UI.t("calc.prev")) + "</button></div>"; }
+  function prevNext() { return '<div class="row gap-8 mt-3"><button class="btn ghost" type="button" data-prev>' + Fmt.escapeHtml(UI.t("calc.prev")) + '</button><button class="btn" type="button" data-next>' + Fmt.escapeHtml(UI.t("calc.next")) + "</button></div>"; }
+
+  function bindNav(p) {
+    const nx = p.querySelector("[data-next]"), pv = p.querySelector("[data-prev]");
+    if (nx) nx.addEventListener("click", () => {
+      if (step === 2 && !state.hospitalId) { UI.toast(UI.t("calc.toast.hospital")); return; }
+      if (step === 3 && !chosenItems().length) { UI.toast(UI.t("calc.toast.service")); return; }
+      step = Math.min(STEPS.length - 1, step + 1);
+      if (step > maxReached) maxReached = step;
+      render();
+    });
+    if (pv) pv.addEventListener("click", () => { step = Math.max(0, step - 1); render(); });
+  }
+
+  function render() {
+    renderProgress();
+    panel();
+    // The last step already shows the full estimate in the panel; the sidebar would repeat it.
+    const aside = document.getElementById("summary");
+    if (aside) aside.style.display = step === STEPS.length - 1 ? "none" : "";
+  }
+
+  const q = new URLSearchParams(location.search);
+  const deepSc = DB.scenarioById(q.get("scenario") || "");
+  if (deepSc) applyScenario(deepSc);
+  const hParam = q.get("hospital") || "";
+  const deepH = DB.hospitals.find((h) => h.id === hParam || h.slug === hParam);
+  if (deepH) {
+    state.hospitalId = deepH.id;
+    state.city = deepH.city;
+    UI.setCity(deepH.city);
+  }
+  step = deepH ? 3 : (deepSc ? 1 : 0);
+  maxReached = step;
+  render();
+})();
+</script>
+</body>
+</html>

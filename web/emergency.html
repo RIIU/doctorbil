@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>জরুরি তথ্য | DoctorBill</title>
+<meta name="description" content="জরুরি প্রয়োজনে বাংলাদেশের সরকারি জরুরি নম্বর ৯৯৯ এবং এলাকাভিত্তিক হাসপাতালের তথ্য দ্রুত দেখুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/emergency.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="জরুরি তথ্য | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="জরুরি প্রয়োজনে সরকারি জরুরি নম্বর এবং এলাকাভিত্তিক হাসপাতালের তথ্য।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/emergency.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <div class="call-999" role="region" aria-label="সরকারি জরুরি নম্বর">
+        <div>
+          <div class="small" style="opacity:.9" data-i18n="emg.services_label">জরুরি সেবা (পুলিশ/অ্যাম্বুলেন্স/ফায়ার)</div>
+          <div class="num">৯৯৯</div>
+          <div class="small" style="opacity:.9" data-i18n="emg.gov_number">বাংলাদেশের সরকারি জরুরি নম্বর</div>
+        </div>
+        <a class="btn secondary" style="--btn-fg:#d64534;--btn-bg:#fff" href="tel:999" aria-label="৯৯৯ এ কল করুন" data-i18n="emg.call_now">এখনই কল করুন</a>
+      </div>
+
+      <div class="notice danger mt-3"><strong data-i18n="emg.important_label">গুরুত্বপূর্ণ:</strong> <span data-i18n="emg.notice">এই প্ল্যাটফর্ম জরুরি চিকিৎসা সেবার বিকল্প নয়। জীবনঝুঁকি থাকলে অবিলম্বে ৯৯৯-এ কল করুন বা নিকটস্থ হাসপাতালের জরুরি বিভাগে যান।</span></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:8px">
+    <div class="container">
+      <h2 style="font-size:22px" data-i18n="emg.by_area_h2">এলাকাভিত্তিক হাসপাতাল</h2>
+      <p class="section-sub" data-i18n="emg.by_area_sub">শহর/এলাকা বেছে নিন। ঠিকানা ও দিকনির্দেশনা দেখুন। (তালিকার সব তথ্য নমুনা।)</p>
+      <div class="field-row two">
+        <div class="field mb-0"><label for="e-city" data-i18n="hospitals.city">শহর</label><select class="select" id="e-city"></select></div>
+        <div class="field mb-0"><label for="e-area" data-i18n="hospitals.area">এলাকা</label><select class="select" id="e-area"><option value="">সব এলাকা</option></select></div>
+      </div>
+      <div class="grid mt-3" id="e-grid" style="grid-template-columns:1fr"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.addI18n({
+    bn: {
+      "emg.page_title": "জরুরি তথ্য | DoctorBill",
+      "emg.services_label": "জরুরি সেবা (পুলিশ/অ্যাম্বুলেন্স/ফায়ার)",
+      "emg.gov_number": "বাংলাদেশের সরকারি জরুরি নম্বর",
+      "emg.call_now": "এখনই কল করুন",
+      "emg.important_label": "গুরুত্বপূর্ণ:",
+      "emg.notice": "এই প্ল্যাটফর্ম জরুরি চিকিৎসা সেবার বিকল্প নয়। জীবনঝুঁকি থাকলে অবিলম্বে ৯৯৯-এ কল করুন বা নিকটস্থ হাসপাতালের জরুরি বিভাগে যান।",
+      "emg.by_area_h2": "এলাকাভিত্তিক হাসপাতাল",
+      "emg.by_area_sub": "শহর/এলাকা বেছে নিন। ঠিকানা ও দিকনির্দেশনা দেখুন। (তালিকার সব তথ্য নমুনা।)",
+      "emg.emd_verified": "জরুরি বিভাগ তথ্য যাচাইকৃত",
+      "emg.emd_unverified": "জরুরি বিভাগের তথ্য যাচাই করা হয়নি",
+      "emg.contact": "যোগাযোগ:",
+      "emg.sample_number_note": "নমুনা নম্বর — কল করার জন্য নয়",
+      "emg.directions_sample": "দিকনির্দেশনা (নমুনা)",
+      "emg.details": "বিস্তারিত",
+      "emg.last_verify": "সর্বশেষ যাচাই: তথ্য এখনো যাচাই করা হয়নি।",
+      "emg.empty_area": "এই এলাকায় নমুনা হাসপাতাল নেই। জরুরি প্রয়োজনে ৯৯৯-এ কল করুন।",
+      "emg.toast_sample": "নমুনা উপস্থাপনা — লাইভ দিকনির্দেশনা এখনো যুক্ত নয়।",
+      "emg.modal_title": "জরুরি নম্বর",
+      "emg.modal_note": "এই ডিভাইসে সরাসরি কল করার সুবিধা নেই। মোবাইল থেকে ৯৯৯ ডায়াল করুন, অথবা নম্বরটি কপি করুন।",
+      "emg.try_call": "তবুও কল করার চেষ্টা করুন",
+      "emg.copy_number": "নম্বর কপি করুন",
+      "emg.copied": "৯৯৯ কপি হয়েছে",
+      "emg.dial_manual": "ম্যানুয়ালি ডায়াল করুন: ৯৯৯"
+    },
+    en: {
+      "emg.page_title": "Emergency Information | DoctorBill",
+      "emg.services_label": "Emergency services (police/ambulance/fire)",
+      "emg.gov_number": "Bangladesh's government emergency number",
+      "emg.call_now": "Call now",
+      "emg.important_label": "Important:",
+      "emg.notice": "This platform is not a substitute for emergency medical services. If there is a risk to life, call 999 immediately or go to the emergency department of the nearest hospital.",
+      "emg.by_area_h2": "Hospitals by area",
+      "emg.by_area_sub": "Pick a city/area. See the address and directions. (All information in the list is sample data.)",
+      "emg.emd_verified": "Emergency department info verified",
+      "emg.emd_unverified": "Emergency department info not verified",
+      "emg.contact": "Contact:",
+      "emg.sample_number_note": "sample number — not for calling",
+      "emg.directions_sample": "Directions (sample)",
+      "emg.details": "Details",
+      "emg.last_verify": "Last verified: this information has not been verified yet.",
+      "emg.empty_area": "No sample hospitals in this area. In an emergency, call 999.",
+      "emg.toast_sample": "Sample view — live directions are not available yet.",
+      "emg.modal_title": "Emergency number",
+      "emg.modal_note": "This device can't make calls directly. Dial 999 from a mobile phone, or copy the number.",
+      "emg.try_call": "Try to call anyway",
+      "emg.copy_number": "Copy number",
+      "emg.copied": "999 copied",
+      "emg.dial_manual": "Dial manually: 999"
+    }
+  });
+  document.title = UI.t("emg.page_title");
+  UI.boot("emergency");
+  const eCity = document.getElementById("e-city"), eArea = document.getElementById("e-area");
+  eCity.innerHTML = '<option value="">' + UI.t("hospitals.allcity") + "</option>" + UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(c) + "</option>").join("");
+
+  function fillAreas() {
+    const areas = [...new Set(DB.hospitals.filter((h) => !eCity.value || h.city === eCity.value).map((h) => h.area))];
+    eArea.innerHTML = '<option value="">' + UI.t("hospitals.allarea") + "</option>" + areas.map((a) => '<option value="' + Fmt.escapeHtml(a) + '">' + Fmt.escapeHtml(a) + "</option>").join("");
+  }
+
+  function card(hp) {
+    return '<div class="card tight">' +
+      '<div class="row between items-center wrap gap-8">' +
+        "<div class='grow'><h3 style='font-size:17px;margin:0'>" + Fmt.escapeHtml(hp.name_bn) + "</h3>" +
+        '<div class="kv small">' + UI.ICONS.pin + "<span>" + Fmt.escapeHtml(hp.address_bn) + "</span></div></div>" +
+        UI.sampleBadge() +
+      "</div>" +
+      '<div class="badge-row mt-2">' +
+        (hp.emergency_verified
+          ? '<span class="badge verified"><span class="dot"></span>' + UI.t("emg.emd_verified") + '</span>'
+          : '<span class="badge unverified"><span class="dot"></span>' + UI.t("emg.emd_unverified") + '</span>') +
+      "</div>" +
+      '<div class="small muted mt-2">' + UI.t("emg.contact") + ' ' + Fmt.escapeHtml(hp.phone_masked) + ' <span>(' + UI.t("emg.sample_number_note") + ')</span></div>' +
+      '<div class="row gap-8 wrap mt-2">' +
+        '<button class="btn sm secondary" type="button" data-dir="' + hp.id + '">' + UI.t("emg.directions_sample") + '</button>' +
+        '<a class="btn sm ghost" href="hospital.html?slug=' + encodeURIComponent(hp.slug) + '">' + UI.t("emg.details") + '</a>' +
+      "</div>" +
+      '<div class="small muted mt-2">' + UI.t("emg.last_verify") + '</div>' +
+    "</div>";
+  }
+
+  function render() {
+    const list = DB.hospitals.filter((h) => (!eCity.value || h.city === eCity.value) && (!eArea.value || h.area === eArea.value));
+    const pins = list.concat(UI.directoryForCity(eCity.value));
+    const grid = document.getElementById("e-grid");
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    const mapHtml = UI.miniMap(pins, { height: wide ? 380 : 240 });
+    if (!list.length) {
+      grid.style.gridTemplateColumns = "1fr";
+      grid.innerHTML = '<div class="empty">' + UI.t("emg.empty_area") + '</div><div class="mt-3">' + mapHtml + "</div>";
+      return;
+    }
+    grid.style.gridTemplateColumns = wide ? "1fr 1.1fr" : "1fr";
+    const listHtml = '<div class="stack">' + list.map(card).join("") + "</div>";
+    grid.innerHTML = wide ? "<div>" + listHtml + "</div><div>" + mapHtml + "</div>" : listHtml + '<div class="mt-3">' + mapHtml + "</div>";
+    grid.querySelectorAll("[data-dir]").forEach((b) => b.addEventListener("click", () => UI.toast(UI.t("emg.toast_sample"))));
+  }
+
+  eCity.addEventListener("change", () => { fillAreas(); render(); });
+  eArea.addEventListener("change", render);
+  window.addEventListener("resize", render);
+  fillAreas(); render();
+
+  // ৯৯৯ call button: mobile dialers open via native tel: link; on devices with
+  // no dialer (most desktops) show the number with a copy fallback instead of
+  // doing nothing.
+  const canDial = ("ontouchstart" in window) || navigator.maxTouchPoints > 0 ||
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const callBtn = document.querySelector('.call-999 a[href="tel:999"]');
+  if (callBtn && !canDial) {
+    callBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const back = document.createElement("div");
+      back.className = "modal-backdrop open";
+      back.innerHTML =
+        '<div class="modal" role="dialog" aria-modal="true" aria-label="জরুরি নম্বর">' +
+          '<div class="modal-head"><h3 class="mb-0">' + UI.t("emg.modal_title") + '</h3>' +
+            '<button class="icon-btn" type="button" aria-label="বন্ধ করুন" data-close>✕</button></div>' +
+          '<div class="center mt-3">' +
+            '<div style="font-size:46px;font-weight:800;color:#d64534;line-height:1">৯৯৯</div>' +
+            '<p class="small muted mt-2">' + UI.t("emg.modal_note") + '</p>' +
+          "</div>" +
+          '<div class="stack mt-3">' +
+            '<a class="btn block" style="--btn-bg:#d64534;--btn-fg:#fff" href="tel:999">📞 ' + UI.t("emg.try_call") + '</a>' +
+            '<button class="btn secondary block" type="button" id="copy999">' + UI.t("emg.copy_number") + ' (999)</button>' +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(back);
+      const close = () => back.remove();
+      back.addEventListener("click", (ev) => { if (ev.target === back || ev.target.closest("[data-close]")) close(); });
+      back.querySelector("#copy999").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText("999"); UI.toast(UI.t("emg.copied")); }
+        catch (_) { UI.toast(UI.t("emg.dial_manual")); }
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

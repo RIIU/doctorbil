@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>অ্যাডমিন প্যানেল (লোকাল) | DoctorBill</title>
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <div class="row between items-center wrap gap-8">
+        <div><h1 style="margin:0" data-i18n="adm.title.h1">অ্যাডমিন প্যানেল</h1><p class="section-sub mb-0" data-i18n="adm.title.sub">হাসপাতাল, সেবা ও মূল্যের লোকাল এডিটর।</p></div>
+        <span class="badge sample" data-i18n="badge.sample">নমুনা ডেটা</span>
+      </div>
+
+      <div class="notice warn mt-3"><strong data-i18n="adm.notice.lead">সৎ ঘোষণা:</strong> <span data-i18n="adm.notice.body">সম্পাদনা, আমদানি, রপ্তানি, কভারেজ ও রিভিউ কিউ এই ব্রাউজারেই কাজ করে (localStorage)। লগইন, রোল, audit logging ও পাবলিশিং ব্যাকএন্ড ধাপে আসবে।</span></div>
+      <div class="notice danger mt-2" id="storage-warn" hidden><span data-i18n="adm.storage.bad">এই ব্রাউজারে সংরক্ষণ করা যাচ্ছে না — পরিবর্তন হারাবে।</span></div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.dashboard.h2">ড্যাশবোর্ড</h2>
+      <div class="grid cols-3" id="stats"></div>
+      <div class="mt-2" id="covbar"></div>
+
+      <div class="card mt-3">
+        <h3 style="font-size:17px" data-i18n="adm.roles.h3">ভূমিকা ও অনুমতি (পরিকল্পিত মডেল)</h3>
+        <p class="small muted mt-2" data-i18n="adm.roles.note">ভূমিকাগুলো ভবিষ্যৎ রোল-এনফোর্সমেন্ট মডেল; এই প্রোটোটাইপে কোনো রোল চালু নেই — পাতা খুললেই সব কাজ করা যায়।</p>
+        <div class="grid cols-2 mt-2">
+          <div class="notice small"><strong>Super Admin</strong><br><span data-i18n="adm.role.super.desc">সব ব্যবস্থাপনা, ভূমিকা ও সেটিংস।</span></div>
+          <div class="notice small"><strong>Data Manager</strong><br><span data-i18n="adm.role.data.desc">হাসপাতাল, সেবা ও মূল্য রেকর্ড সম্পাদনা।</span></div>
+          <div class="notice small"><strong>Verification Reviewer</strong><br><span data-i18n="adm.role.verify.desc">বিল পর্যালোচনা ও যাচাইয়ের সিদ্ধান্ত।</span></div>
+          <div class="notice small"><strong>Read-only Analyst</strong><br><span data-i18n="adm.role.readonly.desc">শুধু দেখা ও রিপোর্ট, সম্পাদনা নয়।</span></div>
+        </div>
+      </div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.prices.h2">মূল্য রেকর্ড</h2>
+      <p class="section-sub" data-i18n="adm.prices.sub">টেবিল থেকে সম্পাদনা করুন বা নতুন মূল্য যোগ করুন; সব পরিবর্তন লোকাল ওভাররাইড হিসেবে সংরক্ষিত হয়।</p>
+      <div class="row between items-center wrap gap-8">
+        <input id="pf-q" class="input" type="search" style="flex:1;min-width:180px" data-i18n-ph="adm.filter.q" placeholder="হাসপাতাল বা সেবা খুঁজুন">
+        <select id="pf-status" class="select" data-i18n-title="adm.filter.status" title="অবস্থা">
+          <option value="" data-i18n="adm.filter.all">সব অবস্থা</option>
+          <option value="verified" data-i18n="adm.vstat.verified">যাচাইকৃত</option>
+          <option value="hospital_provided" data-i18n="adm.vstat.hospital_provided">হাসপাতাল-প্রদত্ত</option>
+          <option value="user_provided" data-i18n="adm.vstat.user_provided">ব্যবহারকারী-প্রদত্ত</option>
+          <option value="unverified" data-i18n="adm.vstat.unverified">যাচাই হয়নি</option>
+          <option value="unavailable" data-i18n="adm.vstat.unavailable">মূল্য নেই</option>
+        </select>
+        <button class="btn sm" type="button" id="btn-new" data-i18n="adm.btn.new">নতুন মূল্য</button>
+      </div>
+
+      <div class="card tight mt-2" id="price-editor" hidden>
+        <h3 style="font-size:17px;margin:0" id="editor-title"></h3>
+        <div class="admin-form mt-2">
+          <div class="field"><label for="f-hospital" data-i18n="adm.f.hospital">হাসপাতাল</label><select id="f-hospital" class="select"></select></div>
+          <div class="field"><label for="f-service" data-i18n="adm.f.service">সেবা</label><select id="f-service" class="select"></select></div>
+          <div class="field"><label for="f-status" data-i18n="adm.f.status">যাচাই অবস্থা</label>
+            <select id="f-status" class="select">
+              <option value="verified" data-i18n="adm.vstat.verified">যাচাইকৃত</option>
+              <option value="hospital_provided" data-i18n="adm.vstat.hospital_provided">হাসপাতাল-প্রদত্ত</option>
+              <option value="user_provided" data-i18n="adm.vstat.user_provided">ব্যবহারকারী-প্রদত্ত</option>
+              <option value="unverified" data-i18n="adm.vstat.unverified">যাচাই হয়নি</option>
+              <option value="unavailable" data-i18n="adm.vstat.unavailable">মূল্য নেই</option>
+            </select>
+          </div>
+          <div class="field"><label for="f-amount" data-i18n="adm.f.amount">নির্দিষ্ট মূল্য (৳)</label><input id="f-amount" class="input" type="number" min="0" step="1" inputmode="numeric"><div class="hint small" data-i18n="adm.f.orhint">নির্দিষ্ট মূল্য অথবা min–max দিন</div></div>
+          <div class="field"><label for="f-min" data-i18n="adm.f.min">সর্বনিম্ন (৳)</label><input id="f-min" class="input" type="number" min="0" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="f-max" data-i18n="adm.f.max">সর্বোচ্চ (৳)</label><input id="f-max" class="input" type="number" min="0" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="f-source" data-i18n="adm.f.source">উৎসের ধরন</label>
+            <select id="f-source" class="select">
+              <option value="hospital_provided" data-i18n="adm.src.hospital_provided">হাসপাতাল-প্রদত্ত</option>
+              <option value="user_submission" data-i18n="adm.src.user_submission">ব্যবহারকারী জমা</option>
+              <option value="public_listing" data-i18n="adm.src.public_listing">প্রকাশ্য তালিকা</option>
+              <option value="manual_entry" data-i18n="adm.src.manual_entry">ম্যানুয়াল এন্ট্রি</option>
+            </select>
+          </div>
+          <div class="field"><label for="f-ref" data-i18n="adm.f.ref">উৎস রেফারেন্স</label><input id="f-ref" class="input" type="text" data-i18n-ph="adm.f.ref.ph" placeholder="যেমন: হাসপাতালের প্রাইস লিস্ট"></div>
+          <div class="field"><label for="f-checked" data-i18n="adm.f.checked">সর্বশেষ যাচাই</label><input id="f-checked" class="input" type="date"></div>
+          <div class="field"><label for="f-inc" data-i18n="adm.f.inc">অন্তর্ভুক্ত</label><input id="f-inc" class="input" type="text" data-i18n-ph="adm.f.inc.ph" placeholder="কী কী আছে"></div>
+          <div class="field"><label for="f-exc" data-i18n="adm.f.exc">বাদ</label><input id="f-exc" class="input" type="text" data-i18n-ph="adm.f.exc.ph" placeholder="কী কী নেই"></div>
+        </div>
+        <div class="err" id="form-err"></div>
+        <div class="row gap-8 wrap mt-2">
+          <button class="btn sm" type="button" id="btn-save" data-i18n="adm.btn.save">সংরক্ষণ</button>
+          <button class="btn sm ghost" type="button" id="btn-cancel" data-i18n="adm.btn.cancel">বাতিল</button>
+        </div>
+      </div>
+
+      <p class="small muted mt-2" id="table-count"></p>
+      <div class="table-wrap"><table class="data" id="price-table">
+        <thead><tr><th data-i18n="adm.col.hospital">হাসপাতাল</th><th data-i18n="adm.col.service">সেবা</th><th data-i18n="adm.col.price">মূল্য</th><th data-i18n="adm.col.source">উৎস</th><th data-i18n="adm.col.status">অবস্থা</th><th data-i18n="adm.col.updated">আপডেট</th><th data-i18n="adm.col.action">ক্রিয়া</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.import.h2">বাল্ক ইমপোর্ট</h2>
+      <div class="card tight mt-2">
+        <p class="small muted mb-0" data-i18n="adm.import.hint">CSV পেস্ট করুন বা ফাইল বেছে নিন, আগে প্রিভিউ, তারপর আমদানি।</p>
+        <label class="small muted mt-2" data-i18n="adm.import.paste">CSV বা JSON পেস্ট করুন</label>
+        <textarea class="import-box mt-2" id="imp-text" rows="6" data-i18n-ph="adm.import.ph" placeholder="header row সহ ডেটা"></textarea>
+        <div class="small muted mt-2"><strong data-i18n="adm.import.example">উদাহরণ header:</strong> <span id="imp-header" class="muted"></span></div>
+        <div class="row between items-center wrap gap-8 mt-2">
+          <label class="btn sm secondary" for="imp-file"><span data-i18n="adm.import.file">ফাইল বেছে নিন (.csv/.json/.txt)</span></label>
+          <input id="imp-file" type="file" accept=".csv,.json,.txt" class="sr-only">
+          <div class="row gap-8 wrap">
+            <button class="btn sm" type="button" id="btn-preview" data-i18n="adm.import.preview">প্রিভিউ</button>
+            <button class="btn sm" type="button" id="btn-import" data-i18n="adm.import.apply" disabled>আমদানি করুন</button>
+            <button class="btn sm ghost" type="button" id="btn-sample" data-i18n="adm.import.sample">নমুনা CSV কপি</button>
+          </div>
+        </div>
+        <div class="mt-2" id="imp-result"></div>
+        <p class="small muted mt-2" data-i18n="adm.import.note">ইমপোর্ট শুধু আপনার লোকাল ডেটাসেটে যোগ হয়; ব্যাকএন্ডে মেলানোর আগে রিভিউ করুন।</p>
+      </div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.export.h2">এক্সপোর্ট</h2>
+      <div class="card tight mt-2">
+        <p class="small muted mb-0" id="export-count"></p>
+        <div class="row gap-8 wrap mt-2">
+          <button class="btn sm" type="button" id="btn-json" data-i18n="adm.export.json">JSON ডাউনলোড</button>
+          <button class="btn sm secondary" type="button" id="btn-csv" data-i18n="adm.export.csv">CSV ডাউনলোড</button>
+        </div>
+        <p class="small muted mt-2" data-i18n="adm.export.note">ডাউনলোড করা ফাইলটি আপনার নিজের (লোকাল) ডেটাসেট — মার্জের আগে নিজে রিভিউ করুন।</p>
+      </div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.cover.h2">কভারেজ ট্র্যাকার</h2>
+      <p class="section-sub" data-i18n="adm.cover.sub">যেসব সেবার এখনো মূল্য নেই — হাসপাতাল অনুযায়ী।</p>
+      <div class="stack" id="coverage"></div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.gaps.h2">সার্চ গ্যাপ</h2>
+      <p class="section-sub" data-i18n="adm.gaps.sub">মানুষ যা খুঁজেছে কিন্তু মূল্য পায়নি — পরবর্তী গবেষণার তালিকা।</p>
+      <div class="card tight mt-2">
+        <div class="row between items-center wrap gap-8">
+          <span class="small muted" id="gaps-count"></span>
+          <button class="btn sm ghost" type="button" id="btn-gaps-clear" data-i18n="adm.gaps.clear">গ্যাপ রিসেট</button>
+        </div>
+        <ul class="gap-list" id="gaps"></ul>
+      </div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.review.h2">রিভিউ কিউ</h2>
+      <div class="table-wrap mt-2"><table class="data" id="review-table">
+        <thead><tr><th data-i18n="adm.col.hospital">হাসপাতাল</th><th data-i18n="adm.col.service">সেবা</th><th data-i18n="adm.col.amount">পরিমাণ</th><th data-i18n="adm.col.submitted">তারিখ</th><th data-i18n="adm.col.mode">মোড</th><th data-i18n="adm.col.receipt">রসিদ</th><th data-i18n="adm.col.status">অবস্থা</th><th data-i18n="adm.col.action">ক্রিয়া</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="notice small mt-2"><span data-i18n="adm.review.note">এখানে অনুমোদন শুধু লোকাল অবস্থা বদলায়; ব্যাকএন্ড না আসা পর্যন্ত সাইটে প্রকাশ হয় না। জমাকারীর যোগাযোগ তথ্য কখনো দেখানো হয় না।</span></div>
+
+      <h2 style="font-size:20px" class="mt-3" data-i18n="adm.danger.h2">বিপজ্জনক এরিয়া</h2>
+      <div class="card tight mt-2">
+        <p class="small muted mb-0" data-i18n="adm.danger.sub">নিচের কাজগুলো শুধু লোকাল ডেটা মুছবে; ব্যাকএন্ড ডেটায় প্রভাব ফেলবে না। প্রতিটিতে দুবার ক্লিক করে নিশ্চিত করুন।</p>
+        <div class="row gap-8 wrap mt-2">
+          <button class="btn sm danger" type="button" data-danger="overrides" data-i18n="adm.danger.overrides">সব লোকাল ওভাররাইড মুছুন</button>
+          <button class="btn sm danger" type="button" data-danger="gaps" data-i18n="adm.danger.gaps">সব সার্চ গ্যাপ মুছুন</button>
+          <button class="btn sm danger" type="button" data-danger="all" data-i18n="adm.danger.all">সব লোকাল ডেটা রিসেট</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var ADMI18N = {
+    bn: {
+      "adm.doctitle": "অ্যাডমিন প্যানেল (লোকাল) | DoctorBill",
+      "adm.title.h1": "অ্যাডমিন প্যানেল",
+      "adm.title.sub": "হাসপাতাল, সেবা ও মূল্যের লোকাল এডিটর।",
+      "adm.notice.lead": "সৎ ঘোষণা:",
+      "adm.notice.body": "সম্পাদনা, আমদানি, রপ্তানি, কভারেজ ও রিভিউ কিউ এই ব্রাউজারেই কাজ করে (localStorage)। সার্ভার-সাইড লগইন, রোল/অনুমতি, audit logging ও পাবলিশিং এখনো ব্যাকএন্ড ধাপে আসবে; এ পর্যন্ত কোনো এডিট অন্য ডিভাইসে যায় না। এই প্যানেল পাবলিক মেনুতে নেই ও noindex।",
+      "adm.storage.bad": "এই ব্রাউজারে localStorage সংরক্ষণ করা যাচ্ছে না (প্রাইভেট মোড/বন্ধ) — কোনো পরিবর্তন সংরক্ষিত হবে না।",
+      "adm.dashboard.h2": "ড্যাশবোর্ড",
+      "adm.stat.filled": "মূল্যসহ সেবা (ভরা / মোট)",
+      "adm.stat.overrides": "লোকাল ওভাররাইড",
+      "adm.stat.pending": "অপেক্ষমাণ জমা",
+      "adm.stat.feedback": "মতামত ভোট",
+      "adm.stat.gaps": "লগ করা সার্চ গ্যাপ",
+      "adm.roles.h3": "ভূমিকা ও অনুমতি (পরিকল্পিত মডেল)",
+      "adm.roles.note": "ভূমিকাগুলো ভবিষ্যৎ রোল-এনফোর্সমেন্ট মডেল; এই প্রোটোটাইপে কোনো রোল চালু নেই — পাতা খুললেই সব কাজ করা যায়।",
+      "adm.role.super.desc": "সব ব্যবস্থাপনা, ভূমিকা ও সেটিংস।",
+      "adm.role.data.desc": "হাসপাতাল, সেবা ও মূল্য রেকর্ড সম্পাদনা।",
+      "adm.role.verify.desc": "বিল পর্যালোচনা ও যাচাইয়ের সিদ্ধান্ত।",
+      "adm.role.readonly.desc": "শুধু দেখা ও রিপোর্ট, সম্পাদনা নয়।",
+      "adm.prices.h2": "মূল্য রেকর্ড",
+      "adm.prices.sub": "টেবিল থেকে সম্পাদনা করুন বা নতুন মূল্য যোগ করুন; সব পরিবর্তন লোকাল ওভাররাইড হিসেবে সংরক্ষিত হয়।",
+      "adm.filter.q": "হাসপাতাল বা সেবা খুঁজুন",
+      "adm.filter.status": "অবস্থা",
+      "adm.filter.all": "সব অবস্থা",
+      "adm.btn.new": "নতুন মূল্য",
+      "adm.editor.new": "নতুন মূল্য রেকর্ড",
+      "adm.editor.edit": "মূল্য সম্পাদনা",
+      "adm.f.hospital": "হাসপাতাল",
+      "adm.f.service": "সেবা",
+      "adm.f.status": "যাচাই অবস্থা",
+      "adm.f.amount": "নির্দিষ্ট মূল্য (৳)",
+      "adm.f.orhint": "নির্দিষ্ট মূল্য অথবা min–max দিন",
+      "adm.f.min": "সর্বনিম্ন (৳)",
+      "adm.f.max": "সর্বোচ্চ (৳)",
+      "adm.f.source": "উৎসের ধরন",
+      "adm.f.ref": "উৎস রেফারেন্স",
+      "adm.f.ref.ph": "যেমন: হাসপাতালের প্রাইস লিস্ট",
+      "adm.f.checked": "সর্বশেষ যাচাই",
+      "adm.f.inc": "অন্তর্ভুক্ত",
+      "adm.f.inc.ph": "কী কী আছে",
+      "adm.f.exc": "বাদ",
+      "adm.f.exc.ph": "কী কী নেই",
+      "adm.f.pick": "— বেছে নিন —",
+      "adm.btn.save": "সংরক্ষণ",
+      "adm.btn.cancel": "বাতিল",
+      "adm.err.pair": "হাসপাতাল ও সেবা দুটোই বেছে নিন।",
+      "adm.err.price": "মূল্য দিন: নির্দিষ্ট মূল্য অথবা min–max, না হয় অবস্থা = “মূল্য নেই” রাখুন।",
+      "adm.err.minmax": "min ও max দুটোই দিতে হবে (বা শুধু নির্দিষ্ট মূল্য)।",
+      "adm.err.save": "সংরক্ষণ ব্যর্থ হয়েছে — হাসপাতাল/সেবা ও মূল্য চেক করুন।",
+      "adm.saved": "সংরক্ষিত হয়েছে; টেবিল রিফ্রেশ হয়েছে।",
+      "adm.reset": "রিসেট হয়েছে; পৃষ্ঠা আবার লোড হচ্ছে।",
+      "adm.vstat.verified": "যাচাইকৃত",
+      "adm.vstat.hospital_provided": "হাসপাতাল-প্রদত্ত",
+      "adm.vstat.user_provided": "ব্যবহারকারী-প্রদত্ত",
+      "adm.vstat.unverified": "যাচাই হয়নি",
+      "adm.vstat.unavailable": "মূল্য নেই",
+      "adm.src.hospital_provided": "হাসপাতাল-প্রদত্ত",
+      "adm.src.user_submission": "ব্যবহারকারী জমা",
+      "adm.src.public_listing": "প্রকাশ্য তালিকা",
+      "adm.src.manual_entry": "ম্যানুয়াল এন্ট্রি",
+      "adm.badge.override": "লোকাল এডিট",
+      "adm.action.edit": "সম্পাদনা",
+      "adm.action.reset": "রিসেট",
+      "adm.col.hospital": "হাসপাতাল",
+      "adm.col.service": "সেবা",
+      "adm.col.price": "মূল্য",
+      "adm.col.source": "উৎস",
+      "adm.col.status": "অবস্থা",
+      "adm.col.updated": "আপডেট",
+      "adm.col.action": "ক্রিয়া",
+      "adm.col.amount": "পরিমাণ",
+      "adm.col.submitted": "তারিখ",
+      "adm.col.mode": "মোড",
+      "adm.col.receipt": "রসিদ",
+      "adm.price.none": "নেই",
+      "adm.empty.rows": "এই ফিল্টারে কোনো রেকর্ড নেই।",
+      "adm.table.count": "দেখানো: {n}টি রেকর্ড (মোট {t})",
+      "adm.import.h2": "বাল্ক ইমপোর্ট",
+      "adm.import.hint": "CSV পেস্ট করুন বা ফাইল বেছে নিন, আগে প্রিভিউ, তারপর আমদানি।",
+      "adm.import.paste": "CSV বা JSON পেস্ট করুন",
+      "adm.import.ph": "header row সহ ডেটা এখানে পেস্ট করুন",
+      "adm.import.example": "উদাহরণ header:",
+      "adm.import.file": "ফাইল বেছে নিন (.csv/.json/.txt)",
+      "adm.import.preview": "প্রিভিউ",
+      "adm.import.apply": "আমদানি করুন",
+      "adm.import.sample": "নমুনা CSV কপি",
+      "adm.import.note": "ইমপোর্ট শুধু আপনার লোকাল ডেটাসেটে যোগ হয়; ব্যাকএন্ডে মেলানোর আগে রিভিউ করুন।",
+      "adm.import.rows": "বৈধ সারি: {n}",
+      "adm.import.errcount": "{n}টি সমস্যা:",
+      "adm.import.none": "প্রথমে প্রিভিউ করুন; কোনো সারি প্রস্তুত নেই।",
+      "adm.import.done": "আমদানি সম্পন্ন: {n}টি রেকর্ড সংরক্ষিত হয়েছে।",
+      "adm.import.empty": "কোনো বৈধ সারি পাওয়া যায়নি।",
+      "adm.export.h2": "এক্সপোর্ট",
+      "adm.export.json": "JSON ডাউনলোড",
+      "adm.export.csv": "CSV ডাউনলোড",
+      "adm.export.note": "ডাউনলোড করা ফাইলটি আপনার নিজের (লোকাল) ডেটাসেট — মার্জের আগে নিজে রিভিউ করুন।",
+      "adm.export.count": "লোকাল রেকর্ড প্রস্তুত: {n}টি",
+      "adm.export.empty": "কোনো লোকাল রেকর্ড নেই; আগে মূল্য যোগ/ইমপোর্ট করুন।",
+      "adm.cover.h2": "কভারেজ ট্র্যাকার",
+      "adm.cover.sub": "যেসব সেবার এখনো মূল্য নেই — হাসপাতাল অনুযায়ী।",
+      "adm.cover.add": "মূল্য যোগ করুন",
+      "adm.cover.empty": "দারুণ! প্রতিটি হাসপাতাল–সেবার জোড়া এখন মূল্যসহ।",
+      "adm.cover.missing": "{n}টি সেবার মূল্য বাকি",
+      "adm.gaps.h2": "সার্চ গ্যাপ",
+      "adm.gaps.sub": "মানুষ যা খুঁজেছে কিন্তু মূল্য পায়নি — পরবর্তী গবেষণার তালিকা।",
+      "adm.gaps.clear": "গ্যাপ রিসেট",
+      "adm.gaps.empty": "এখনো কোনো লগ করা গ্যাপ নেই।",
+      "adm.gaps.count": "{n}টি টার্ম",
+      "adm.review.h2": "রিভিউ কিউ",
+      "adm.review.note": "এখানে অনুমোদন শুধু লোকাল অবস্থা বদলায়; ব্যাকএন্ড না আসা পর্যন্ত সাইটে প্রকাশ হয় না। জমাকারীর যোগাযোগ তথ্য কখনো দেখানো হয় না।",
+      "adm.review.empty": "এখনো কোনো জমা নেই।",
+      "adm.review.done": "অবস্থা আপডেট হয়েছে (শুধু লোকাল)।",
+      "adm.mode.quick": "দ্রুত",
+      "adm.mode.full": "ফুল",
+      "adm.receipt.yes": "রসিদ আছে",
+      "adm.receipt.no": "নেই",
+      "adm.action.verify": "যাচাই করুন",
+      "adm.action.moreinfo": "আরও তথ্য",
+      "adm.action.reject": "বাতিল",
+      "adm.danger.h2": "বিপজ্জনক এরিয়া",
+      "adm.danger.sub": "নিচের কাজগুলো শুধু লোকাল ডেটা মুছবে; ব্যাকএন্ড ডেটায় প্রভাব ফেলবে না। প্রতিটিতে দুবার ক্লিক করে নিশ্চিত করুন।",
+      "adm.danger.overrides": "সব লোকাল ওভাররাইড মুছুন",
+      "adm.danger.gaps": "সব সার্চ গ্যাপ মুছুন",
+      "adm.danger.all": "সব লোকাল ডেটা রিসেট",
+      "adm.danger.confirm": "নিশ্চিত করুন",
+      "adm.danger.done": "লোকাল ডেটা মুছে ফেলা হয়েছে।",
+    },
+    en: {
+      "adm.doctitle": "Admin panel (local) | DoctorBill",
+      "adm.title.h1": "Admin panel",
+      "adm.title.sub": "A local editor for hospitals, services and prices.",
+      "adm.notice.lead": "Honest notice:",
+      "adm.notice.body": "Editing, importing, exporting, coverage and the review queue work in this browser only (localStorage). Server-side login, roles/permissions, audit logging and publishing still require the backend step; until then no edit reaches any other device. This panel is not in the public menu and is noindex.",
+      "adm.storage.bad": "localStorage cannot save in this browser (private mode/blocked) — no changes will be kept.",
+      "adm.dashboard.h2": "Dashboard",
+      "adm.stat.filled": "Services with a price (filled / total)",
+      "adm.stat.overrides": "Local overrides",
+      "adm.stat.pending": "Pending submissions",
+      "adm.stat.feedback": "Feedback votes",
+      "adm.stat.gaps": "Logged search gaps",
+      "adm.roles.h3": "Roles and permissions (intended model)",
+      "adm.roles.note": "These roles are the intended future enforcement model; this prototype has no roles — anyone opening the page can do everything.",
+      "adm.role.super.desc": "Full management, roles and settings.",
+      "adm.role.data.desc": "Edit hospitals, services and price records.",
+      "adm.role.verify.desc": "Review bills and decide on verification.",
+      "adm.role.readonly.desc": "Viewing and reports only, no editing.",
+      "adm.prices.h2": "Price records",
+      "adm.prices.sub": "Edit from the table or add a new price; every change is saved as a local override.",
+      "adm.filter.q": "Search hospital or service",
+      "adm.filter.status": "Status",
+      "adm.filter.all": "All statuses",
+      "adm.btn.new": "New price",
+      "adm.editor.new": "New price record",
+      "adm.editor.edit": "Edit price",
+      "adm.f.hospital": "Hospital",
+      "adm.f.service": "Service",
+      "adm.f.status": "Verification status",
+      "adm.f.amount": "Fixed price (৳)",
+      "adm.f.orhint": "Give a fixed price or a min–max range",
+      "adm.f.min": "Minimum (৳)",
+      "adm.f.max": "Maximum (৳)",
+      "adm.f.source": "Source type",
+      "adm.f.ref": "Source reference",
+      "adm.f.ref.ph": "e.g. hospital price list",
+      "adm.f.checked": "Last checked",
+      "adm.f.inc": "Inclusions",
+      "adm.f.inc.ph": "what is included",
+      "adm.f.exc": "Exclusions",
+      "adm.f.exc.ph": "what is excluded",
+      "adm.f.pick": "— select —",
+      "adm.btn.save": "Save",
+      "adm.btn.cancel": "Cancel",
+      "adm.err.pair": "Pick both a hospital and a service.",
+      "adm.err.price": "Add a price: a fixed price or a min–max range, or set status = “unavailable”.",
+      "adm.err.minmax": "Provide both min and max (or just a fixed price).",
+      "adm.err.save": "Save failed — check the hospital/service and price.",
+      "adm.saved": "Saved; the table was refreshed.",
+      "adm.reset": "Reset done; reloading the page.",
+      "adm.vstat.verified": "Verified",
+      "adm.vstat.hospital_provided": "Hospital-provided",
+      "adm.vstat.user_provided": "User-provided",
+      "adm.vstat.unverified": "Not verified",
+      "adm.vstat.unavailable": "Unavailable",
+      "adm.src.hospital_provided": "Hospital-provided",
+      "adm.src.user_submission": "User submission",
+      "adm.src.public_listing": "Public listing",
+      "adm.src.manual_entry": "Manual entry",
+      "adm.badge.override": "Local edit",
+      "adm.action.edit": "Edit",
+      "adm.action.reset": "Reset",
+      "adm.col.hospital": "Hospital",
+      "adm.col.service": "Service",
+      "adm.col.price": "Price",
+      "adm.col.source": "Source",
+      "adm.col.status": "Status",
+      "adm.col.updated": "Updated",
+      "adm.col.action": "Action",
+      "adm.col.amount": "Amount",
+      "adm.col.submitted": "Date",
+      "adm.col.mode": "Mode",
+      "adm.col.receipt": "Receipt",
+      "adm.price.none": "N/A",
+      "adm.empty.rows": "No records match this filter.",
+      "adm.table.count": "Showing: {n} records (of {t})",
+      "adm.import.h2": "Bulk import",
+      "adm.import.hint": "Paste CSV or pick a file, preview first, then import.",
+      "adm.import.paste": "Paste CSV or JSON",
+      "adm.import.ph": "Paste data here, including the header row",
+      "adm.import.example": "Example header:",
+      "adm.import.file": "Choose a file (.csv/.json/.txt)",
+      "adm.import.preview": "Preview",
+      "adm.import.apply": "Import",
+      "adm.import.sample": "Copy sample CSV",
+      "adm.import.note": "Import only adds to your local dataset; review before merging into the backend.",
+      "adm.import.rows": "Valid rows: {n}",
+      "adm.import.errcount": "{n} issue(s):",
+      "adm.import.none": "Preview first; nothing is ready to import.",
+      "adm.import.done": "Import complete: {n} records saved.",
+      "adm.import.empty": "No valid rows were found.",
+      "adm.export.h2": "Export",
+      "adm.export.json": "Download JSON",
+      "adm.export.csv": "Download CSV",
+      "adm.export.note": "The downloaded file is your own (local) dataset — review it before merging.",
+      "adm.export.count": "Local records ready: {n}",
+      "adm.export.empty": "No local records yet; add or import prices first.",
+      "adm.cover.h2": "Coverage tracker",
+      "adm.cover.sub": "Services still missing a price — grouped by hospital.",
+      "adm.cover.add": "Add price",
+      "adm.cover.empty": "Great! Every hospital–service pair has a price.",
+      "adm.cover.missing": "{n} services missing a price",
+      "adm.gaps.h2": "Search gaps",
+      "adm.gaps.sub": "Terms people searched with no price available — what to research next.",
+      "adm.gaps.clear": "Reset gaps",
+      "adm.gaps.empty": "No logged gaps yet.",
+      "adm.gaps.count": "{n} terms",
+      "adm.review.h2": "Review queue",
+      "adm.review.note": "Approving here only changes local state; nothing publishes to the site until a backend exists. The submitter's contact is never shown.",
+      "adm.review.empty": "No submissions yet.",
+      "adm.review.done": "Status updated (local only).",
+      "adm.mode.quick": "Quick",
+      "adm.mode.full": "Full",
+      "adm.receipt.yes": "Receipt",
+      "adm.receipt.no": "None",
+      "adm.action.verify": "Verify",
+      "adm.action.moreinfo": "More info",
+      "adm.action.reject": "Reject",
+      "adm.danger.h2": "Danger zone",
+      "adm.danger.sub": "These actions only clear local data; they do not affect backend data. Click each twice to confirm.",
+      "adm.danger.overrides": "Clear all local overrides",
+      "adm.danger.gaps": "Clear all search gaps",
+      "adm.danger.all": "Reset all local data",
+      "adm.danger.confirm": "Confirm",
+      "adm.danger.done": "Local data cleared.",
+    },
+  };
+  UI.addI18n(ADMI18N);
+  UI.boot(null);
+  document.title = UI.t("adm.doctitle");
+
+  var h = Fmt.escapeHtml;
+  function el(id) { return document.getElementById(id); }
+  var IMP = el("imp-header");
+  IMP.textContent = "hospital_id,service_id,price_amount,verification_status,source_type,last_checked_at";
+
+  if (!Store.storageOk()) el("storage-warn").hidden = false;
+
+  function isOverrideKey(hid, sid) {
+    return Store.overrides().some(function (o) { return o.hospital_id === hid && o.service_id === sid; });
+  }
+  function vLabel(key) { return UI.t("adm.vstat." + key); }
+  function srcLabel(key) { return key && ("adm.src." + key) in ADMI18N[UI.isEn() ? "en" : "bn"] ? UI.t("adm.src." + key) : (key || "—"); }
+  function cstat(s) {
+    var o = Store.CONTRIB_STATUS[s] || Store.CONTRIB_STATUS.pending;
+    return UI.isEn() ? o.en : o.bn;
+  }
+
+  function renderStats() {
+    var s = Store.stats(DB);
+    var cards = [
+      [UI.t("adm.stat.filled"), Fmt.bn(s.filled) + " / " + Fmt.bn(s.total)],
+      [UI.t("adm.stat.overrides"), Fmt.bn(s.overrides)],
+      [UI.t("adm.stat.pending"), Fmt.bn(s.pending)],
+      [UI.t("adm.stat.feedback"), Fmt.bn(s.feedbackVotes)],
+      [UI.t("adm.stat.gaps"), Fmt.bn(s.gaps)],
+    ];
+    el("stats").innerHTML = cards.map(function (c) {
+      return '<div class="card tight center"><div class="price lg">' + h(c[1]) + '</div><div class="small muted">' + h(c[0]) + "</div></div>";
+    }).join("");
+    el("covbar").innerHTML = UI.coverageBar();
+    el("export-count").textContent = s.overrides ? UI.t("adm.export.count").replace("{n}", Fmt.bn(s.overrides)) : UI.t("adm.export.empty");
+  }
+
+  function currentFilter() {
+    return { q: el("pf-q").value.trim().toLowerCase(), status: el("pf-status").value };
+  }
+
+  function renderPriceTable() {
+    var f = currentFilter();
+    var rows = DB.prices.filter(function (p) {
+      if (f.status && p.verification_status !== f.status) return false;
+      if (!f.q) return true;
+      var hp = DB.hospitalById(p.hospital_id), svc = DB.serviceById(p.service_id);
+      var hay = [hp && hp.name_bn, hp && hp.name_en, svc && svc.name_bn, svc && svc.name_en].join(" ").toLowerCase();
+      return hay.indexOf(f.q) !== -1;
+    });
+    el("table-count").textContent = UI.t("adm.table.count").replace("{n}", Fmt.bn(rows.length)).replace("{t}", Fmt.bn(DB.prices.length));
+    var tb = el("price-table").getElementsByTagName("tbody")[0];
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">' + h(UI.t("adm.empty.rows")) + "</td></tr>"; return; }
+    tb.innerHTML = rows.map(function (p) {
+      var hp = DB.hospitalById(p.hospital_id), svc = DB.serviceById(p.service_id);
+      var ov = isOverrideKey(p.hospital_id, p.service_id);
+      var price = Fmt.price(p) || '<span class="price-na">' + h(UI.t("adm.price.none")) + "</span>";
+      if (ov) price += '<div class="badge-row"><span class="badge">' + h(UI.t("adm.badge.override")) + "</span></div>";
+      return "<tr>" +
+        "<td style='white-space:normal'>" + h(hp ? UI.nameOf(hp) : "—") + "</td>" +
+        "<td style='white-space:normal'>" + h(svc ? UI.nameOf(svc) : "—") + "</td>" +
+        "<td>" + price + "</td>" +
+        "<td class='small muted'>" + h(srcLabel(p.source_type)) + "</td>" +
+        "<td>" + UI.statusBadge(p) + "</td>" +
+        "<td class='small muted'>" + h(Fmt.date(p.last_checked_at) || "—") + "</td>" +
+        "<td class='wrap gap-8'><button class='btn sm ghost' type='button' data-edit data-h='" + h(p.hospital_id) + "' data-s='" + h(p.service_id) + "'>" + h(UI.t("adm.action.edit")) + "</button>" +
+        (ov ? " <button class='btn sm ghost' type='button' data-reset data-h='" + h(p.hospital_id) + "' data-s='" + h(p.service_id) + "'>" + h(UI.t("adm.action.reset")) + "</button>" : "") +
+        "</td></tr>";
+    }).join("");
+  }
+
+  function fillSelect(node, list, pickName, withEmpty) {
+    var html = withEmpty ? '<option value="">' + h(UI.t("adm.f.pick")) + "</option>" : "";
+    html += list.map(function (x) { return '<option value="' + h(x.id) + '">' + h(pickName(x)) + "</option>"; }).join("");
+    node.innerHTML = html;
+  }
+  function buildFormOptions() {
+    fillSelect(el("f-hospital"), DB.hospitals, UI.nameOf, true);
+    fillSelect(el("f-service"), DB.services, UI.nameOf, true);
+  }
+
+  function showErr(msg) {
+    var e = el("form-err");
+    if (msg) { e.textContent = msg; e.classList.add("show"); } else { e.textContent = ""; e.classList.remove("show"); }
+  }
+
+  function openEditor(hid, sid) {
+    buildFormOptions();
+    el("editor-title").textContent = (hid && sid) ? UI.t("adm.editor.edit") : UI.t("adm.editor.new");
+    el("f-hospital").value = hid || "";
+    el("f-service").value = sid || "";
+    var p = (hid && sid) ? DB.prices.find(function (x) { return x.hospital_id === hid && x.service_id === sid; }) : null;
+    el("f-amount").value = p && p.price_amount != null ? p.price_amount : "";
+    el("f-min").value = p && p.price_min != null ? p.price_min : "";
+    el("f-max").value = p && p.price_max != null ? p.price_max : "";
+    el("f-status").value = p ? p.verification_status : "hospital_provided";
+    el("f-source").value = p ? p.source_type : "manual_entry";
+    el("f-ref").value = p && p.source_reference ? p.source_reference : "";
+    el("f-checked").value = p && p.last_checked_at ? String(p.last_checked_at).slice(0, 10) : new Date().toISOString().slice(0, 10);
+    el("f-inc").value = p ? p.inclusions || "" : "";
+    el("f-exc").value = p ? p.exclusions || "" : "";
+    showErr("");
+    el("price-editor").hidden = false;
+    el("price-editor").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    el("f-hospital").focus();
+  }
+  function closeEditor() { el("price-editor").hidden = true; showErr(""); }
+
+  function saveForm() {
+    var rec = {
+      hospital_id: el("f-hospital").value,
+      service_id: el("f-service").value,
+      price_amount: el("f-amount").value,
+      price_min: el("f-min").value,
+      price_max: el("f-max").value,
+      verification_status: el("f-status").value,
+      source_type: el("f-source").value,
+      source_reference: el("f-ref").value,
+      last_checked_at: el("f-checked").value,
+      inclusions: el("f-inc").value,
+      exclusions: el("f-exc").value,
+    };
+    if (!rec.hospital_id || !rec.service_id) return showErr(UI.t("adm.err.pair"));
+    if (rec.verification_status !== "unavailable") {
+      var amt = rec.price_amount !== "", mn = rec.price_min !== "", mx = rec.price_max !== "";
+      if (!amt && !(mn && mx)) return showErr(mn || mx ? UI.t("adm.err.minmax") : UI.t("adm.err.price"));
+    }
+    var res = Store.upsertOverride(rec);
+    if (!res.ok || !res.record) return showErr(UI.t("adm.err.save"));
+    Store.applyOverrides(DB);
+    closeEditor();
+    renderAll();
+    UI.toast(UI.t("adm.saved"));
+  }
+
+  function renderImportResult(res) {
+    var box = el("imp-result");
+    if (!res) { box.innerHTML = ""; return; }
+    var html = '<div class="notice small">' + h(UI.t("adm.import.rows").replace("{n}", Fmt.bn(res.rows.length)));
+    if (res.errors.length) html += "<br>" + h(UI.t("adm.import.errcount").replace("{n}", Fmt.bn(res.errors.length)));
+    html += "</div>";
+    if (res.errors.length) html += '<ul class="gap-list">' + res.errors.map(function (e) { return "<li>" + h(e) + "</li>"; }).join("") + "</ul>";
+    if (!res.rows.length && !res.errors.length) html += '<div class="small muted mt-2">' + h(UI.t("adm.import.empty")) + "</div>";
+    box.innerHTML = html;
+  }
+
+  function previewImport() {
+    var text = el("imp-text").value;
+    if (!text.trim()) { lastImport = null; el("btn-import").disabled = true; el("imp-result").innerHTML = '<div class="small muted">' + h(UI.t("adm.import.none")) + "</div>"; return; }
+    var t = text.trim();
+    lastImport = (t.charAt(0) === "[" || t.charAt(0) === "{") ? Store.importJSON(t) : Store.importCSV(text, DB);
+    renderImportResult(lastImport);
+    el("btn-import").disabled = lastImport.rows.length === 0;
+  }
+
+  function applyImport() {
+    if (!lastImport || !lastImport.rows.length) return UI.toast(UI.t("adm.import.none"));
+    var n = 0;
+    lastImport.rows.forEach(function (rec) {
+      var r = Store.upsertOverride(rec);
+      if (r.ok && r.record) n++;
+    });
+    Store.applyOverrides(DB);
+    lastImport = null;
+    el("btn-import").disabled = true;
+    el("imp-result").innerHTML = "";
+    renderAll();
+    UI.toast(UI.t("adm.import.done").replace("{n}", Fmt.bn(n)));
+  }
+
+  function fillSampleCSV() {
+    var hdr = "hospital_id,service_id,price_amount,verification_status,source_type,last_checked_at";
+    var rows = [
+      "h1,s3,9000,hospital_provided,hospital_provided,2026-10-01",
+      "নগর মেডিকেল কলেজ হাসপাতাল (নমুনা),CT Scan,11000,user_submission,user_submission,2026-10-03",
+    ];
+    el("imp-text").value = [hdr].concat(rows).join("\n");
+    lastImport = null;
+    el("btn-import").disabled = true;
+    el("imp-result").innerHTML = "";
+  }
+
+  function renderCoverage() {
+    var miss = Store.coverage(DB).missing;
+    var host = el("coverage");
+    if (!miss.length) { host.innerHTML = '<div class="card tight"><div class="empty">' + h(UI.t("adm.cover.empty")) + "</div></div>"; return; }
+    var groups = {};
+    miss.forEach(function (m) { (groups[m.hospital_id] = groups[m.hospital_id] || []).push(m.service_id); });
+    host.innerHTML = Object.keys(groups).map(function (hid) {
+      var hp = DB.hospitalById(hid);
+      var sids = groups[hid];
+      var list = sids.map(function (sid) {
+        var svc = DB.serviceById(sid);
+        return "<li style='list-style:none' class='row between items-center wrap gap-8'><span class='small'>" + h(svc ? UI.nameOf(svc) : sid) + "</span>" +
+          "<button class='btn sm secondary' type='button' data-add data-h='" + h(hid) + "' data-s='" + h(sid) + "'>" + h(UI.t("adm.cover.add")) + "</button></li>";
+      }).join("");
+      return '<div class="card tight"><div class="row between items-center wrap gap-8"><strong>' + h(hp ? UI.nameOf(hp) : hid) + "</strong>" +
+        '<span class="small muted">' + h(UI.t("adm.cover.missing").replace("{n}", Fmt.bn(sids.length))) + "</span></div>" +
+        '<ul class="contrib-list">' + list + "</ul></div>";
+    }).join("");
+  }
+
+  function renderGaps() {
+    var g = Store.gaps();
+    var box = el("gaps");
+    el("gaps-count").textContent = g.length ? UI.t("adm.gaps.count").replace("{n}", Fmt.bn(g.length)) : "";
+    if (!g.length) { box.innerHTML = '<li class="muted">' + h(UI.t("adm.gaps.empty")) + "</li>"; return; }
+    box.innerHTML = g.map(function (x) {
+      return "<li>" + h(x.term) + " <b>× " + Fmt.bn(x.count) + "</b></li>";
+    }).join("");
+  }
+
+  function renderReview() {
+    var list = Store.contributions();
+    var tb = el("review-table").getElementsByTagName("tbody")[0];
+    if (!list.length) { tb.innerHTML = '<tr><td colspan="8" class="empty">' + h(UI.t("adm.review.empty")) + "</td></tr>"; return; }
+    tb.innerHTML = list.map(function (r) {
+      var hp = DB.hospitalById(r.hospital_id), svc = DB.serviceById(r.service_id);
+      var pillCls = r.status === "verified" ? " verified" : r.status === "rejected" ? " rejected" : "";
+      return "<tr>" +
+        "<td style='white-space:normal'>" + h(hp ? UI.nameOf(hp) : "—") + "</td>" +
+        "<td style='white-space:normal'>" + h(svc ? UI.nameOf(svc) : "—") + "</td>" +
+        "<td>" + h(Fmt.taka(r.amount) || "—") + "</td>" +
+        "<td class='small muted'>" + h(Fmt.date(r.bill_date || r.created_at) || "—") + "</td>" +
+        "<td class='small muted'>" + h(UI.t("adm.mode." + (r.mode === "quick" ? "quick" : "full"))) + "</td>" +
+        "<td class='small muted'>" + h(r.has_receipt ? UI.t("adm.receipt.yes") : UI.t("adm.receipt.no")) + "</td>" +
+        "<td><span class='status-pill" + pillCls + "'>" + h(cstat(r.status)) + "</span></td>" +
+        "<td class='wrap gap-8'>" +
+          "<button class='btn sm ghost' type='button' data-cact='verified' data-cid='" + h(r.id) + "'>" + h(UI.t("adm.action.verify")) + "</button> " +
+          "<button class='btn sm ghost' type='button' data-cact='needs_info' data-cid='" + h(r.id) + "'>" + h(UI.t("adm.action.moreinfo")) + "</button> " +
+          "<button class='btn sm ghost' type='button' data-cact='rejected' data-cid='" + h(r.id) + "'>" + h(UI.t("adm.action.reject")) + "</button>" +
+        "</td></tr>";
+    }).join("");
+  }
+
+  function renderAll() {
+    renderStats();
+    renderPriceTable();
+    renderCoverage();
+    renderGaps();
+    renderReview();
+  }
+
+  var lastImport = null;
+
+  el("pf-q").addEventListener("input", renderPriceTable);
+  el("pf-status").addEventListener("change", renderPriceTable);
+  el("btn-new").addEventListener("click", function () { openEditor("", ""); });
+  el("btn-save").addEventListener("click", saveForm);
+  el("btn-cancel").addEventListener("click", closeEditor);
+
+  el("price-table").addEventListener("click", function (e) {
+    var ed = e.target.closest("[data-edit]");
+    if (ed) return openEditor(ed.getAttribute("data-h"), ed.getAttribute("data-s"));
+    var rs = e.target.closest("[data-reset]");
+    if (rs) {
+      Store.removeOverride(rs.getAttribute("data-h"), rs.getAttribute("data-s"));
+      UI.toast(UI.t("adm.reset"));
+      setTimeout(function () { location.reload(); }, 700);
+    }
+  });
+
+  el("coverage").addEventListener("click", function (e) {
+    var a = e.target.closest("[data-add]");
+    if (a) openEditor(a.getAttribute("data-h"), a.getAttribute("data-s"));
+  });
+
+  el("review-table").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cact]");
+    if (!b) return;
+    Store.updateContribution(b.getAttribute("data-cid"), { status: b.getAttribute("data-cact"), reviewed_by: "local-admin" });
+    renderStats();
+    renderReview();
+    UI.toast(UI.t("adm.review.done"));
+  });
+
+  el("btn-preview").addEventListener("click", previewImport);
+  el("btn-import").addEventListener("click", applyImport);
+  el("btn-sample").addEventListener("click", fillSampleCSV);
+  el("imp-file").addEventListener("change", function () {
+    var file = el("imp-file").files && el("imp-file").files[0];
+    if (!file) return;
+    var rd = new FileReader();
+    rd.onload = function () { el("imp-text").value = String(rd.result || ""); previewImport(); };
+    rd.readAsText(file);
+  });
+
+  el("btn-json").addEventListener("click", function () {
+    if (!Store.overrides().length) return UI.toast(UI.t("adm.export.empty"));
+    Store.download("doctorbill-prices.json", Store.exportJSON(), "application/json");
+  });
+  el("btn-csv").addEventListener("click", function () {
+    if (!Store.overrides().length) return UI.toast(UI.t("adm.export.empty"));
+    Store.download("doctorbill-prices.csv", Store.toCSV(Store.overrides()), "text/csv");
+  });
+
+  el("btn-gaps-clear").addEventListener("click", function () {
+    Store.clearGaps();
+    renderStats();
+    renderGaps();
+    UI.toast(UI.t("adm.danger.done"));
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-danger]"), function (btn) {
+    var label = btn.textContent;
+    btn.addEventListener("click", function () {
+      if (btn.dataset.armed === "1") {
+        btn.dataset.armed = "0";
+        clearTimeout(btn._t);
+        btn.textContent = label;
+        var kind = btn.getAttribute("data-danger");
+        if (kind === "gaps") { Store.clearGaps(); renderStats(); renderGaps(); UI.toast(UI.t("adm.danger.done")); }
+        else if (kind === "overrides") { Store.clearOverrides(); UI.toast(UI.t("adm.danger.done")); setTimeout(function () { location.reload(); }, 700); }
+        else { Store.resetAll(); UI.toast(UI.t("adm.danger.done")); setTimeout(function () { location.reload(); }, 700); }
+        return;
+      }
+      btn.dataset.armed = "1";
+      btn.textContent = UI.t("adm.danger.confirm");
+      btn._t = setTimeout(function () { btn.dataset.armed = "0"; btn.textContent = label; }, 4000);
+    });
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

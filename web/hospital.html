@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>হাসপাতালের বিস্তারিত | DoctorBill</title>
+<meta name="description" content="হাসপাতালের ঠিকানা, যোগাযোগ ও সেবাভিত্তিক তালিকাভুক্ত মূল্য দেখুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospital.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="হাসপাতালের বিস্তারিত | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="হাসপাতালের ঠিকানা, মানচিত্র ও সেবাভিত্তিক তালিকাভুক্ত মূল্য দেখুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospital.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <div class="container" id="crumb" style="padding-top:14px"></div>
+  <section class="section" style="padding-top:8px"><div class="container" id="detail"></div></section>
+</main>
+
+<div class="modal-backdrop" id="price-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <div class="modal-head"><h3 id="pm-title" class="mb-0" data-i18n="hosp.modal.title">মূল্যের বিস্তারিত</h3><button class="icon-btn" type="button" aria-label="বন্ধ করুন" data-close>✕</button></div>
+    <div id="pm-body" class="mt-3"></div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.addI18n({
+    bn: {
+      "hosp.modal.title": "মূল্যের বিস্তারিত",
+      "hosp.modal.disclaimer": "চূড়ান্ত বিলে পরামর্শ ফি, ট্যাক্স ও অতিরিক্ত সেবার খরচ যুক্ত হতে পারে।",
+      "hosp.dirs.btn": "দিকনির্দেশনা (নমুনা)",
+      "hosp.website": "ওয়েবসাইট",
+      "hosp.phone.note": "নমুনা নম্বর — আসল যোগাযোগ নম্বর নয়",
+      "hosp.price.h2": "সেবার মূল্য তালিকা",
+      "hosp.price.empty": "এই হাসপাতালের জন্য এখনো কোনো তালিকাভুক্ত মূল্য নেই।",
+      "hosp.price.sub": "সেবা বেছে মূল্যের বিস্তারিত (কী অন্তর্ভুক্ত, উৎস, আপডেটের তারিখ) দেখুন।",
+      "hosp.th.service": "সেবা",
+      "hosp.th.price": "মূল্য",
+      "hosp.th.status": "অবস্থা",
+      "hosp.th.updated": "আপডেট",
+      "hosp.btn.details": "বিস্তারিত",
+      "hosp.btn.report": "ভুল মূল্য জানান",
+      "hosp.info.about.h3": "পরিচিতি",
+      "hosp.info.about.p": "{type} ধরনের একটি নমুনা হাসপাতাল রেকর্ড। বাস্তব সুযোগ-সুবিধা এখানে কাল্পনিকভাবে যুক্ত করা হয়নি।",
+      "hosp.info.services.h3": "উপলব্ধ সেবা",
+      "hosp.info.services.p": "{n} টি সেবার তালিকাভুক্ত মূল্য আছে। উপরের তালিকা দেখুন।",
+      "hosp.info.address.h3": "ঠিকানা ও দিকনির্দেশনা",
+      "hosp.info.corrections.h3": "ভুল তথ্য সংশোধন",
+      "hosp.info.corrections.p": "কোনো মূল্য ভুল হলে নিচের বাটনে জানান, অথবা {link}।",
+      "hosp.link.compare.other": "অন্য হাসপাতালে তুলনা",
+      "hosp.dt.included": "অন্তর্ভুক্ত",
+      "hosp.dt.excluded": "বাদ/অতিরিক্ত",
+      "hosp.dt.source": "উৎস",
+      "hosp.dt.updated": "সর্বশেষ আপডেট",
+      "hosp.src.user": "ব্যবহারকারীর জমা",
+      "hosp.src.hospital": "হাসপাতাল-প্রদত্ত",
+      "hosp.toast.dirs": "নমুনা উপস্থাপনা — লাইভ দিকনির্দেশনা এখনো যুক্ত নয়।",
+      "hosp.toast.report": "সংশোধনের অনুরোধ নমুনা হিসেবে গ্রহণ করা হলো।",
+      "hosp.toast.report.thanks": "ধন্যবাদ! সংশোধনের অনুরোধ নমুনা হিসেবে গ্রহণ করা হলো।",
+      "hosp.dir.warn.lead": "তথ্য এখনো যুক্ত হয়নি:",
+      "hosp.dir.warn.body": "এই হাসপাতালটি খোঁজার সুবিধার্থে তালিকাভুক্ত, কিন্তু এর যাচাইকৃত মূল্য, ঠিকানা বা যোগাযোগের তথ্য এখনো প্ল্যাটফর্মে যোগ করা হয়নি। আমরা ভুয়া তথ্য দেখাই না।",
+      "hosp.dir.help.h3": "এই হাসপাতালের তথ্য যোগ করতে সহায়তা করুন",
+      "hosp.dir.help.sub": "আপনি এখানে চিকিৎসা নিলে বিল জমা দিয়ে মূল্য তথ্য যাচাইয়ে সহায়তা করতে পারেন।",
+      "hosp.fb.th": "মূল্যের সত্যতা",
+      "hosp.govt.th.this": "এই হাসপাতাল",
+      "hosp.govt.th.govt": "সরকারি রেফারেন্স",
+      "hosp.govt.th.diff": "পার্থক্য",
+      "hosp.govt.multi": "≈ {n} গুণ",
+      "hosp.govt.note": "সরকারি রেফারেন্স কলামের সংখ্যাগুলো একটি আদর্শ সরকারি হাসপাতালের নমুনা রেঞ্জ — এই হাসপাতালের নির্ধারিত হার নয় এবং প্রকাশিত ট্যারিফ নয়।",
+      "hosp.est.h": "আনুমানিক পুরো বিল",
+      "hosp.est.sub": "একটি পরিস্থিতি বেছে নিন — এই হাসপাতালের তালিকাভুক্ত মূল্যের সঙ্গে নমুনা এক্সট্রা খরচ যোগ করে আনুমানিক মোট দেখানো হবে।",
+      "hosp.est.link": "ক্যালকুলেটরে পূর্ণ হিসাব করুন",
+      "hosp.est.covered": "এই হাসপাতালে {h}/{t} সেবার মূল্য তালিকাভুক্ত",
+      "hosp.contrib.note": "নিচের তালিকা শুধু আপনার এই ডিভাইসে জমা দেওয়া বিল দেখায় — কোথাও পাঠানো হয়নি, এবং বিস্তারিত বা যোগাযোগের তথ্য এখানে দেখানো হয় না।",
+      "hosp.contrib.min": "সর্বনিম্ন জমা",
+      "hosp.contrib.med": "মধ্যমা",
+      "hosp.contrib.max": "সর্বোচ্চ জমা",
+      "hosp.contrib.last": "সর্বশেষ জমা"
+    },
+    en: {
+      "hosp.modal.title": "Price details",
+      "hosp.modal.disclaimer": "A final bill may add consultation fees, tax and charges for additional services.",
+      "hosp.dirs.btn": "Directions (sample)",
+      "hosp.website": "Website",
+      "hosp.phone.note": "Sample number — not a real contact number",
+      "hosp.price.h2": "Service price list",
+      "hosp.price.empty": "No listed prices for this hospital yet.",
+      "hosp.price.sub": "Select a service to see its price details (what is included, source, update date).",
+      "hosp.th.service": "Service",
+      "hosp.th.price": "Price",
+      "hosp.th.status": "Status",
+      "hosp.th.updated": "Updated",
+      "hosp.btn.details": "Details",
+      "hosp.btn.report": "Report wrong price",
+      "hosp.info.about.h3": "Overview",
+      "hosp.info.about.p": "A sample hospital record of type {type}. Real facilities and amenities have not been invented here.",
+      "hosp.info.services.h3": "Available services",
+      "hosp.info.services.p": "Listed prices are available for {n} services. See the list above.",
+      "hosp.info.address.h3": "Address & directions",
+      "hosp.info.corrections.h3": "Correct wrong info",
+      "hosp.info.corrections.p": "If a price looks wrong, tell us using the button below, or {link}.",
+      "hosp.link.compare.other": "Compare at other hospitals",
+      "hosp.dt.included": "Included",
+      "hosp.dt.excluded": "Excluded/extra",
+      "hosp.dt.source": "Source",
+      "hosp.dt.updated": "Last updated",
+      "hosp.src.user": "User-submitted",
+      "hosp.src.hospital": "Hospital-provided",
+      "hosp.toast.dirs": "Sample presentation — live directions are not available yet.",
+      "hosp.toast.report": "Correction request accepted as a sample.",
+      "hosp.toast.report.thanks": "Thank you! Your correction request has been accepted as a sample.",
+      "hosp.dir.warn.lead": "Information not added yet:",
+      "hosp.dir.warn.body": "This hospital is listed to make searching easier, but its verified prices, address and contact details have not been added to the platform yet. We do not show fake information.",
+      "hosp.dir.help.h3": "Help us add this hospital's information",
+      "hosp.dir.help.sub": "If you have been treated here, submitting a bill helps us verify its price data.",
+      "hosp.fb.th": "Price accuracy",
+      "hosp.govt.th.this": "This hospital",
+      "hosp.govt.th.govt": "Government reference",
+      "hosp.govt.th.diff": "Difference",
+      "hosp.govt.multi": "≈ {n}x",
+      "hosp.govt.note": "The government reference column shows sample ranges for a typical government facility — not this hospital's rates and not published tariffs.",
+      "hosp.est.h": "Estimated full bill",
+      "hosp.est.sub": "Pick a situation — we add sample extra charges to this hospital's listed prices to show an indicative total.",
+      "hosp.est.link": "Do the full calculation in the calculator",
+      "hosp.est.covered": "{h}/{t} of these services are priced at this hospital",
+      "hosp.contrib.note": "The list below shows only bills submitted on this device — nothing was sent anywhere, and free-text details or contact info are never displayed.",
+      "hosp.contrib.min": "Lowest submission",
+      "hosp.contrib.med": "Median",
+      "hosp.contrib.max": "Highest submission",
+      "hosp.contrib.last": "Last submission"
+    }
+  });
+  UI.boot("hospitals");
+  const slug = new URLSearchParams(location.search).get("slug");
+  const hp = DB.resolveHospital(slug) || DB.hospitals[0];
+  // Record names are data (name_bn / name_en), not UI strings: pick the field like the shared cards do.
+  const hpName = UI.isEn() && hp.name_en ? hp.name_en : hp.name_bn;
+  const hpSub = UI.isEn() ? hp.name_bn : hp.name_en;
+  const svcName = (s) => (UI.isEn() && s.name_en ? s.name_en : s.name_bn);
+  const svcSub = (s) => (UI.isEn() ? s.name_bn : s.name_en);
+  document.title = hpName + " | DoctorBill";
+
+  document.getElementById("crumb").innerHTML =
+    '<nav aria-label="breadcrumb"><ol class="small muted" style="list-style:none;display:flex;gap:6px;padding:0;margin:0;flex-wrap:wrap">' +
+      '<li><a href="index.html">' + Fmt.escapeHtml(UI.t("nav.home")) + '</a> ›</li><li><a href="hospitals.html">' + Fmt.escapeHtml(UI.t("nav.hospitals")) + '</a> ›</li>' +
+      '<li aria-current="page" style="color:var(--text)">' + Fmt.escapeHtml(hpName) + "</li></ol></nav>";
+
+  // Directory-only hospital: real name for search, but no verified price/contact data yet.
+  if (hp.is_directory) {
+    document.getElementById("detail").innerHTML =
+      '<div class="card">' +
+        '<div class="hcard-head">' +
+          '<div class="hcard-avatar" aria-hidden="true">' + Fmt.escapeHtml(hp.name_bn.slice(0, 1)) + "</div>" +
+          "<div class='grow'><h1 style='font-size:24px;margin:0'>" + Fmt.escapeHtml(hpName) + "</h1>" +
+          '<div class="small muted">' + Fmt.escapeHtml(hpSub) + "</div></div>" +
+          UI.favBtn(hp.slug) +
+        "</div>" +
+        '<div class="badge-row mt-2"><span class="tag">' + Fmt.escapeHtml(hp.hospital_type) + "</span>" +
+          '<span class="tag">' + Fmt.escapeHtml((hp.area ? hp.area + ", " : "") + hp.city) + "</span></div>" +
+      "</div>" +
+      '<div class="notice warn mt-3"><strong>' + Fmt.escapeHtml(UI.t("hosp.dir.warn.lead")) + "</strong> " + Fmt.escapeHtml(UI.t("hosp.dir.warn.body")) + "</div>" +
+      '<div class="card mt-3"><h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("hosp.dir.help.h3")) + "</h3>" +
+        '<p class="muted small">' + Fmt.escapeHtml(UI.t("hosp.dir.help.sub")) + "</p>" +
+        '<div class="row gap-8 wrap"><a class="btn" href="submit-bill.html">' + Fmt.escapeHtml(UI.t("action.submit_bill")) + "</a>" +
+        '<a class="btn secondary" href="compare.html">' + Fmt.escapeHtml(UI.t("action.compare_other")) + "</a>" +
+        UI.directionsLink(hp) + "</div></div>";
+    return;
+  }
+
+  const recs = DB.pricesForHospital(hp.id);
+  const usable = recs.filter((r) => r.verification_status !== "unavailable");
+  const byCat = {};
+  recs.forEach((r) => {
+    const svc = DB.serviceById(r.service_id); if (!svc) return;
+    (byCat[svc.category_id] = byCat[svc.category_id] || []).push({ rec: r, svc });
+  });
+
+  // Header
+  const header =
+    '<div class="card">' +
+      '<div class="hcard-head">' +
+        '<div class="hcard-avatar" aria-hidden="true">' + Fmt.escapeHtml(hp.name_bn.slice(0, 1)) + "</div>" +
+        "<div class='grow'><h1 style='font-size:24px;margin:0'>" + Fmt.escapeHtml(hpName) + "</h1>" +
+        '<div class="small muted">' + Fmt.escapeHtml(hpSub) + "</div></div>" +
+        UI.favBtn(hp.slug) +
+      "</div>" +
+      '<div class="badge-row mt-2">' + UI.sampleBadge() + '<span class="tag">' + Fmt.escapeHtml(hp.hospital_type) + "</span>" +
+        '<span class="badge unverified"><span class="dot"></span>' + Fmt.escapeHtml(UI.t("badge.unverified")) + "</span></div>" +
+      '<div class="stack mt-3">' +
+        '<div class="kv">' + UI.ICONS.pin + "<span>" + Fmt.escapeHtml(hp.address_bn) + "</span></div>" +
+        '<div class="kv">' + UI.ICONS.phone + "<span>" + Fmt.escapeHtml(hp.phone_masked) + ' <span class="small muted">(' + Fmt.escapeHtml(UI.t("hosp.phone.note")) + ")</span></span></div>" +
+        (hp.website ? '<div class="kv">🔗 <a href="' + Fmt.escapeHtml(hp.website) + '" rel="noopener">' + Fmt.escapeHtml(UI.t("hosp.website")) + "</a></div>" : "") +
+      "</div>" +
+      '<div class="row gap-8 wrap mt-3">' +
+        '<button class="btn sm secondary" type="button" id="dir-btn">' + Fmt.escapeHtml(UI.t("hosp.dirs.btn")) + "</button>" +
+        '<a class="btn sm ghost" href="compare.html?area=' + encodeURIComponent(hp.area) + '">' + Fmt.escapeHtml(UI.t("action.compare_price")) + "</a>" +
+      "</div>" +
+    "</div>" +
+    '<div class="mt-3">' + UI.miniMap([hp], { height: 220 }) + "</div>";
+
+  // Price list grouped by category
+  let priceHtml = '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("hosp.price.h2")) + "</h2>";
+  if (!usable.length) {
+    priceHtml += '<div class="empty">' + Fmt.escapeHtml(UI.t("hosp.price.empty")) + "</div>";
+  } else {
+    priceHtml += '<p class="section-sub">' + Fmt.escapeHtml(UI.t("hosp.price.sub")) + "</p>";
+    Object.keys(byCat).forEach((cid) => {
+      const cat = DB.categoryById(cid);
+      const catName = cat ? (UI.isEn() && cat.name_en ? cat.name_en : cat.name_bn) : cid;
+      priceHtml += '<h3 style="font-size:17px;margin-top:18px">' + Fmt.escapeHtml(catName) + "</h3>";
+      priceHtml += '<div class="card tight" style="padding:0"><div class="table-wrap"><table class="data">' +
+        "<thead><tr><th>" + Fmt.escapeHtml(UI.t("hosp.th.service")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.th.price")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.th.status")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.th.updated")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.fb.th")) + "</th><th></th></tr></thead><tbody>";
+      byCat[cid].forEach((row) => {
+        const p = Fmt.price(row.rec);
+        priceHtml += "<tr>" +
+          "<td style='white-space:normal;min-width:180px'>" + Fmt.escapeHtml(svcName(row.svc)) + '<div class="small muted">' + Fmt.escapeHtml(row.svc.unit || "") + "</div></td>" +
+          "<td>" + (p ? "<span class='price' style='font-size:18px'>" + p + "</span>" : '<span class="price-na">' + Fmt.escapeHtml(UI.t("label.price_na")) + "</span>") + "</td>" +
+          "<td>" + UI.statusBadge(row.rec) + "</td>" +
+          "<td class='small muted'>" + Fmt.escapeHtml(Fmt.date(row.rec.last_checked_at) || "—") + "</td>" +
+          "<td style='min-width:220px'>" + UI.feedbackBtn(hp.id, row.svc.id) + UI.staleNote(row.rec.last_checked_at) + "</td>" +
+          "<td><button class='btn sm ghost' type='button' data-svc='" + row.svc.id + "'>" + Fmt.escapeHtml(UI.t("hosp.btn.details")) + "</button></td>" +
+        "</tr>";
+      });
+      priceHtml += "</tbody></table></div></div>";
+    });
+  }
+
+  // ---- Bill anatomy: extras, govt comparison, discounts, quick estimate, this-device submissions ----
+  const hid = hp.id;
+  const priced = {};
+  recs.forEach((r) => { if (r.verification_status !== "unavailable" && Fmt.price(r)) priced[r.service_id] = r; });
+  const hasSurgical = recs.some((r) => {
+    const s = DB.serviceById(r.service_id);
+    return s && s.category_id === "c6" && Fmt.price(r);
+  });
+
+  const exIds = ["x_visit", "x_reg", "x_medicine", "x_consumable", "x_nursing", "x_ward"];
+  if (hp.hospital_type !== "ডায়াগনস্টিক") exIds.push("x_icu");
+  if (hasSurgical) ["x_ot", "x_anesthesia", "x_surgeon", "x_implant"].forEach((id) => exIds.push(id));
+  exIds.push("x_vat");
+  const exRows = exIds.map((id) => DB.extraById(id)).filter(Boolean).map((x) => {
+    const r = DB.extraRange(x, "private");
+    const val = x.type === "percent" ? Fmt.bn(Math.round((r && r.rate != null ? r.rate : x.rate) * 100)) + "%"
+      : (r ? Fmt.taka(r.low) + "–" + Fmt.taka(r.high) : "—");
+    const unit = x.type === "per_day" ? UI.t("sh.perday") : UI.t("sh.once");
+    const note = UI.isEn() ? (x.note_en || x.note_bn) : x.note_bn;
+    return "<div>" +
+      '<div class="row between items-center wrap gap-8"><strong>' + Fmt.escapeHtml(UI.nameOf(x)) + "</strong>" +
+      '<span class="price">' + Fmt.escapeHtml(val) + "</span></div>" +
+      '<div class="small muted">' + Fmt.escapeHtml(unit + " · " + note) + "</div></div>";
+  }).join("");
+  const extrasHtml =
+    '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("sh.extras.h")) + "</h2>" +
+    '<p class="section-sub">' + Fmt.escapeHtml(UI.t("sh.extras.sub")) + "</p>" +
+    '<div class="card tight"><div class="badge-row">' + UI.sampleBadge() + "</div>" +
+      '<div class="stack mt-2">' + exRows + "</div></div>";
+
+  const cmpRows = usable.filter((r) => Fmt.price(r));
+  let govtHtml = "";
+  if (cmpRows.length) {
+    const cmpBody = cmpRows.map((r) => {
+      const s = DB.serviceById(r.service_id); if (!s) return "";
+      const g = DB.govtService[s.id] || null;
+      const hv = r.price_amount != null ? r.price_amount : ((r.price_min || 0) + (r.price_max || 0)) / 2;
+      let diff = "—";
+      if (g && hv > 0) {
+        const gm = (g[0] + g[1]) / 2;
+        if (gm > 0) diff = UI.t("hosp.govt.multi").replace("{n}", Fmt.bn(Math.max(1, Math.round(hv / gm))));
+      }
+      return "<tr>" +
+        "<td>" + Fmt.escapeHtml(UI.nameOf(s)) + "</td>" +
+        '<td><span class="price">' + Fmt.escapeHtml(Fmt.price(r)) + "</span></td>" +
+        "<td>" + (g ? Fmt.escapeHtml(Fmt.taka(g[0]) + "–" + Fmt.taka(g[1])) : "—") + "</td>" +
+        "<td>" + Fmt.escapeHtml(diff) + "</td></tr>";
+    }).join("");
+    govtHtml =
+      '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("sh.govt_vs_private")) + "</h2>" +
+      '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+      '<div class="card tight" style="padding:0"><div class="table-wrap"><table class="govt-cmp">' +
+        "<thead><tr><th>" + Fmt.escapeHtml(UI.t("hosp.th.service")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.govt.th.this")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.govt.th.govt")) + "</th><th>" + Fmt.escapeHtml(UI.t("hosp.govt.th.diff")) + "</th></tr></thead>" +
+        "<tbody>" + cmpBody + "</tbody></table></div></div>" +
+      '<p class="small muted mt-2">' + Fmt.escapeHtml(UI.t("hosp.govt.note")) + "</p>";
+  }
+
+  const bimaHtml =
+    '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("sh.bima.h")) + "</h2>" +
+    '<p class="section-sub">' + Fmt.escapeHtml(UI.t("sh.bima.sub")) + "</p>" +
+    '<div class="card tight">' + UI.checklist(DB.bima) + "</div>";
+
+  const picks = DB.scenarios.map((sc, i) => {
+    const tot = sc.services.length;
+    const have = sc.services.filter((it) => priced[it.id]).length;
+    return { id: sc.id, i, ratio: tot ? have / tot : 0 };
+  }).filter((x) => x.ratio > 0)
+    .sort((a, b) => b.ratio - a.ratio || a.i - b.i)
+    .slice(0, 3).map((x) => x.id);
+  ["sc_opd", "sc_dengue", "sc_cesarean"].forEach((id) => {
+    if (picks.length < 3 && picks.indexOf(id) === -1 && DB.scenarioById(id)) picks.push(id);
+  });
+  const estHtml =
+    '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("hosp.est.h")) + "</h2>" +
+    '<p class="section-sub">' + Fmt.escapeHtml(UI.t("hosp.est.sub")) + "</p>" +
+    '<div class="scenario-grid">' + picks.map((id) => {
+      const sc = DB.scenarioById(id);
+      const have = sc.services.filter((it) => priced[it.id]).length;
+      return '<button class="scenario" type="button" data-est="' + Fmt.escapeHtml(id) + '"><b>' + Fmt.escapeHtml(UI.nameOf(sc)) + "</b>" +
+        "<small>" + Fmt.escapeHtml(UI.t("hosp.est.covered").replace("{h}", Fmt.bn(have)).replace("{t}", Fmt.bn(sc.services.length))) + "</small></button>";
+    }).join("") + "</div>" +
+    '<div id="est-out" class="mt-2"></div>';
+
+  const mine = Store.contributions().filter((c) => c && c.hospital_id === hid);
+  const amts = mine.map((c) => Number(c.amount)).filter((n) => isFinite(n) && n > 0).sort((a, b) => a - b);
+  const med = amts.length ? (amts.length % 2 ? amts[(amts.length - 1) / 2] : (amts[amts.length / 2 - 1] + amts[amts.length / 2]) / 2) : null;
+  const lastC = mine.slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))[0];
+  let contribHtml =
+    '<h2 class="mt-3" style="font-size:22px">' + Fmt.escapeHtml(UI.t("sh.contrib.h")) + "</h2>" +
+    '<p class="small muted">' + Fmt.escapeHtml(UI.t("hosp.contrib.note")) + "</p>";
+  if (!mine.length) {
+    contribHtml += '<div class="empty">' + Fmt.escapeHtml(UI.t("sh.contrib.none")) +
+      ' <a class="btn sm secondary" href="submit-bill.html">' + Fmt.escapeHtml(UI.t("action.submit_bill")) + "</a></div>";
+  } else {
+    const stat = (label, val) => '<div class="row between items-center"><span class="muted small">' + Fmt.escapeHtml(label) + "</span>" +
+      '<span class="price">' + Fmt.escapeHtml(val) + "</span></div>";
+    contribHtml += '<div class="card tight">' +
+      '<div class="badge-row"><span class="badge">' + Fmt.escapeHtml(UI.t("sh.contrib.count").replace("{n}", Fmt.bn(mine.length))) + "</span></div>" +
+      '<div class="stack mt-2">' +
+        (amts.length ? stat(UI.t("hosp.contrib.min"), Fmt.taka(amts[0])) +
+          stat(UI.t("hosp.contrib.med"), Fmt.taka(med)) +
+          stat(UI.t("hosp.contrib.max"), Fmt.taka(amts[amts.length - 1])) : "") +
+        (lastC ? stat(UI.t("hosp.contrib.last"), Fmt.date(String(lastC.created_at).slice(0, 10)) || "—") : "") +
+      "</div>" +
+      '<ul class="contrib-list">' + mine.slice(0, 5).map((c) => {
+        const s = DB.serviceById(c.service_id);
+        return '<li class="contrib-item"><span>' + Fmt.escapeHtml(s ? UI.nameOf(s) : "—") + "</span>" +
+          '<span class="price">' + Fmt.escapeHtml(Fmt.taka(c.amount) || "—") + "</span>" +
+          '<span class="small muted">' + Fmt.escapeHtml(Fmt.date(String(c.bill_date || c.created_at || "").slice(0, 10)) || "—") + "</span></li>";
+      }).join("") + "</ul></div>";
+  }
+
+  // Info sections
+  const aboutP = Fmt.escapeHtml(UI.t("hosp.info.about.p")).replace("{type}", Fmt.escapeHtml(hp.hospital_type));
+  const servicesP = Fmt.escapeHtml(UI.t("hosp.info.services.p")).replace("{n}", Fmt.bn(usable.length));
+  const correctionsP = Fmt.escapeHtml(UI.t("hosp.info.corrections.p"))
+    .replace("{link}", '<a href="submit-bill.html">' + Fmt.escapeHtml(UI.t("action.submit_bill")) + "</a>");
+  const info =
+    '<div class="grid cols-2 mt-3">' +
+      '<div class="card tight"><h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("hosp.info.about.h3")) + '</h3><p class="muted small mb-0">' + aboutP + "</p></div>" +
+      '<div class="card tight"><h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("hosp.info.services.h3")) + '</h3><p class="muted small mb-0">' + servicesP + "</p></div>" +
+      '<div class="card tight"><h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("hosp.info.address.h3")) + '</h3><p class="muted small mb-0">' + Fmt.escapeHtml(hp.address_bn) + "</p></div>" +
+      '<div class="card tight" id="corrections"><h3 style="font-size:17px">' + Fmt.escapeHtml(UI.t("hosp.info.corrections.h3")) + '</h3><p class="muted small mb-0">' + correctionsP + '</p><button class="btn sm secondary mt-2" type="button" id="report-btn">' + Fmt.escapeHtml(UI.t("hosp.btn.report")) + "</button></div>" +
+    "</div>";
+
+  const detailEl = document.getElementById("detail");
+  detailEl.innerHTML = header + priceHtml + extrasHtml + govtHtml + bimaHtml + estHtml + contribHtml + info;
+
+  UI.bindFeedback(detailEl);
+
+  const estOut = document.getElementById("est-out");
+  function showEst(id) {
+    if (!estOut) return;
+    detailEl.querySelectorAll(".scenario").forEach((b) => b.classList.toggle("on", b.dataset.est === id));
+    estOut.innerHTML = "";
+    estOut.appendChild(UI.renderEstimate(UI.estimate(id, hid, {}), {}));
+    const link = document.createElement("div");
+    link.className = "row gap-8 mt-2 wrap";
+    link.innerHTML = '<a class="btn sm secondary" href="calculator.html?scenario=' + encodeURIComponent(id) +
+      "&hospital=" + encodeURIComponent(hid) + '">' + Fmt.escapeHtml(UI.t("hosp.est.link")) + "</a>";
+    estOut.appendChild(link);
+  }
+  detailEl.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-est]");
+    if (b) showEst(b.dataset.est);
+  });
+  if (picks.length) showEst(picks[0]);
+
+  document.getElementById("dir-btn").addEventListener("click", () => UI.toast(UI.t("hosp.toast.dirs")));
+  document.getElementById("report-btn").addEventListener("click", () => UI.toast(UI.t("hosp.toast.report.thanks")));
+
+  // Price detail drawer
+  const modal = document.getElementById("price-modal");
+  document.getElementById("detail").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-svc]"); if (!b) return;
+    const rec = recs.find((r) => r.service_id === b.dataset.svc);
+    const svc = DB.serviceById(rec.service_id);
+    document.getElementById("pm-body").innerHTML =
+      "<h3 style='font-size:18px;margin:0'>" + Fmt.escapeHtml(svcName(svc)) + "</h3>" +
+      '<div class="small muted">' + Fmt.escapeHtml(svcSub(svc)) + "</div>" +
+      "<div class='mt-2'>" + UI.priceText(rec) + ' <span class="small muted">' + Fmt.escapeHtml(rec.price_basis || "") + "</span></div>" +
+      '<div class="badge-row mt-2">' + UI.statusBadge(rec) + UI.sampleBadge() + "</div>" +
+      '<dl class="small mt-3" style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0">' +
+        "<dt class='muted'>" + Fmt.escapeHtml(UI.t("hosp.dt.included")) + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.inclusions || "—") + "</dd>" +
+        "<dt class='muted'>" + Fmt.escapeHtml(UI.t("hosp.dt.excluded")) + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.exclusions || "—") + "</dd>" +
+        "<dt class='muted'>" + Fmt.escapeHtml(UI.t("hosp.dt.source")) + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.source_type === "user_submission" ? UI.t("hosp.src.user") : UI.t("hosp.src.hospital")) + "</dd>" +
+        "<dt class='muted'>" + Fmt.escapeHtml(UI.t("hosp.dt.updated")) + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(Fmt.date(rec.last_checked_at) || "—") + "</dd>" +
+      "</dl>" +
+      '<p class="small muted mt-3">' + Fmt.escapeHtml(UI.t("hosp.modal.disclaimer")) + "</p>" +
+      '<div class="row gap-8 wrap"><button class="btn sm secondary" type="button" id="pm-report">' + Fmt.escapeHtml(UI.t("hosp.btn.report")) + "</button>" +
+      '<a class="btn sm ghost" href="compare.html?service=' + encodeURIComponent(svc.slug) + '">' + Fmt.escapeHtml(UI.t("hosp.link.compare.other")) + "</a></div>";
+    modal.classList.add("open");
+    document.getElementById("pm-report").addEventListener("click", () => { modal.classList.remove("open"); UI.toast(UI.t("hosp.toast.report")); });
+  });
+  modal.addEventListener("click", (e) => { if (e.target === modal || e.target.closest("[data-close]")) modal.classList.remove("open"); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") modal.classList.remove("open"); });
+})();
+</script>
+</body>
+</html>

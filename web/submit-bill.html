@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>বিল জমা দিন | DoctorBill</title>
+<meta name="description" content="হাসপাতালের বিল বা রশিদের তথ্য জমা দিন। এই প্রোটোটাইপ সংস্করণে আপনার দেওয়া তথ্য শুধু আপনার ব্রাউজারে থাকে — এখনো কোনো সার্ভারে পাঠানো বা প্রকাশ করা হয় না।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/submit-bill.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="বিল জমা দিন | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="হাসপাতালের বিল বা রশিদের তথ্য জমা দিন — তথ্য শুধু আপনার ব্রাউজারে থাকে।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/submit-bill.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container" style="max-width:720px">
+      <h1 data-i18n="page.submit.h1">বিল জমা দিন</h1>
+      <p class="section-sub" data-i18n="sub.section_sub">আপনার হাসপাতালের বিল বা রশিদের তথ্য জমা দিয়ে মূল্য যাচাই ও গবেষণায় সহায়তা করুন।</p>
+
+      <div class="notice warn"><strong data-i18n="sub.privacy_title">গোপনীয়তা:</strong> <span data-i18n="sub.privacy_notice">এই প্রোটোটাইপে আপনার দেওয়া তথ্য শুধু আপনার ব্রাউজারে সংরক্ষিত হয় — কাউকে পাঠানো হয় না বা প্রকাশ করা হয় না। তবু অপ্রয়োজনীয় ব্যক্তিগত তথ্য লিখবেন বা ফাইল দিবেন না।</span></div>
+
+      <form id="bill-form" class="card mt-3" novalidate>
+        <div class="field">
+          <label id="mode-heading" data-i18n="sub.mode_heading">কীভাবে জানাবেন?</label>
+          <div class="scenario-grid" role="group" aria-labelledby="mode-heading">
+            <button class="scenario on" type="button" data-mode="quick" aria-pressed="true">
+              <b data-i18n="sub.mode_quick">দ্রুত জানান</b><small data-i18n="sub.mode_quick_sub">তিনটি তথ্য · প্রায় ৩০ সেকেন্ড</small>
+            </button>
+            <button class="scenario" type="button" data-mode="full" aria-pressed="false">
+              <b data-i18n="sub.mode_full">বিস্তারিত বিল</b><small data-i18n="sub.mode_full_sub">সব তথ্য + রশিদ</small>
+            </button>
+          </div>
+          <div class="hint mt-2" id="mode-note"></div>
+        </div>
+
+        <div class="row gap-8 items-center wrap small muted" id="list-sample-row"></div>
+
+        <div class="field mt-2">
+          <label for="b-hospital"><span data-i18n="sub.hospital_label">হাসপাতালের নাম</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <select class="select" id="b-hospital" required aria-describedby="e-hospital">
+            <option value="" data-i18n="sub.select">বেছে নিন…</option>
+          </select>
+          <div class="err" id="e-hospital" data-i18n="sub.err_hospital">হাসপাতাল বেছে নিন।</div>
+        </div>
+
+        <div class="field">
+          <label for="b-service"><span data-i18n="sub.service_label">সেবা বা টেস্টের নাম</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <select class="select" id="b-service" required aria-describedby="e-service">
+            <option value="" data-i18n="sub.select">বেছে নিন…</option>
+          </select>
+          <div class="err" id="e-service" data-i18n="sub.err_service">সেবা বেছে নিন।</div>
+        </div>
+
+        <div class="field-row two">
+          <div class="field">
+            <label for="b-amount"><span data-i18n="sub.amount_label">বিলের পরিমাণ (৳)</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <input class="input" id="b-amount" type="number" min="1" inputmode="numeric" required placeholder="যেমন ৭০০" data-i18n-ph="sub.amount_ph" aria-describedby="e-amount">
+            <div class="err" id="e-amount" data-i18n="sub.err_amount">সঠিক পরিমাণ লিখুন।</div>
+          </div>
+          <div class="field">
+            <label for="b-date"><span data-i18n="sub.date_label">বিলের তারিখ</span> <span aria-hidden="true" id="date-req" style="color:var(--danger)">*</span></label>
+            <input class="input" id="b-date" type="date" aria-describedby="e-date">
+            <div class="err" id="e-date" data-i18n="sub.err_date">তারিখ দিন।</div>
+          </div>
+        </div>
+
+        <div id="extra-fields">
+          <div class="field">
+            <label for="b-details" data-i18n="sub.details_label">অতিরিক্ত বিবরণ (ঐচ্ছিক)</label>
+            <textarea class="textarea" id="b-details" placeholder="প্যাকেজ, কেবিন, কী কী অন্তর্ভুক্ত ছিল ইত্যাদি" data-i18n-ph="sub.details_ph"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="b-file" data-i18n="sub.file_label">রশিদ/বিলের ছবি বা PDF (ঐচ্ছিক)</label>
+            <input class="input" id="b-file" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" aria-describedby="file-hint e-file" style="padding:10px">
+            <div class="hint" id="file-hint" data-i18n="sub.file_hint">রশিদ থাকলে দিন — এটি যাচাইয়ে সাহায্য করে। বর্তমান সংস্করণে ফাইল আপলোড বা সংরক্ষণ হয় না, শুধু "রশিদ দেওয়া হয়েছে" চিহ্নটি জমা থাকে।</div>
+            <div class="err" id="e-file" data-i18n="sub.err_file">ছবি/PDF-টি গ্রহণযোগ্য নয় (PNG/JPG/WEBP/PDF, ≤৫ এমবি)।</div>
+          </div>
+
+          <div class="field">
+            <label for="b-contact" data-i18n="sub.contact_label">যোগাযোগ (কেবল যাচাইয়ের প্রয়োজনে, ঐচ্ছিক)</label>
+            <input class="input" id="b-contact" type="text" placeholder="ফোন বা ইমেইল" data-i18n-ph="sub.contact_ph" autocomplete="off">
+            <div class="hint" data-i18n="sub.contact_hint">প্রকাশ্যে দেখানো হবে না এবং এখনো কোথাও পাঠানো হবে না।</div>
+          </div>
+
+          <div class="notice mt-2 small" id="privacy">
+            <strong data-i18n="sub.privacy_purpose_title">কেন ও কীভাবে ব্যবহার হবে:</strong> <span data-i18n="sub.privacy_purpose_body">মূল্য গবেষণার জন্য বিল তথ্য সংগ্রহের প্রস্তুতি। এই সংস্করণে সব তথ্য কেবল আপনার ব্রাউজারে থাকে; কোনো সার্ভার বা পর্যালোচক দল এখনো চালু হয়নি, তাই কিছুই পাঠানো বা প্রকাশ হয় না। সত্যিকারের সংগ্রহ চালু হলে ব্যক্তিগত তথ্য সরিয়ে বেনামি মূল্য তুলনায় ব্যবহারের পরিকল্পনা আছে।</span>
+          </div>
+
+          <label class="check mt-3">
+            <input type="checkbox" id="b-consent" aria-describedby="e-consent">
+            <span><span data-i18n="sub.consent_text">আমি বুঝছি যে এই প্রোটোটাইপে জমা দেওয়া তথ্য শুধু আমার এই ব্রাউজারে থাকে — কাউকে পাঠানো হয় না বা প্রকাশ হয় না — এবং আমি স্বেচ্ছায় এটি জানাচ্ছি।</span> <span aria-hidden="true" style="color:var(--danger)">*</span></span>
+          </label>
+          <div class="err" id="e-consent" data-i18n="sub.err_consent">জমা দিতে সম্মতি দিন।</div>
+        </div>
+
+        <button class="btn block mt-3" type="submit" id="submit-btn" data-i18n="action.submit_bill">বিল জমা দিন</button>
+        <p class="small muted center mt-2" data-i18n="sub.verified_note">জমা দিলেই মূল্য "যাচাইকৃত" হয় না — এখনো কোনো পর্যালোচনা বা প্রকাশ ব্যবস্থা চালু নেই; তথ্য শুধু আপনার ব্রাউজারে থাকে।</p>
+      </form>
+
+      <div class="card mt-3" id="result" style="display:none" role="status" aria-live="polite"></div>
+
+      <div class="card mt-3" id="my-contribs">
+        <div class="row between items-center">
+          <h2 style="font-size:18px;margin:0" data-i18n="sub.my_title">আপনার জমা</h2>
+          <span class="small muted" id="contrib-count"></span>
+        </div>
+        <p class="small muted mt-2" data-i18n="sub.my_sub">এই ব্রাউজারে আপনার জমা দেওয়া তালিকা — অন্য কারও জমা এখানে দেখানো হয় না।</p>
+        <div id="contrib-host"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.addI18n({
+    bn: {
+      "sub.section_sub": "আপনার হাসপাতালের বিল বা রশিদের তথ্য জমা দিয়ে মূল্য যাচাই ও গবেষণায় সহায়তা করুন।",
+      "sub.privacy_title": "গোপনীয়তা:",
+      "sub.privacy_notice": "এই প্রোটোটাইপে আপনার দেওয়া তথ্য শুধু আপনার ব্রাউজারে সংরক্ষিত হয় — কাউকে পাঠানো হয় না বা প্রকাশ করা হয় না। তবু অপ্রয়োজনীয় ব্যক্তিগত তথ্য লিখবেন বা ফাইল দিবেন না।",
+      "sub.mode_heading": "কীভাবে জানাবেন?",
+      "sub.mode_quick": "দ্রুত জানান",
+      "sub.mode_quick_sub": "তিনটি তথ্য · প্রায় ৩০ সেকেন্ড",
+      "sub.mode_full": "বিস্তারিত বিল",
+      "sub.mode_full_sub": "সব তথ্য + রশিদ",
+      "sub.note_quick": "শুধু হাসপাতাল, সেবা ও পরিমাণ দিন; তারিখ আজকের বসানো আছে, দরকার হলে বদলান।",
+      "sub.note_full": "বিস্তারিত মোডে বিবরণ, রশিদ ও যোগাযোগ যোগ করা যায় — যাচাইয়ে সাহায্য করে।",
+      "sub.list_sample_note": "হাসপাতাল/সেবার তালিকা নমুনা-ভিত্তিক; আপনার সংস্থা বা সেবা তালিকায় নাও থাকতে পারে।",
+      "sub.hospital_label": "হাসপাতালের নাম",
+      "sub.service_label": "সেবা বা টেস্টের নাম",
+      "sub.select": "বেছে নিন…",
+      "sub.err_hospital": "হাসপাতাল বেছে নিন।",
+      "sub.err_service": "সেবা বেছে নিন।",
+      "sub.amount_label": "বিলের পরিমাণ (৳)",
+      "sub.amount_ph": "যেমন ৭০০",
+      "sub.err_amount": "সঠিক পরিমাণ লিখুন।",
+      "sub.date_label": "বিলের তারিখ",
+      "sub.err_date": "তারিখ দিন।",
+      "sub.details_label": "অতিরিক্ত বিবরণ (ঐচ্ছিক)",
+      "sub.details_ph": "প্যাকেজ, কেবিন, কী কী অন্তর্ভুক্ত ছিল ইত্যাদি",
+      "sub.file_label": "রশিদ/বিলের ছবি বা PDF (ঐচ্ছিক)",
+      "sub.file_hint": "রশিদ থাকলে দিন — এটি যাচাইয়ে সাহায্য করে। বর্তমান সংস্করণে ফাইল আপলোড বা সংরক্ষণ হয় না, শুধু \"রশিদ দেওয়া হয়েছে\" চিহ্নটি জমা থাকে। অনুমোদিত: PNG, JPG, WEBP, PDF · সর্বোচ্চ ৫ এমবি।",
+      "sub.err_file": "ছবি/PDF-টি গ্রহণযোগ্য নয় (PNG/JPG/WEBP/PDF, ≤৫ এমবি)।",
+      "sub.contact_label": "যোগাযোগ (কেবল যাচাইয়ের প্রয়োজনে, ঐচ্ছিক)",
+      "sub.contact_ph": "ফোন বা ইমেইল",
+      "sub.contact_hint": "প্রকাশ্যে দেখানো হবে না এবং এখনো কোথাও পাঠানো হবে না।",
+      "sub.privacy_purpose_title": "কেন ও কীভাবে ব্যবহার হবে:",
+      "sub.privacy_purpose_body": "মূল্য গবেষণার জন্য বিল তথ্য সংগ্রহের প্রস্তুতি। এই সংস্করণে সব তথ্য কেবল আপনার ব্রাউজারে থাকে; কোনো সার্ভার বা পর্যালোচক দল এখনো চালু হয়নি, তাই কিছুই পাঠানো বা প্রকাশ হয় না। সত্যিকারের সংগ্রহ চালু হলে ব্যক্তিগত তথ্য সরিয়ে বেনামি মূল্য তুলনায় ব্যবহারের পরিকল্পনা আছে।",
+      "sub.consent_text": "আমি বুঝছি যে এই প্রোটোটাইপে জমা দেওয়া তথ্য শুধু আমার এই ব্রাউজারে থাকে — কাউকে পাঠানো হয় না বা প্রকাশ হয় না — এবং আমি স্বেচ্ছায় এটি জানাচ্ছি।",
+      "sub.err_consent": "জমা দিতে সম্মতি দিন।",
+      "sub.verified_note": "জমা দিলেই মূল্য \"যাচাইকৃত\" হয় না — এখনো কোনো পর্যালোচনা বা প্রকাশ ব্যবস্থা চালু নেই; তথ্য শুধু আপনার ব্রাউজারে থাকে।",
+      "sub.doc_title": "বিল জমা দিন | DoctorBill",
+      "sub.form_errors": "ফর্মে কিছু ত্রুটি আছে, ঠিক করে আবার চেষ্টা করুন।",
+      "sub.res_thanks": "ধন্যবাদ! আপনার এনট্রি এই ব্রাউজারে সংরক্ষিত হয়েছে।",
+      "sub.ref_id": "রেফারেন্স আইডি:",
+      "sub.res_hospital": "হাসপাতাল:",
+      "sub.res_service": "সেবা:",
+      "sub.res_amount": "পরিমাণ:",
+      "sub.res_date": "তারিখ:",
+      "sub.res_mode": "পদ্ধতি:",
+      "sub.res_next_title": "এরপর যা হবে:",
+      "sub.res_next_body": "আপনার এনট্রি নিচের \"আপনার জমা\" তালিকায় \"পর্যালোচনাধীন\" অবস্থায় সংরক্ষিত থাকবে এবং যেকোনো সময় মুছে ফেলতে পারবেন। এটি প্রোটোটাইপ — কোনো সার্ভার বা পর্যালোচক দল এখনো চালু নেই, তাই কিছুই পাঠানো বা প্রকাশ হয়নি।",
+      "sub.storage_warn": "সতর্কতা: এই ব্রাউজারে সংরক্ষণ করা যাচ্ছে না (localStorage বন্ধ) — পাতা রিলোড হলে জমাটি হারাবে।",
+      "sub.save_fail": "দুঃখিত, জমাটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+      "sub.again_btn": "আরেকটি বিল জমা দিন",
+      "sub.my_title": "আপনার জমা",
+      "sub.my_sub": "এই ব্রাউজারে আপনার জমা দেওয়া তালিকা — অন্য কারও জমা এখানে দেখানো হয় না।",
+      "sub.tag_quick": "দ্রুত",
+      "sub.tag_full": "বিস্তারিত",
+      "sub.del_btn": "মছুন",
+      "sub.del_confirm": "মুছে ফেলতে চান? নিশ্চিত করতে আবার \"মছুন\"-এ চাপুন।",
+      "sub.del_confirm_short": "নিশ্চিত করুন",
+      "sub.del_done": "জমাটি মুছে ফেলা হয়েছে।",
+      "sub.unknown_item": "অজানা",
+    },
+    en: {
+      "sub.section_sub": "Submit your hospital bill or receipt details to help with price verification and research.",
+      "sub.privacy_title": "Privacy:",
+      "sub.privacy_notice": "In this prototype the information you give is stored only in your browser — it is not sent to anyone or published. Still, avoid adding unnecessary personal information or files.",
+      "sub.mode_heading": "How do you want to report?",
+      "sub.mode_quick": "Quick report",
+      "sub.mode_quick_sub": "Three fields · about 30 seconds",
+      "sub.mode_full": "Detailed bill",
+      "sub.mode_full_sub": "All fields + receipt",
+      "sub.note_quick": "Just give hospital, service and amount; the date is set to today — change it if needed.",
+      "sub.note_full": "The detailed mode lets you add notes, a receipt and contact — it helps verification.",
+      "sub.list_sample_note": "The hospital/service list is sample-based; your facility or service may not appear in it.",
+      "sub.hospital_label": "Hospital name",
+      "sub.service_label": "Service or test name",
+      "sub.select": "Select…",
+      "sub.err_hospital": "Please select a hospital.",
+      "sub.err_service": "Please select a service.",
+      "sub.amount_label": "Bill amount (৳)",
+      "sub.amount_ph": "e.g. 700",
+      "sub.err_amount": "Please enter a valid amount.",
+      "sub.date_label": "Bill date",
+      "sub.err_date": "Please enter the date.",
+      "sub.details_label": "Additional details (optional)",
+      "sub.details_ph": "Package, cabin, what was included, etc.",
+      "sub.file_label": "Receipt/bill image or PDF (optional)",
+      "sub.file_hint": "Add a receipt if you have one — it helps verification. In this version the file is not uploaded or stored; only a \"receipt provided\" marker is saved. Accepted: PNG, JPG, WEBP, PDF · maximum 5 MB.",
+      "sub.err_file": "That image/PDF isn't valid (PNG/JPG/WEBP/PDF, ≤5 MB).",
+      "sub.contact_label": "Contact (only if verification is needed, optional)",
+      "sub.contact_ph": "Phone or email",
+      "sub.contact_hint": "Will not be shown publicly and is not sent anywhere yet.",
+      "sub.privacy_purpose_title": "Why and how it is used:",
+      "sub.privacy_purpose_body": "Bills are collected to prepare for price research. In this version everything stays only in your browser; no server or review team is running yet, so nothing is transmitted or published. Once real collection begins, the plan is to use anonymous price comparisons with personal details removed.",
+      "sub.consent_text": "I understand that in this prototype the submitted information stays only in my browser — it is not sent to anyone or published — and I am reporting it voluntarily.",
+      "sub.err_consent": "Please give consent to submit.",
+      "sub.verified_note": "Submitting a bill does not make a price \"verified\" — no review or publishing system is running yet; the data stays only in your browser.",
+      "sub.doc_title": "Submit a Bill | DoctorBill",
+      "sub.form_errors": "There are some errors in the form — please fix them and try again.",
+      "sub.res_thanks": "Thank you! Your entry has been saved in this browser.",
+      "sub.ref_id": "Reference ID:",
+      "sub.res_hospital": "Hospital:",
+      "sub.res_service": "Service:",
+      "sub.res_amount": "Amount:",
+      "sub.res_date": "Date:",
+      "sub.res_mode": "Mode:",
+      "sub.res_next_title": "What happens next:",
+      "sub.res_next_body": "Your entry is saved below in \"Your submissions\" with an \"Under review\" status and you can delete it at any time. This is a prototype — no server or review team is running yet, so nothing has been transmitted or published.",
+      "sub.storage_warn": "Warning: this browser cannot store data (localStorage is off) — the entry will be lost on reload.",
+      "sub.save_fail": "Sorry, the entry could not be saved. Please try again.",
+      "sub.again_btn": "Submit another bill",
+      "sub.my_title": "Your submissions",
+      "sub.my_sub": "The list of what you have submitted in this browser — nobody else's submissions are shown here.",
+      "sub.tag_quick": "Quick",
+      "sub.tag_full": "Detailed",
+      "sub.del_btn": "Delete",
+      "sub.del_confirm": "Delete this? Press \"Delete\" again to confirm.",
+      "sub.del_confirm_short": "Confirm",
+      "sub.del_done": "Submission deleted.",
+      "sub.unknown_item": "Unknown",
+    },
+  });
+  UI.boot("submit");
+  document.title = UI.t("sub.doc_title");
+
+  const MAX = 5 * 1024 * 1024;
+  const OK_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+  const esc = Fmt.escapeHtml;
+  const hospSel = document.getElementById("b-hospital");
+  const svcSel = document.getElementById("b-service");
+  const amountEl = document.getElementById("b-amount");
+  const dateEl = document.getElementById("b-date");
+  const detailsEl = document.getElementById("b-details");
+  const fileEl = document.getElementById("b-file");
+  const contactEl = document.getElementById("b-contact");
+  const consentEl = document.getElementById("b-consent");
+  const extraFields = document.getElementById("extra-fields");
+  const dateReq = document.getElementById("date-req");
+  const modeNote = document.getElementById("mode-note");
+  const res = document.getElementById("result");
+  const form = document.getElementById("bill-form");
+
+  hospSel.innerHTML += DB.hospitals.map((h) => '<option value="' + esc(h.id) + '">' + esc(UI.nameOf(h)) + "</option>").join("");
+  svcSel.innerHTML += DB.services.map((s) => '<option value="' + esc(s.id) + '">' + esc(UI.nameOf(s)) + "</option>").join("");
+  document.getElementById("list-sample-row").innerHTML = UI.sampleBadge() + "<span>" + esc(UI.t("sub.list_sample_note")) + "</span>";
+
+  function isoToday() { return new Date().toISOString().slice(0, 10); }
+  dateEl.value = isoToday();
+
+  let mode = "quick";
+  function setErr(id, show) { const e = document.getElementById(id); if (e) e.classList.toggle("show", show); }
+
+  function applyMode(m) {
+    mode = m === "full" ? "full" : "quick";
+    const full = mode === "full";
+    extraFields.style.display = full ? "" : "none";
+    dateReq.style.display = full ? "" : "none";
+    dateEl.required = full;
+    modeNote.textContent = UI.t(full ? "sub.note_full" : "sub.note_quick");
+    document.querySelectorAll("[data-mode]").forEach((b) => {
+      const on = b.getAttribute("data-mode") === mode;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (!full) { setErr("e-file", false); setErr("e-date", false); setErr("e-consent", false); }
+  }
+  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => applyMode(b.getAttribute("data-mode"))));
+  applyMode("quick");
+
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const full = mode === "full";
+    const hosp = hospSel.value;
+    const svc = svcSel.value;
+    const amount = Number(amountEl.value);
+    const date = dateEl.value || isoToday();
+    const file = full ? fileEl.files[0] : null;
+    const fileProvided = !!(file && file.name);
+    const consent = consentEl.checked;
+
+    let ok = true;
+    setErr("e-hospital", !hosp); if (!hosp) ok = false;
+    setErr("e-service", !svc); if (!svc) ok = false;
+    const badAmt = !(amount > 0); setErr("e-amount", badAmt); if (badAmt) ok = false;
+    const dateMissing = full && !dateEl.value; setErr("e-date", dateMissing); if (dateMissing) ok = false;
+    const fileBad = fileProvided && (!OK_TYPES.includes(file.type) || file.size > MAX);
+    setErr("e-file", fileBad); if (fileBad) ok = false;
+    const consMissing = full && !consent; setErr("e-consent", consMissing); if (consMissing) ok = false;
+    if (!ok) { UI.toast(UI.t("sub.form_errors")); const first = form.querySelector(".err.show"); if (first) first.scrollIntoView({ block: "center" }); return; }
+
+    const out = Store.addContribution({
+      hospital_id: hosp,
+      service_id: svc,
+      amount: amount,
+      bill_date: date,
+      details: full ? detailsEl.value.trim() : "",
+      has_receipt: fileProvided && !fileBad,
+      contact: full ? contactEl.value.trim() : "",
+      mode: mode,
+    });
+    if (!out.record) { UI.toast(UI.t("sub.save_fail")); return; }
+    renderResult(out.record, out.saved);
+    renderList();
+    res.scrollIntoView({ block: "center" });
+  });
+
+  function detailRow(label, val) {
+    return "<div>" + esc(label) + " <strong>" + esc(val) + "</strong></div>";
+  }
+
+  function renderResult(rec, saved) {
+    const hospRec = DB.hospitalById(rec.hospital_id);
+    const svcRec = DB.serviceById(rec.service_id);
+    const st = Store.CONTRIB_STATUS[rec.status] || Store.CONTRIB_STATUS.pending;
+    const warn = saved && Store.storageOk() ? "" : '<div class="notice warn small mt-2">' + esc(UI.t("sub.storage_warn")) + "</div>";
+    res.style.display = "block";
+    res.innerHTML =
+      '<span class="status-pill">' + esc(UI.isEn() ? st.en : st.bn) + "</span>" +
+      "<h2 style='font-size:20px' class='mt-2'>" + esc(UI.t("sub.res_thanks")) + "</h2>" +
+      '<p class="muted small">' + esc(UI.t("sub.ref_id")) + " <strong>" + esc(rec.id) + "</strong></p>" +
+      '<div class="stack small mt-2">' +
+        detailRow(UI.t("sub.res_hospital"), hospRec ? UI.nameOf(hospRec) : UI.t("sub.unknown_item")) +
+        detailRow(UI.t("sub.res_service"), svcRec ? UI.nameOf(svcRec) : UI.t("sub.unknown_item")) +
+        detailRow(UI.t("sub.res_amount"), Fmt.taka(rec.amount) || "—") +
+        detailRow(UI.t("sub.res_date"), rec.bill_date ? Fmt.date(rec.bill_date) : "—") +
+        detailRow(UI.t("sub.res_mode"), UI.t(rec.mode === "quick" ? "sub.tag_quick" : "sub.tag_full")) +
+      "</div>" +
+      '<div class="notice mt-3 small"><strong>' + esc(UI.t("sub.res_next_title")) + "</strong> " + esc(UI.t("sub.res_next_body")) + "</div>" +
+      UI.localNote() + warn +
+      '<button class="btn secondary mt-3" type="button" id="again">' + esc(UI.t("sub.again_btn")) + "</button>";
+    document.getElementById("again").addEventListener("click", () => {
+      form.reset();
+      dateEl.value = isoToday();
+      res.style.display = "none";
+      renderList();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  let pendingDelete = null;
+  const host = document.getElementById("contrib-host");
+
+  function statusClass(s) {
+    return s === "verified" ? " status-pill verified" : s === "rejected" ? " status-pill rejected" : " status-pill";
+  }
+
+  function renderItem(r) {
+    const hospRec = DB.hospitalById(r.hospital_id);
+    const svcRec = DB.serviceById(r.service_id);
+    const st = Store.CONTRIB_STATUS[r.status] || Store.CONTRIB_STATUS.pending;
+    const armed = pendingDelete === r.id;
+    return '<li class="contrib-item">' +
+      "<strong>" + esc(hospRec ? UI.nameOf(hospRec) : UI.t("sub.unknown_item")) + "</strong>" +
+      '<span class="muted">' + esc(svcRec ? UI.nameOf(svcRec) : "—") + "</span>" +
+      "<span><strong>" + esc(Fmt.taka(r.amount) || "—") + "</strong></span>" +
+      '<span class="muted small">' + esc(r.bill_date ? Fmt.date(r.bill_date) : "—") + "</span>" +
+      '<span class="muted small">' + esc(UI.t(r.mode === "quick" ? "sub.tag_quick" : "sub.tag_full")) + "</span>" +
+      '<span class="' + statusClass(r.status).trim() + '">' + esc(UI.isEn() ? st.en : st.bn) + "</span>" +
+      '<button class="btn sm ghost" type="button" data-del="' + esc(r.id) + '">' + esc(UI.t(armed ? "sub.del_confirm_short" : "sub.del_btn")) + "</button>" +
+      "</li>";
+  }
+
+  function renderList() {
+    const items = Store.contributions();
+    document.getElementById("contrib-count").textContent = UI.t("sh.contrib.count").replace("{n}", Fmt.bn(items.length));
+    if (!items.length) { host.innerHTML = '<div class="empty">' + esc(UI.t("sh.contrib.none")) + "</div>"; return; }
+    host.innerHTML = '<ul class="contrib-list">' + items.map(renderItem).join("") + "</ul>";
+  }
+
+  host.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-del]");
+    if (!btn) return;
+    const id = btn.getAttribute("data-del");
+    if (pendingDelete === id) {
+      Store.removeContribution(id);
+      pendingDelete = null;
+      UI.toast(UI.t("sub.del_done"));
+    } else {
+      pendingDelete = id;
+      UI.toast(UI.t("sub.del_confirm"));
+    }
+    renderList();
+  });
+
+  renderList();
+})();
+</script>
+</body>
+</html>

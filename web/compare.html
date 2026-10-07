@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>মূল্য তুলনা করুন | DoctorBill</title>
+<meta name="description" content="একই চিকিৎসা সেবার মূল্য বিভিন্ন হাসপাতালে তুলনা করুন। মূল্য, উৎস, যাচাইয়ের অবস্থা ও কী কী অন্তর্ভুক্ত তা পাশাপাশি দেখুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/compare.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="মূল্য তুলনা | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="একই চিকিৎসা সেবার মূল্য বিভিন্ন হাসপাতালে তুলনা করুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/compare.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="page.compare.h1">মূল্য তুলনা</h1>
+      <p class="section-sub" data-i18n="cmp.sub">একটি সেবা বেছে নিন — বিভিন্ন হাসপাতালের তালিকাভুক্ত মূল্য পাশাপাশি দেখুন।</p>
+      <div id="cmp-search"></div>
+      <div class="chips mt-3" id="service-chips"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <!-- Selected service summary -->
+      <div class="card" id="service-head" style="display:none"></div>
+
+      <div class="grid mt-3" id="layout" style="grid-template-columns:1fr">
+        <!-- Filters -->
+        <aside class="card" id="filters" aria-label="ফিল্টার">
+          <div class="row between items-center"><h3 style="font-size:17px;margin:0" data-i18n="cmp.filters">ফিল্টার</h3><button class="btn ghost sm" type="button" id="reset-filters" data-i18n="cmp.reset">রিসেট</button></div>
+          <hr class="divider">
+          <div class="field"><label for="f-city" data-i18n="hospitals.city">শহর</label><select class="select" id="f-city"></select></div>
+          <div class="field"><label for="f-type" data-i18n="cmp.f_type">হাসপাতালের ধরন</label><select class="select" id="f-type"></select></div>
+          <div class="field"><label for="f-status" data-i18n="cmp.f_status">মূল্যের অবস্থা</label><select class="select" id="f-status">
+            <option value="" data-i18n="cmp.opt.all">সব</option>
+            <option value="hospital_provided" data-i18n="cmp.status.hospital_provided">হাসপাতাল-প্রদত্ত তথ্য</option>
+            <option value="user_provided" data-i18n="cmp.status.user_provided">ব্যবহারকারী-প্রদত্ত তথ্য</option>
+            <option value="unverified" data-i18n="cmp.status.unverified">মূল্য যাচাই করা হয়নি</option>
+          </select></div>
+          <div class="field-row two">
+            <div class="field"><label for="f-min" data-i18n="cmp.f_min">সর্বনিম্ন মূল্য (৳)</label><input class="input" id="f-min" type="number" min="0" inputmode="numeric" placeholder="যেমন ৫০০" data-i18n-ph="cmp.min_ph"></div>
+            <div class="field"><label for="f-max" data-i18n="cmp.f_max">সর্বোচ্চ মূল্য (৳)</label><input class="input" id="f-max" type="number" min="0" inputmode="numeric" placeholder="যেমন ৫০০০" data-i18n-ph="cmp.max_ph"></div>
+          </div>
+          <div class="field"><label for="f-sort" data-i18n="cmp.f_sort">সাজান</label><select class="select" id="f-sort">
+            <option value="price-asc" data-i18n="cmp.sort.price_asc">মূল্য: কম থেকে বেশি</option>
+            <option value="price-desc" data-i18n="cmp.sort.price_desc">মূল্য: বেশি থেকে কম</option>
+            <option value="updated" data-i18n="cmp.sort.updated">সর্বশেষ আপডেট</option>
+          </select></div>
+        </aside>
+
+        <!-- Results -->
+        <div>
+          <div class="card tight" id="est-ctl">
+            <label class="check" style="min-height:44px">
+              <input type="checkbox" id="est-toggle">
+              <span class="grow"><strong data-i18n="cmp.est.toggle">অতিরিক্ত খরচসহ আনুমানিক মোট</strong>
+              <span class="ex-note" data-i18n="cmp.est.sub">ওয়ার্ড, ওষুধ, নার্সিং ও ফি যোগ করে প্রতি হাসপাতালের সম্ভাব্য মোট পরিসর দেখুন। সব মান নমুনা ডেটা।</span></span>
+            </label>
+            <div id="est-panel" hidden>
+              <hr class="divider">
+              <h3 style="font-size:17px;margin:0" data-i18n="sh.extras.h">বিলে যা যা আরও যুক্ত হতে পারে</h3>
+              <p class="small muted mt-2 mb-0" data-i18n="sh.extras.sub">টেস্টের দামের বাইরে এই খরচগুলোই সাধারণত হিসাব বড় করে দেয়।</p>
+              <div id="cmp-extras"></div>
+              <div id="cmp-days-host"></div>
+              <div class="notice warn small mt-2" id="est-hint" hidden></div>
+              <div class="badge-row" id="est-badges"></div>
+            </div>
+          </div>
+          <div class="row between items-center mb-0 mt-3" id="result-meta"></div>
+          <div class="stack mt-2" id="results"></div>
+          <div id="govt-ref"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="compare-bar" id="compare-bar">
+  <div><strong id="cmp-count">০</strong> <span class="muted small" data-i18n="cmp.selected_suffix">টি হাসপাতাল নির্বাচিত</span></div>
+  <div class="row gap-8">
+    <button class="btn ghost sm" type="button" id="cmp-clear" data-i18n="search.clear">মুছুন</button>
+    <button class="btn sm" type="button" id="cmp-show" data-i18n="cmp.show">তুলনা দেখুন</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="cmp-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cmp-modal-title">
+    <div class="modal-head"><h3 id="cmp-modal-title" class="mb-0" data-i18n="page.compare.h1">মূল্য তুলনা</h3><button class="icon-btn" type="button" aria-label="বন্ধ করুন" data-close>✕</button></div>
+    <div id="cmp-modal-body" class="mt-3"></div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.addI18n({
+    bn: {
+      "cmp.title": "মূল্য তুলনা করুন | DoctorBill",
+      "cmp.sub": "একটি সেবা বেছে নিন — বিভিন্ন হাসপাতালের তালিকাভুক্ত মূল্য পাশাপাশি দেখুন।",
+      "cmp.filters": "ফিল্টার",
+      "cmp.reset": "রিসেট",
+      "cmp.f_type": "হাসপাতালের ধরন",
+      "cmp.f_status": "মূল্যের অবস্থা",
+      "cmp.opt.all": "সব",
+      "cmp.status.hospital_provided": "হাসপাতাল-প্রদত্ত তথ্য",
+      "cmp.status.user_provided": "ব্যবহারকারী-প্রদত্ত তথ্য",
+      "cmp.status.unverified": "মূল্য যাচাই করা হয়নি",
+      "cmp.f_min": "সর্বনিম্ন মূল্য (৳)",
+      "cmp.min_ph": "যেমন ৫০০",
+      "cmp.f_max": "সর্বোচ্চ মূল্য (৳)",
+      "cmp.max_ph": "যেমন ৫০০০",
+      "cmp.f_sort": "সাজান",
+      "cmp.sort.price_asc": "মূল্য: কম থেকে বেশি",
+      "cmp.sort.price_desc": "মূল্য: বেশি থেকে কম",
+      "cmp.sort.updated": "সর্বশেষ আপডেট",
+      "cmp.selected_suffix": "টি হাসপাতাল নির্বাচিত",
+      "cmp.show": "তুলনা দেখুন",
+      "cmp.toast.selected": "{x} নির্বাচিত",
+      "cmp.all_types": "সব ধরন",
+      "cmp.priced_count": "{x} টি হাসপাতালে তালিকাভুক্ত মূল্য আছে।",
+      "cmp.results_count": "{x} টি ফলাফল",
+      "cmp.empty.pick": "তুলনা দেখতে উপর থেকে একটি সেবা বেছে নিন বা সার্চ করুন।",
+      "cmp.empty.noprice": "এই ফিল্টারে কোনো মূল্য পাওয়া যায়নি। ফিল্টার পরিবর্তন করে দেখুন।",
+      "cmp.hospital_details": "হাসপাতালের বিস্তারিত",
+      "cmp.need_two": "তুলনার জন্য অন্তত ২টি হাসপাতাল নির্বাচন করুন",
+      "cmp.badge.cheapest": "তুলনায় কম",
+      "cmp.k.basis": "মূল্য ভিত্তি",
+      "cmp.k.included": "অন্তর্ভুক্ত",
+      "cmp.k.excluded": "অতিরিক্ত/বাদ",
+      "cmp.k.status": "অবস্থা",
+      "cmp.k.updated": "আপডেট",
+      "cmp.notice.ranked": "মূল্য একই ভিত্তিতে তুলনা করা হয়েছে, তাই কম মূল্য চিহ্নিত করা হয়েছে।",
+      "cmp.notice.warn": "ভিন্ন মূল্য ভিত্তি বা রেঞ্জ থাকায় \"সবচেয়ে কম\" চিহ্নিত করা হয়নি — নিচের বিস্তারিত দেখে বুঝে সিদ্ধান্ত নিন।",
+      "cmp.disclaimer": "পরামর্শ ফি, ট্যাক্স, রেজিস্ট্রেশন ফি, consumables, কেবিন চার্জ ও অন্যান্য খরচ এই তালিকায় অন্তর্ভুক্ত নাও থাকতে পারে।",
+      "cmp.est.toggle": "অতিরিক্ত খরচসহ আনুমানিক মোট",
+      "cmp.est.sub": "ওয়ার্ড, ওষুধ, নার্সিং ও ফি যোগ করে প্রতি হাসপাতালের সম্ভাব্য মোট পরিসর দেখুন। সব মান নমুনা ডেটা।",
+      "cmp.est.head": "পুরো বিলের আনুমানিক পরিসর",
+      "cmp.est.listed": "তালিকাভুক্ত মূল্য",
+      "cmp.est.noextras": "নিচ থেকে অন্তত একটি অতিরিক্ত খরচ বেছে নিন — না নিলে হিসাবটি শুধু তালিকাভুক্ত মূল্যের সমান থাকবে।",
+      "cmp.days.label": "ভর্তির দিন সংখ্যা",
+      "cmp.govt.h": "সরকারি ফ্যাসিলিটির রেফারেন্স",
+      "cmp.govt.th.range": "আদর্শ সরকারি রেঞ্জ",
+      "cmp.govt.note": "এটি একটি আদর্শ সরকারি হাসপাতালের সম্ভাব্য রেঞ্জ (নমুনা) — তালিকাভুক্ত কোনো হাসপাতালের প্রকৃত মূল্য নয়।",
+      "cmp.th.service": "সেবা"
+    },
+    en: {
+      "cmp.title": "Compare Prices | DoctorBill",
+      "cmp.sub": "Pick a service — see the listed prices across hospitals side by side.",
+      "cmp.filters": "Filters",
+      "cmp.reset": "Reset",
+      "cmp.f_type": "Hospital type",
+      "cmp.f_status": "Price status",
+      "cmp.opt.all": "All",
+      "cmp.status.hospital_provided": "Hospital-provided",
+      "cmp.status.user_provided": "User-provided",
+      "cmp.status.unverified": "Price not verified",
+      "cmp.f_min": "Min price (৳)",
+      "cmp.min_ph": "e.g. 500",
+      "cmp.f_max": "Max price (৳)",
+      "cmp.max_ph": "e.g. 5000",
+      "cmp.f_sort": "Sort",
+      "cmp.sort.price_asc": "Price: low to high",
+      "cmp.sort.price_desc": "Price: high to low",
+      "cmp.sort.updated": "Most recent update",
+      "cmp.selected_suffix": "hospitals selected",
+      "cmp.show": "View comparison",
+      "cmp.toast.selected": "{x} selected",
+      "cmp.all_types": "All types",
+      "cmp.priced_count": "{x} hospitals have listed prices.",
+      "cmp.results_count": "{x} results",
+      "cmp.empty.pick": "Pick a service above, or search, to see a comparison.",
+      "cmp.empty.noprice": "No prices match these filters. Try changing the filters.",
+      "cmp.hospital_details": "Hospital details",
+      "cmp.need_two": "Select at least 2 hospitals to compare.",
+      "cmp.badge.cheapest": "Lowest here",
+      "cmp.k.basis": "Price basis",
+      "cmp.k.included": "Included",
+      "cmp.k.excluded": "Extras / excluded",
+      "cmp.k.status": "Status",
+      "cmp.k.updated": "Updated",
+      "cmp.notice.ranked": "Prices are compared on the same basis, so the lowest is marked.",
+      "cmp.notice.warn": "Because the price bases differ or are ranges, \"lowest\" is not marked — read the details below and decide.",
+      "cmp.disclaimer": "Consultation fees, tax, registration fees, consumables, cabin charges and other costs may not be included in this list.",
+      "cmp.est.toggle": "Estimated total including extras",
+      "cmp.est.sub": "Add ward, medicines, nursing and fees to see each hospital's likely total range. All values are sample data.",
+      "cmp.est.head": "Likely range for the whole bill",
+      "cmp.est.listed": "Listed price",
+      "cmp.est.noextras": "Pick at least one extra charge below — otherwise this figure just equals the listed price.",
+      "cmp.days.label": "Inpatient days",
+      "cmp.govt.h": "Government facility reference",
+      "cmp.govt.th.range": "Typical government range",
+      "cmp.govt.note": "This is the range for a typical government facility (sample data) — not the actual rate of any hospital listed here.",
+      "cmp.th.service": "Service"
+    }
+  });
+
+  UI.boot("compare");
+  document.title = UI.t("cmp.title");
+
+  // Pick the correct record-name field per language (data, not UI chrome).
+  function nameOf(r) { return UI.isEn() && r.name_en ? r.name_en : r.name_bn; }
+  function nameAlt(r) { return UI.isEn() ? r.name_bn : r.name_en; }
+
+  const params = new URLSearchParams(location.search);
+  let currentService = null;
+  const selected = new Set();
+
+  // Search box (service/hospital aware)
+  document.getElementById("cmp-search").appendChild(UI.searchBox({
+    onSelect: (value, type) => { if (type === "hospital") location.href = "hospital.html?slug=" + encodeURIComponent(value); else selectServiceBySlug(value); }
+  }));
+  if (params.get("q")) {
+    const q = params.get("q").toLowerCase();
+    const found = DB.services.find((s) => [s.name_bn, s.name_en, s.slug].concat(s.synonyms).some((x) => String(x).toLowerCase().includes(q)));
+    if (found) currentService = found;
+  }
+  if (params.get("service")) {
+    const s = DB.services.find((x) => x.slug === params.get("service"));
+    if (s) currentService = s;
+  }
+
+  // Service quick-chips
+  document.getElementById("service-chips").innerHTML = DB.services.map((s) =>
+    '<button class="chip" type="button" data-slug="' + s.slug + '" aria-pressed="false">' + Fmt.escapeHtml(nameOf(s)) + "</button>").join("");
+  document.getElementById("service-chips").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-slug]"); if (b) selectServiceBySlug(b.dataset.slug);
+  });
+
+  function selectServiceBySlug(slug, silent) {
+    const s = DB.services.find((x) => x.slug === slug);
+    if (!s) return;
+    currentService = s; selected.clear();
+    document.querySelectorAll("#service-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.slug === slug)));
+    renderServiceHead(); renderResults(); if (!silent) UI.toast(UI.t("cmp.toast.selected").replace("{x}", nameOf(s)));
+  }
+
+  // Filters
+  const fCity = document.getElementById("f-city"), fType = document.getElementById("f-type"),
+    fStatus = document.getElementById("f-status"), fMin = document.getElementById("f-min"),
+    fMax = document.getElementById("f-max"), fSort = document.getElementById("f-sort");
+  fCity.innerHTML = '<option value="">' + UI.t("hospitals.allcity") + "</option>" + DB.cities.map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(c) + "</option>").join("");
+  fType.innerHTML = '<option value="">' + UI.t("cmp.all_types") + "</option>" + DB.hospitalTypes.map((t) => '<option value="' + Fmt.escapeHtml(t) + '">' + Fmt.escapeHtml(t) + "</option>").join("");
+  [fCity, fType, fStatus, fSort].forEach((el) => el.addEventListener("change", renderResults));
+  [fMin, fMax].forEach((el) => el.addEventListener("input", renderResults));
+  document.getElementById("reset-filters").addEventListener("click", () => {
+    fCity.value = fType.value = fStatus.value = fSort.value = ""; fMin.value = fMax.value = ""; fSort.value = "price-asc"; renderResults();
+  });
+
+  // Whole-bill estimate (selected service + chosen extra charges, private sector)
+  const estState = { on: false, extras: [], days: 0 };
+  const estToggle = document.getElementById("est-toggle");
+
+  function hasPerDay() {
+    return estState.extras.some((id) => { const x = DB.extraById(id); return x && x.type === "per_day"; });
+  }
+  function daysLabelHtml() {
+    return Fmt.escapeHtml(UI.t("cmp.days.label")) + " (" +
+      Fmt.escapeHtml(UI.t("sh.days_n")).replace("{n}", Fmt.bn(estState.days)) + ")";
+  }
+  function daysRow() {
+    if (!hasPerDay()) return "";
+    return '<div class="field mt-2" style="max-width:260px"><label for="cmp-days" id="cmp-days-label">' + daysLabelHtml() + "</label>" +
+      '<input class="input" id="cmp-days" type="number" min="1" step="1" value="' + Fmt.escapeHtml(String(estState.days)) + '" style="min-height:44px"></div>';
+  }
+  function bindDays() {
+    const inp = document.getElementById("cmp-days");
+    if (!inp) return;
+    inp.addEventListener("input", () => {
+      const v = Math.max(1, Number(inp.value) || 0);
+      estState.days = v;
+      if (String(v) !== inp.value) inp.value = String(v);
+      const lb = document.getElementById("cmp-days-label");
+      if (lb) lb.innerHTML = daysLabelHtml();
+      renderResults();
+    });
+  }
+  function renderEstPanel(rebuild) {
+    const panel = document.getElementById("est-panel");
+    panel.hidden = !estState.on;
+    if (estState.on) {
+      if (rebuild) {
+        const host = document.getElementById("cmp-extras");
+        host.innerHTML = "";
+        host.appendChild(UI.extrasPicker(estState.extras, (id, checked) => {
+          if (checked) { if (estState.extras.indexOf(id) === -1) estState.extras.push(id); }
+          else estState.extras = estState.extras.filter((x) => x !== id);
+          // A per-day charge needs at least one day, so the input never contradicts the maths.
+          if (hasPerDay() && estState.days < 1) estState.days = 1;
+          renderEstPanel(false);
+        }, { sector: "private" }));
+        document.getElementById("est-badges").innerHTML = UI.sampleBadge();
+      }
+      document.getElementById("cmp-days-host").innerHTML = daysRow();
+      bindDays();
+      const hint = document.getElementById("est-hint");
+      hint.hidden = estState.extras.length > 0;
+      if (!hint.hidden) hint.textContent = UI.t("cmp.est.noextras");
+    }
+    renderResults();
+  }
+  function estFor(hospitalId) {
+    const items = currentService ? [{ id: currentService.id, qty: 1 }] : [];
+    return UI.computeEstimate(items, estState.extras, { hospitalId: hospitalId, sector: "private", days: estState.days });
+  }
+  // "তালিকাভুক্ত মূল্য" is the generic default basis; the line above already says exactly that.
+  function basisSuffix(rec) {
+    const b = rec.price_basis;
+    if (!b || b === "তালিকাভুক্ত মূল্য") return "";
+    return " · " + Fmt.escapeHtml(b);
+  }
+  estToggle.addEventListener("change", () => {
+    estState.on = estToggle.checked;
+    renderEstPanel(estState.on);
+  });
+
+  // Responsive two-column layout
+  function applyLayout() {
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    document.getElementById("layout").style.gridTemplateColumns = wide ? "280px 1fr" : "1fr";
+  }
+  window.addEventListener("resize", applyLayout); applyLayout();
+
+  function renderServiceHead() {
+    const box = document.getElementById("service-head");
+    if (!currentService) { box.style.display = "none"; return; }
+    box.style.display = "block";
+    const cat = DB.categoryById(currentService.category_id);
+    const ps = DB.pricesForService(currentService.id);
+    box.innerHTML =
+      '<div class="row between items-center wrap gap-8">' +
+        "<div><h2 style='font-size:20px;margin:0'>" + Fmt.escapeHtml(nameOf(currentService)) + "</h2>" +
+        '<div class="small muted">' + Fmt.escapeHtml(nameAlt(currentService)) + " · " + Fmt.escapeHtml(cat ? nameOf(cat) : "") + " · " + Fmt.escapeHtml(currentService.unit || "") + "</div></div>" +
+        '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+      "</div>" +
+      '<div class="small muted mt-2">' + UI.t("cmp.priced_count").replace("{x}", Fmt.bn(ps.length)) + "</div>";
+  }
+
+  function collectRows() {
+    let recs = DB.prices.slice();
+    if (currentService) recs = recs.filter((r) => r.service_id === currentService.id);
+    recs = recs.filter((r) => r.verification_status !== "unavailable");
+    recs = recs.map((r) => ({ rec: r, hosp: DB.hospitalById(r.hospital_id), svc: DB.serviceById(r.service_id) }));
+    if (fCity.value) recs = recs.filter((x) => x.hosp.city === fCity.value);
+    if (fType.value) recs = recs.filter((x) => x.hosp.hospital_type === fType.value);
+    if (fStatus.value) recs = recs.filter((x) => x.rec.verification_status === fStatus.value);
+    const lo = fMin.value ? Number(fMin.value) : null, hi = fMax.value ? Number(fMax.value) : null;
+    const base = (r) => r.rec.price_amount != null ? r.rec.price_amount : (r.rec.price_min != null ? r.rec.price_min : (r.rec.price_max != null ? r.rec.price_max : Infinity));
+    if (lo != null) recs = recs.filter((x) => base(x) >= lo);
+    if (hi != null) recs = recs.filter((x) => base(x) <= hi);
+    const sortKey = fSort.value;
+    recs.sort((a, b) => {
+      if (sortKey === "updated") return String(b.rec.last_checked_at || "").localeCompare(String(a.rec.last_checked_at || ""));
+      const d = base(a) - base(b); return sortKey === "price-desc" ? -d : d;
+    });
+    return recs;
+  }
+
+  function renderGovtRef() {
+    const el = document.getElementById("govt-ref");
+    const g = currentService ? DB.govtService[currentService.id] : null;
+    if (!g) { el.innerHTML = ""; return; }
+    el.innerHTML = '<div class="card tight mt-3">' +
+      '<h3 style="font-size:17px;margin:0">' + Fmt.escapeHtml(UI.t("cmp.govt.h")) + "</h3>" +
+      '<div class="table-wrap"><table class="govt-cmp"><thead><tr><th>' + Fmt.escapeHtml(UI.t("cmp.th.service")) +
+        "</th><th>" + Fmt.escapeHtml(UI.t("cmp.govt.th.range")) + '</th></tr></thead><tbody>' +
+        "<tr><td style='white-space:normal'>" + Fmt.escapeHtml(nameOf(currentService)) + "</td>" +
+        "<td><span class='price-range'>" + Fmt.escapeHtml(Fmt.taka(g[0]) + "–" + Fmt.taka(g[1])) + "</span></td></tr>" +
+      "</tbody></table></div>" +
+      '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+      '<p class="small muted mt-2 mb-0">' + Fmt.escapeHtml(UI.t("sh.govt_note")) + " " + Fmt.escapeHtml(UI.t("cmp.govt.note")) + "</p>" +
+    "</div>";
+  }
+
+  function renderResults() {
+    renderGovtRef();
+    const rows = collectRows();
+    document.getElementById("result-meta").innerHTML =
+      '<p class="small muted mb-0">' + UI.t("cmp.results_count").replace("{x}", Fmt.bn(rows.length)) + (currentService ? " — " + Fmt.escapeHtml(nameOf(currentService)) : "") + "</p>";
+    const box = document.getElementById("results");
+    if (!currentService) {
+      box.innerHTML = '<div class="empty">' + UI.t("cmp.empty.pick") + "</div>"; updateCompareBar(); return;
+    }
+    if (!rows.length) {
+      box.innerHTML = '<div class="empty">' + UI.t("cmp.empty.noprice") + "</div>"; updateCompareBar(); return;
+    }
+    box.innerHTML = rows.map((x, i) => {
+      const key = x.rec.hospital_id + "|" + x.rec.service_id;
+      const checked = selected.has(key) ? "checked" : "";
+      const est = estState.on ? estFor(x.rec.hospital_id) : null;
+      return '<div class="card tight">' +
+        '<div class="row between items-center gap-8">' +
+          "<div class='grow'><h3 style='font-size:17px;margin:0'>" + Fmt.escapeHtml(nameOf(x.hosp)) + "</h3>" +
+          '<div class="kv small">' + UI.ICONS.pin + "<span>" + Fmt.escapeHtml(x.hosp.area) + ", " + Fmt.escapeHtml(x.hosp.city) + "</span></div></div>" +
+          '<label class="check" style="padding:0"><input type="checkbox" data-key="' + Fmt.escapeHtml(key) + '" ' + checked + ' aria-label="তুলনার জন্য নির্বাচন"><span class="small muted">' + UI.t("nav.compare") + "</span></label>" +
+        "</div>" +
+        '<div class="row between items-center wrap gap-8 mt-2">' +
+          "<div>" + (est
+            ? '<span class="price lg">' + Fmt.escapeHtml(UI.bandText(est)) + "</span>" +
+              '<div class="price-meta">' + Fmt.escapeHtml(UI.t("cmp.est.head")) + "</div>" +
+              '<div class="small muted">' + Fmt.escapeHtml(UI.t("cmp.est.listed")) + ": " +
+                Fmt.escapeHtml(Fmt.price(x.rec) || UI.t("label.price_na")) + basisSuffix(x.rec) + "</div>"
+            : UI.priceText(x.rec) +
+              '<div class="price-meta">' + Fmt.escapeHtml(x.rec.price_basis || "") + "</div>") + "</div>" +
+          "<div>" + UI.statusBadge(x.rec) + "</div>" +
+        "</div>" +
+        '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+        '<div class="small muted mt-2">' + Fmt.updated(x.rec.last_checked_at) + "</div>" +
+        UI.staleNote(x.rec.last_checked_at) +
+        UI.feedbackBtn(x.rec.hospital_id, x.rec.service_id) +
+        '<div class="row gap-8 mt-2"><a class="btn sm secondary" href="hospital.html?slug=' + encodeURIComponent(x.hosp.slug) + '">' + UI.t("cmp.hospital_details") + "</a></div>" +
+      "</div>";
+    }).join("");
+    box.querySelectorAll("input[type=checkbox][data-key]").forEach((cb) =>
+      cb.addEventListener("change", () => { cb.checked ? selected.add(cb.dataset.key) : selected.delete(cb.dataset.key); updateCompareBar(); }));
+    UI.bindFeedback(box);
+    updateCompareBar();
+  }
+
+  function updateCompareBar() {
+    const bar = document.getElementById("compare-bar");
+    document.getElementById("cmp-count").textContent = Fmt.bn(selected.size);
+    bar.classList.toggle("show", selected.size > 0);
+  }
+  document.getElementById("cmp-clear").addEventListener("click", () => { selected.clear(); renderResults(); });
+  document.getElementById("cmp-show").addEventListener("click", showCompare);
+
+  function showCompare() {
+    if (selected.size < 2) { UI.toast(UI.t("cmp.need_two")); return; }
+    const rows = collectRows().filter((x) => selected.has(x.rec.hospital_id + "|" + x.rec.service_id));
+    // Do NOT label cheapest unless consistent basis: check all use same price_basis and are fixed amounts
+    const bases = new Set(rows.map((r) => r.rec.price_basis));
+    const allFixed = rows.every((r) => r.rec.price_amount != null);
+    const canRank = bases.size === 1 && allFixed && rows.length >= 2;
+    let cheapestId = null;
+    if (canRank) cheapestId = rows.reduce((a, b) => (a.rec.price_amount <= b.rec.price_amount ? a : b)).rec.hospital_id;
+
+    const body = document.getElementById("cmp-modal-body");
+    const card = (r) => {
+      const rec = r.rec;
+      const est = estState.on ? estFor(rec.hospital_id) : null;
+      return '<div class="card tight">' +
+        '<div class="row between items-center gap-8"><h3 style="font-size:16px;margin:0">' + Fmt.escapeHtml(nameOf(r.hosp)) + "</h3>" +
+        (cheapestId === rec.hospital_id ? '<span class="badge verified">' + UI.t("cmp.badge.cheapest") + "</span>" : "") + "</div>" +
+        (est
+          ? "<div class='mt-2'>" + Fmt.escapeHtml(UI.t("cmp.est.head")) + "</div>" +
+            '<div class="price lg">' + Fmt.escapeHtml(UI.bandText(est)) + "</div>" +
+            '<div class="small muted">' + Fmt.escapeHtml(UI.t("cmp.est.listed")) + ": " +
+              Fmt.escapeHtml(Fmt.price(rec) || UI.t("label.price_na")) + "</div>"
+          : "<div class='mt-2'>" + UI.priceText(rec) + "</div>") +
+        '<dl class="small" style="margin:10px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px">' +
+          "<dt class='muted'>" + UI.t("cmp.k.basis") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.price_basis || "—") + "</dd>" +
+          "<dt class='muted'>" + UI.t("cmp.k.included") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.inclusions || "—") + "</dd>" +
+          "<dt class='muted'>" + UI.t("cmp.k.excluded") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.exclusions || "—") + "</dd>" +
+          "<dt class='muted'>" + UI.t("cmp.k.status") + "</dt><dd style='margin:0'>" + UI.statusBadge(rec) + "</dd>" +
+          "<dt class='muted'>" + UI.t("cmp.k.updated") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(Fmt.updated(rec.last_checked_at)) + "</dd>" +
+        "</dl>" + UI.staleNote(rec.last_checked_at) +
+        UI.feedbackBtn(rec.hospital_id, rec.service_id) + "</div>";
+    };
+    body.innerHTML =
+      (canRank ? '<div class="notice mb-0">' + UI.t("cmp.notice.ranked") + "</div>"
+        : '<div class="notice warn">' + UI.t("cmp.notice.warn") + "</div>") +
+      '<div class="stack mt-3">' + rows.map(card).join("") + "</div>" +
+      '<p class="small muted mt-3">' + UI.t("cmp.disclaimer") + "</p>" +
+      '<div class="row gap-8 wrap"><a class="btn sm secondary" href="calculator.html">' + UI.t("home.cta.calc") + '</a><button class="btn sm ghost" type="button" data-close>' + UI.t("more.close") + "</button></div>";
+    UI.bindFeedback(body);
+    document.getElementById("cmp-modal").classList.add("open");
+  }
+
+  const modal = document.getElementById("cmp-modal");
+  modal.addEventListener("click", (e) => { if (e.target === modal || e.target.closest("[data-close]")) modal.classList.remove("open"); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") modal.classList.remove("open"); });
+
+  if (currentService) {
+    document.querySelectorAll("#service-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.slug === currentService.slug)));
+  }
+  renderServiceHead(); renderResults();
+})();
+</script>
+</body>
+</html>

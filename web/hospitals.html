@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>হাসপাতালসমূহ | DoctorBill</title>
+<meta name="description" content="শহর ও এলাকা অনুযায়ী হাসপাতাল খুঁজুন, তালিকাভুক্ত সেবার মূল্য দেখুন এবং বিস্তারিত জানুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospitals.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="হাসপাতালসমূহ | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="শহর ও এলাকা অনুযায়ী হাসপাতাল খুঁজুন ও মানচিত্রে দেখুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospitals.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="page.hospitals.h1">হাসপাতালসমূহ</h1>
+      <p class="section-sub" data-i18n="page.hospitals.sub">শহর বা এলাকা দিয়ে ফিল্টার করুন। মানচিত্র ও তালিকা দুভাবেই দেখুন।</p>
+      <div class="card tight">
+        <div class="field-row two">
+          <div class="field mb-0"><label for="f-city" data-i18n="hospitals.city">শহর</label><select class="select" id="f-city"></select></div>
+          <div class="field mb-0"><label for="f-area" data-i18n="hospitals.area">এলাকা</label><select class="select" id="f-area"><option value="">সব এলাকা</option></select></div>
+        </div>
+        <div class="row gap-8 items-center wrap mt-2">
+          <button class="btn sm secondary" type="button" id="near-me" aria-pressed="false" data-i18n="hospitals.near">📍 আমার কাছাকাছি</button>
+          <button class="btn sm ghost" type="button" id="fav-only" aria-pressed="false" data-i18n="hospitals.favonly">★ শুধু প্রিয়</button>
+          <span class="small muted" id="near-status" hidden></span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div id="map-holder" class="mb-0"></div>
+      <div class="grid cols-2 mt-3" id="hosp-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/scenarios.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("hospitals");
+  const T = (k) => UI.t(k);
+  const fCity = document.getElementById("f-city"), fArea = document.getElementById("f-area");
+  fCity.innerHTML = '<option value="">' + T("hospitals.allcity") + "</option>" + UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(c) + "</option>").join("");
+  fCity.value = UI.getCity();
+
+  function fillAreas() {
+    const areas = [...new Set(DB.hospitals.filter((h) => !fCity.value || h.city === fCity.value).map((h) => h.area))];
+    fArea.innerHTML = '<option value="">' + T("hospitals.allarea") + "</option>" + areas.map((a) => '<option value="' + Fmt.escapeHtml(a) + '">' + Fmt.escapeHtml(a) + "</option>").join("");
+  }
+
+  let userPos = null, nearMode = false, favOnly = false;
+  const nearBtn = document.getElementById("near-me");
+  const favBtn = document.getElementById("fav-only");
+  const nearStatus = document.getElementById("near-status");
+
+  function render() {
+    let list, pins, mapOpts = { height: 300 };
+    if (nearMode && userPos) {
+      list = UI.withDistance(DB.hospitals.concat(DB.directory), userPos);
+    } else {
+      list = DB.hospitals.filter((h) => (!fCity.value || h.city === fCity.value) && (!fArea.value || h.area === fArea.value));
+      // When showing favorites, also include starred directory (search-hint) hospitals.
+      if (favOnly) {
+        const favSet = {}; UI.getFavs().forEach((s) => { favSet[s] = true; });
+        list = list.concat(DB.directory.filter((d) => favSet[d.slug] && (!fCity.value || d.city === fCity.value)));
+      }
+    }
+    if (favOnly) list = list.filter((h) => UI.isFav(h.slug));
+    if (nearMode && userPos) list = list.slice(0, 24);
+    pins = (nearMode && userPos) ? list : list.concat(UI.directoryForCity(fCity.value));
+    mapOpts.user = (nearMode && userPos) ? userPos : undefined;
+    const emptyMsg = favOnly ? T("hospitals.empty.fav") : T("hospitals.empty.none");
+    document.getElementById("hosp-list").innerHTML = list.length
+      ? list.map((h) => (h.is_directory ? UI.nearCard(h) : UI.hospitalCard(h))).join("")
+      : '<div class="empty">' + emptyMsg + "</div>";
+    document.getElementById("map-holder").innerHTML = pins.length ? UI.miniMap(pins, mapOpts) : "";
+  }
+
+  favBtn.addEventListener("click", () => {
+    favOnly = !favOnly;
+    favBtn.setAttribute("aria-pressed", favOnly ? "true" : "false");
+    favBtn.removeAttribute("data-i18n");
+    favBtn.textContent = favOnly ? T("hospitals.showall") : T("hospitals.favonly");
+    render();
+  });
+  document.addEventListener("db:favchange", () => { if (favOnly) render(); });
+
+  nearBtn.addEventListener("click", () => {
+    if (nearMode) {
+      nearMode = false; userPos = null;
+      nearBtn.setAttribute("aria-pressed", "false");
+      nearBtn.textContent = T("hospitals.near");
+      nearStatus.hidden = true;
+      render();
+      return;
+    }
+    nearBtn.disabled = true; nearBtn.textContent = T("near.searching");
+    UI.requestLocation((pos) => {
+      userPos = pos; nearMode = true;
+      nearBtn.disabled = false; nearBtn.setAttribute("aria-pressed", "true");
+      nearBtn.textContent = T("near.on");
+      nearStatus.hidden = false;
+      nearStatus.textContent = T("hospitals.near.status");
+      render();
+    }, () => {
+      nearBtn.disabled = false; nearBtn.textContent = T("hospitals.near");
+      UI.toast("অবস্থান অনুমতি পাওয়া যায়নি — শহর বেছে দেখুন।");
+    });
+  });
+
+  fCity.addEventListener("change", () => { fillAreas(); render(); });
+  fArea.addEventListener("change", render);
+  fillAreas(); render();
+})();
+</script>
+</body>
+</html>
