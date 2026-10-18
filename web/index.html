@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="home.doc_title">হাসপাতালের খরচ জানুন ও তুলনা করুন | DoctorBill বাংলাদেশ</title>
+<meta name="description" content="বাংলাদেশের হাসপাতালের টেস্ট, চিকিৎসা ও ডায়াগনস্টিক সেবার সম্ভাব্য খরচ খুঁজুন এবং বিভিন্ন হাসপাতালের মূল্য তুলনা করুন। তালিকাভুক্ত মূল্যভিত্তিক আনুমানিক হিসাব।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="হাসপাতালের খরচ জানুন ও তুলনা করুন | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="বাংলাদেশের হাসপাতালের টেস্ট, চিকিৎসা ও ডায়াগনস্টিক সেবার সম্ভাব্য খরচ খুঁজুন এবং মূল্য তুলনা করুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="হাসপাতালের খরচ জানুন ও তুলনা করুন | DoctorBill বাংলাদেশ">
+<meta name="twitter:description" content="বাংলাদেশের হাসপাতালের সেবার সম্ভাব্য খরচ খুঁজুন এবং মূল্য তুলনা করুন।">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "DoctorBill",
+      "url": "https://doctorbill-bd-6ikpiarwyxl.qoder.website/",
+      "logo": "https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/logo.svg",
+      "description": "বাংলাদেশের হাসপাতালের চিকিৎসা সেবার মূল্য তুলনা প্ল্যাটফর্ম।"
+    },
+    {
+      "@type": "WebSite",
+      "name": "DoctorBill",
+      "url": "https://doctorbill-bd-6ikpiarwyxl.qoder.website/",
+      "inLanguage": "bn",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://doctorbill-bd-6ikpiarwyxl.qoder.website/compare.html?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="common.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <!-- Hero -->
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <div class="hero">
+        <h1 data-i18n="page.home.h1">হাসপাতালের খরচ জানুন, বুঝে সিদ্ধান্ত নিন</h1>
+        <p data-i18n="home.hero.sub">আপনার প্রয়োজনীয় চিকিৎসা ও ডায়াগনস্টিক সেবার সম্ভাব্য খরচ খুঁজুন এবং বিভিন্ন হাসপাতালের মূল্য তুলনা করুন।</p>
+        <div id="hero-search"></div>
+        <div class="hero-chips" id="hero-chips"></div>
+        <div class="hero-cta">
+          <a class="btn secondary" href="compare.html" data-i18n="home.cta.compare">হাসপাতাল তুলনা করুন</a>
+          <a class="btn secondary" href="calculator.html" data-i18n="home.cta.calc">খরচ হিসাব করুন</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular services -->
+  <section class="section" id="services">
+    <div class="container">
+      <h2 data-i18n="home.popular.h2">জনপ্রিয় সেবা</h2>
+      <p class="section-sub" data-i18n="home.popular.sub">সবচেয়ে বেশি খোঁজা হয় এমন টেস্ট ও চিকিৎসা। মূল্য ব্যবহারকারীদের আসল বিল থেকে যুক্ত হয়।</p>
+      <div class="grid cols-3" id="popular-grid"></div>
+      <div class="center mt-3"><a class="btn secondary" href="compare.html" data-i18n="home.popular.all">সব সেবা দেখুন</a></div>
+    </div>
+  </section>
+
+  <!-- Hospitals near you -->
+  <section class="section" id="nearby">
+    <div class="container">
+      <div class="row between items-center wrap gap-8">
+        <div>
+          <h2 class="mb-0" data-i18n="home.nearby.h2">আপনার কাছের হাসপাতাল</h2>
+          <p class="section-sub mb-0" data-i18n="home.nearby.sub">এলাকা বেছে নিন বা মানচিত্রে দেখুন।</p>
+        </div>
+        <label class="row gap-8 items-center">
+          <span class="small muted" data-i18n="home.nearby.citylabel">এলাকা/শহর:</span>
+          <select class="select" id="city-select" style="min-height:42px;width:auto" aria-label="শহর নির্বাচন"></select>
+        </label>
+        <button class="btn sm secondary" type="button" id="near-me" aria-pressed="false" data-i18n="hospitals.near">📍 আমার কাছাকাছি</button>
+      </div>
+      <p class="small muted mt-2" id="near-status" hidden></p>
+      <div class="grid mt-3" id="nearby-grid" style="grid-template-columns:1fr"></div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="how">
+    <div class="container">
+      <h2 data-i18n="home.how.h2">কীভাবে কাজ করে</h2>
+      <div class="card">
+        <div class="steps">
+          <div class="step"><div class="num">১</div><div><h3 style="font-size:18px" data-i18n="home.how.s1.t">সেবা খুঁজুন</h3><p class="muted mb-0" data-i18n="home.how.s1.d">টেস্ট, চিকিৎসা বা হাসপাতালের নাম লিখে সার্চ করুন।</p></div></div>
+          <div class="step"><div class="num">২</div><div><h3 style="font-size:18px" data-i18n="home.how.s2.t">হাসপাতালের খরচ তুলনা করুন</h3><p class="muted mb-0" data-i18n="home.how.s2.d">একই সেবার তালিকাভুক্ত মূল্য পাশাপাশি দেখুন, সাথে কী কী অন্তর্ভুক্ত।</p></div></div>
+          <div class="step"><div class="num">৩</div><div><h3 style="font-size:18px" data-i18n="home.how.s3.t">তথ্য যাচাই করে সিদ্ধান্ত নিন</h3><p class="muted mb-0" data-i18n="home.how.s3.d">মূল্যের উৎস, আপডেটের তারিখ ও যাচাইয়ের অবস্থা দেখে সিদ্ধান্ত নিন।</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust & transparency -->
+  <section class="section" id="trust">
+    <div class="container">
+      <h2 data-i18n="home.trust.h2">স্বচ্ছতা ও বিশ্বাস</h2>
+      <p class="section-sub" data-i18n="home.trust.sub">মূল্য কোথা থেকে আসে এবং কীভাবে যাচাই হয়, তা আমরা স্পষ্টভাবে জানাই।</p>
+      <div class="grid cols-2">
+        <div class="card tight"><h3 style="font-size:17px" data-i18n="home.trust.c1.t">মূল্যের উৎস</h3><p class="muted small mb-0" data-i18n="home.trust.c1.d">মূল্য আসে হাসপাতাল-প্রদত্ত তথ্য, ব্যবহারকারীর জমা দেওয়া বিল ও প্রকাশ্য তালিকা থেকে। প্রতিটি মূল্যে তার উৎস ও অবস্থা দেখানো হয়।</p></div>
+        <div class="card tight"><h3 style="font-size:17px" data-i18n="home.trust.c2.t">বিল জমা ও যাচাই</h3><p class="muted small mb-0" data-i18n="home.trust.c2.d">ব্যবহারকারীরা বিল জমা দিতে পারেন। জমা দেওয়া মানেই মূল্য "যাচাইকৃত" নয় — নির্ধারিত পর্যালোচনা প্রক্রিয়া শেষ হলে তবেই যাচাইকৃত হিসেবে চিহ্নিত হয়।</p></div>
+        <div class="card tight"><h3 style="font-size:17px" data-i18n="home.trust.c3.t">মূল্য কেন ভিন্ন হয়</h3><p class="muted small mb-0" data-i18n="home.trust.c3.d">রোগীর অবস্থা, চিকিৎসক, প্যাকেজ, কেবিন ও অতিরিক্ত সেবার কারণে একই সেবার খরচ হাসপাতালভেদে ভিন্ন হতে পারে।</p></div>
+        <div class="card tight" id="report"><h3 style="font-size:17px" data-i18n="home.trust.c4.t">ভুল তথ্য জানান</h3><p class="muted small mb-0" data-i18n="home.trust.c4.d">কোনো মূল্য ভুল বা পুরনো মনে হলে হাসপাতাল পৃষ্ঠা থেকে "ভুল মূল্য জানান" ব্যবহার করুন।</p></div>
+      </div>
+      <div class="notice mt-3" id="disclaimer"><span data-i18n="home.trust.disclaimer">মূল্য দাবিত্যাগ: এখানে দেখানো মূল্য তালিকাভুক্ত তথ্যভিত্তিক আনুমানিক। চূড়ান্ত বিলে পরামর্শ ফি, ট্যাক্স, রেজিস্ট্রেশন, consumables, কেবিন ও অন্যান্য খরচ যুক্ত হতে পারে। এটি চিকিৎসা পরামর্শ নয়।</span></div>
+    </div>
+  </section>
+
+  <!-- footer's #disclaimer anchor resolves to the notice above; privacy/terms/contact now have dedicated pages -->
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("home");
+
+  // Hero search
+  document.getElementById("hero-search").appendChild(UI.searchBox());
+  const examples = ["CBC Test", "MRI Brain", "CT Scan", "Doctor Consultation", "USG", "Echocardiogram"];
+  document.getElementById("hero-chips").innerHTML = examples.map((e) => {
+    const svc = DB.services.find((s) => s.name_en.toLowerCase() === e.toLowerCase() || e.toLowerCase().includes(s.name_en.toLowerCase().split(" ")[0]));
+    return '<button class="chip" type="button" data-slug="' + (svc ? svc.slug : "") + '">' + Fmt.escapeHtml(e) + "</button>";
+  }).join("");
+  document.getElementById("hero-chips").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-slug]");
+    if (b && b.dataset.slug) location.href = "compare.html?service=" + encodeURIComponent(b.dataset.slug);
+    else if (b) location.href = "compare.html";
+  });
+
+  // Popular services
+  const pop = DB.popularServices(6);
+  document.getElementById("popular-grid").innerHTML = pop.map(UI.serviceCard).join("");
+
+  // City select
+  const sel = document.getElementById("city-select");
+  sel.innerHTML = UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(UI.cityName(c)) + "</option>").join("");
+  sel.value = UI.getCity();
+
+  let userPos = null, nearMode = false;
+  const nearBtn = document.getElementById("near-me");
+  const nearStatus = document.getElementById("near-status");
+
+  function renderNearby() {
+    const grid = document.getElementById("nearby-grid");
+    const isDesktop = window.matchMedia("(min-width: 860px)").matches;
+    let list, pins, mapOpts = { height: isDesktop ? 420 : 240 };
+    if (nearMode && userPos) {
+      list = UI.withDistance(DB.hospitals.concat(DB.directory), userPos).slice(0, 12);
+      pins = list; mapOpts.user = userPos;
+    } else {
+      const city = sel.value;
+      UI.setCity(city);
+      list = DB.hospitals.filter((hp) => hp.city === city);
+      pins = list.concat(UI.directoryForCity(city));
+    }
+    const mapHtml = UI.miniMap(pins, mapOpts);
+    const listHtml = nearMode && userPos
+      ? '<div class="stack" style="' + (isDesktop ? "max-height:420px;overflow:auto" : "") + '">' +
+        list.map((hp) => UI.nearCard(hp)).join("") + "</div>"
+      : (list.length
+        ? '<div class="stack" style="' + (isDesktop ? "max-height:420px;overflow:auto" : "") + '">' +
+          list.map((hp) => UI.hospitalCard(hp)).join("") + "</div>"
+        : '<div class="empty">' + UI.t("home.nearby.empty") + "</div>");
+    grid.style.gridTemplateColumns = isDesktop ? "1.1fr 1fr" : "1fr";
+    grid.innerHTML = isDesktop
+      ? '<div>' + mapHtml + "</div><div>" + listHtml + "</div>"
+      : listHtml + '<div class="mt-3">' + mapHtml + "</div>";
+  }
+
+  nearBtn.addEventListener("click", () => {
+    if (nearMode) {
+      nearMode = false; userPos = null;
+      nearBtn.setAttribute("aria-pressed", "false");
+      nearBtn.textContent = UI.t("hospitals.near");
+      nearStatus.hidden = true;
+      renderNearby();
+      return;
+    }
+    nearBtn.disabled = true; nearBtn.textContent = UI.t("near.searching");
+    UI.requestLocation((pos) => {
+      userPos = pos; nearMode = true;
+      nearBtn.disabled = false; nearBtn.setAttribute("aria-pressed", "true");
+      nearBtn.textContent = UI.t("near.on");
+      nearStatus.hidden = false;
+      nearStatus.textContent = UI.t("home.nearby.status");
+      renderNearby();
+    }, () => {
+      nearBtn.disabled = false; nearBtn.textContent = UI.t("hospitals.near");
+      UI.toast(UI.t("near.denied"));
+    });
+  });
+
+  sel.addEventListener("change", () => { if (nearMode) { nearMode = false; nearBtn.setAttribute("aria-pressed", "false"); nearBtn.textContent = UI.t("hospitals.near"); nearStatus.hidden = true; } renderNearby(); });
+  window.addEventListener("resize", renderNearby);
+  window.addEventListener("db:realdata", function () { renderNearby(); });
+  renderNearby();
+})();
+</script>
+</body>
+</html>

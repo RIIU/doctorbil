@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="hospitals.doc_title">হাসপাতালসমূহ | DoctorBill</title>
+<meta name="description" content="শহর ও এলাকা অনুযায়ী হাসপাতাল খুঁজুন, তালিকাভুক্ত সেবার মূল্য দেখুন এবং বিস্তারিত জানুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospitals.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="হাসপাতালসমূহ | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="শহর ও এলাকা অনুযায়ী হাসপাতাল খুঁজুন ও মানচিত্রে দেখুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/hospitals.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="hospitals.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="page.hospitals.h1">হাসপাতালসমূহ</h1>
+      <p class="section-sub" data-i18n="page.hospitals.sub">শহর বা এলাকা দিয়ে ফিল্টার করুন। মানচিত্র ও তালিকা দুভাবেই দেখুন।</p>
+      <div class="card tight">
+        <div class="field-row two">
+          <div class="field mb-0"><label for="f-city" data-i18n="hospitals.city">শহর</label><select class="select" id="f-city"></select></div>
+          <div class="field mb-0"><label for="f-area" data-i18n="hospitals.area">এলাকা</label><select class="select" id="f-area"><option value="">সব এলাকা</option></select></div>
+        </div>
+        <div class="row gap-8 items-center wrap mt-2">
+          <button class="btn sm secondary" type="button" id="near-me" aria-pressed="false" data-i18n="hospitals.near">📍 আমার কাছাকাছি</button>
+          <button class="btn sm ghost" type="button" id="fav-only" aria-pressed="false" data-i18n="hospitals.favonly">★ শুধু প্রিয়</button>
+          <span class="small muted" id="near-status" hidden></span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div id="map-holder" class="mb-0"></div>
+      <div class="grid cols-2 mt-3" id="hosp-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("hospitals");
+  const T = (k) => UI.t(k);
+  const fCity = document.getElementById("f-city"), fArea = document.getElementById("f-area");
+  fCity.innerHTML = '<option value="">' + T("hospitals.allcity") + "</option>" + UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(UI.cityName(c)) + "</option>").join("");
+  fCity.value = UI.getCity();
+
+  function fillAreas() {
+    const areas = [...new Set(DB.hospitals.filter((h) => !fCity.value || h.city === fCity.value).map((h) => h.area))];
+    fArea.innerHTML = '<option value="">' + T("hospitals.allarea") + "</option>" + areas.map((a) => '<option value="' + Fmt.escapeHtml(a) + '">' + Fmt.escapeHtml(a) + "</option>").join("");
+  }
+
+  let userPos = null, nearMode = false, favOnly = false;
+  const nearBtn = document.getElementById("near-me");
+  const favBtn = document.getElementById("fav-only");
+  const nearStatus = document.getElementById("near-status");
+
+  function render(withMap) {
+    let list, pins, mapOpts = { height: 300 };
+    if (nearMode && userPos) {
+      list = UI.withDistance(DB.hospitals.concat(DB.directory), userPos);
+    } else {
+      let list0 = DB.hospitals.filter((h) => !h.is_rate_card && (!fCity.value || h.city === fCity.value) && (!fArea.value || h.area === fArea.value));
+      list = list0;
+      // When showing favorites, also include starred directory (search-hint) hospitals.
+      if (favOnly) {
+        const favSet = {}; UI.getFavs().forEach((s) => { favSet[s] = true; });
+        list = list.concat(DB.directory.filter((d) => favSet[d.slug] && (!fCity.value || d.city === fCity.value)));
+      }
+    }
+    if (favOnly) list = list.filter((h) => UI.isFav(h.slug));
+    if (nearMode && userPos) list = list.slice(0, 24);
+    pins = (nearMode && userPos) ? list : list.concat(UI.directoryForCity(fCity.value));
+    mapOpts.user = (nearMode && userPos) ? userPos : undefined;
+    mapOpts.live = true;
+    const emptyMsg = favOnly ? T("hospitals.empty.fav") : T("hospitals.empty.none");
+    document.getElementById("hosp-list").innerHTML = list.length
+      ? list.map((h) => (h.is_directory ? UI.nearCard(h) : UI.hospitalCard(h))).join("")
+      : '<div class="empty">' + emptyMsg + "</div>";
+    // Real-time: position updates re-render ONLY the list; liveMapUpdate() moves
+    // the map marker in-place, so zoom/pan ম্যাপের অবস্থানে থাকে।
+    if (withMap !== false || !UI.liveMapUpdate(userPos || {})) {
+      document.getElementById("map-holder").innerHTML = pins.length ? UI.miniMap(pins, mapOpts) : "";
+    }
+  }
+
+  favBtn.addEventListener("click", () => {
+    favOnly = !favOnly;
+    favBtn.setAttribute("aria-pressed", favOnly ? "true" : "false");
+    favBtn.removeAttribute("data-i18n");
+    favBtn.textContent = favOnly ? T("hospitals.showall") : T("hospitals.favonly");
+    render();
+  });
+  document.addEventListener("db:favchange", () => { if (favOnly) render(); });
+
+  let watchId = null;
+
+  function updLiveChip(pos) {
+    if (nearStatus.hidden) return;
+    let txt = T("near.live.status");
+    if (pos && typeof pos.accuracy === "number" && pos.accuracy > 0) {
+      const m = Math.round(pos.accuracy / 5) * 5;
+      txt += " · ±" + (UI.isEn() ? m : Fmt.bn(m)) + " " + T("near.accunit");
+    }
+    nearStatus.textContent = txt;
+  }
+
+  /* --- Real road distance & time (OSRM via our server proxy) --- */
+  let lastRoadQuery = { lat: null, lng: null, t: 0 };
+
+  function rememberRoad(slug, road) {
+    DB.hospitals.concat(DB.directory).forEach((x) => { if (x.slug === slug) x._road = road; });
+  }
+
+  function fetchRoadDistances(force) {
+    if (!nearMode || !userPos) return;
+    const now = Date.now();
+    const moved = Math.abs(userPos.latitude - lastRoadQuery.lat) + Math.abs(userPos.longitude - lastRoadQuery.lng);
+    if (!force && lastRoadQuery.lat !== null && moved < 0.003 && now - lastRoadQuery.t < 20000) return;
+    lastRoadQuery = { lat: userPos.latitude, lng: userPos.longitude, t: now };
+    const near = UI.withDistance(DB.hospitals.concat(DB.directory), userPos).slice(0, 24);
+    const need = near.filter((x) => !(x._road && typeof x._road.km === "number"));
+    if (!need.length) return;
+    const src = userPos.latitude.toFixed(5) + "," + userPos.longitude.toFixed(5);
+    const dests = need.map((x) => x.latitude.toFixed(5) + "," + x.longitude.toFixed(5)).join("|");
+    fetch("/api/geo/routes?src=" + encodeURIComponent(src) + "&dests=" + encodeURIComponent(dests))
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.ok || !Array.isArray(j.results)) return;
+        need.forEach((x, i) => {
+          const r = j.results[i] || {};
+          if (r.km > 0) rememberRoad(x.slug, { km: r.km, min: r.min });
+        });
+        render(false); // লিস্ট আপডেট হবে, ম্যাপ অপরিবর্তিত
+      })
+      .catch(() => { /* OSRM না পাওলে সরলরেখার দূরত্বই থাকবে */ });
+  }
+
+  function stopNear() {
+    if (watchId != null) { UI.stopTracking(watchId); watchId = null; }
+    nearMode = false; userPos = null;
+    nearBtn.setAttribute("aria-pressed", "false");
+    nearBtn.textContent = T("hospitals.near");
+    nearStatus.hidden = true;
+    render();
+  }
+
+  nearBtn.addEventListener("click", () => {
+    if (nearMode) { stopNear(); return; }
+    nearBtn.disabled = true; nearBtn.textContent = T("near.searching");
+    // লাইভ ট্র্যাকিং: অবস্থান বদলালেই তালিকা/দূরত্ব/ম্যাপ আপডেট হয় (watchPosition)।
+    watchId = UI.startTracking((pos) => {
+      userPos = pos;
+      if (!nearMode) {
+        nearMode = true;
+        nearBtn.disabled = false; nearBtn.setAttribute("aria-pressed", "true");
+        nearBtn.textContent = T("near.live");
+        nearStatus.hidden = false;
+        updLiveChip(pos);
+        render();          // প্রথম অবস্থান: ম্যাপসহ পূর্ণ রেন্ডার
+        fetchRoadDistances(true);   // ইন্টারনেট থেকে আসল রাস্তার দূরত্ব + সময়
+      } else {
+        updLiveChip(pos);
+        render(false);     // এরপর শুধু লিস্ট + ম্যাপ মার্কার in-place
+        fetchRoadDistances();       // যথেষ্ট সরলে নতুন-road খোঁজা (ভেতরে ডিবাউন্সড)
+      }
+    }, () => {
+      nearBtn.disabled = false; nearBtn.textContent = T("hospitals.near");
+      UI.toast("অবস্থান অনুমতি পাওয়া যায়নি — শহর বেছে দেখুন।");
+    }, { highAccuracy: true });
+  });
+
+  fCity.addEventListener("change", () => { fillAreas(); render(); });
+  fArea.addEventListener("change", render);
+  window.addEventListener("db:realdata", function () { fillAreas(); render(false); });
+  fillAreas(); render();
+})();
+</script>
+</body>
+</html>

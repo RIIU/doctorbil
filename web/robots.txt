@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+# admin.html is protected by HTTP Basic Auth (401) and carries a noindex meta;
+# it is intentionally NOT disallowed here so search engines honour the noindex.
+
+Sitemap: https://doctorbill-bd-6ikpiarwyxl.qoder.website/sitemap.xml

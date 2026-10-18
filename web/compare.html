@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="cmp.doc_title">মূল্য তুলনা করুন | DoctorBill</title>
+<meta name="description" content="একই চিকিৎসা সেবার মূল্য বিভিন্ন হাসপাতালে তুলনা করুন। মূল্য, উৎস, যাচাইয়ের অবস্থা ও কী কী অন্তর্ভুক্ত তা পাশাপাশি দেখুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/compare.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="মূল্য তুলনা | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="একই চিকিৎসা সেবার মূল্য বিভিন্ন হাসপাতালে তুলনা করুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/compare.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="cmp.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="cmp.h1">মূল্য তুলনা</h1>
+      <p class="section-sub" data-i18n="cmp.sub">একটি সেবা বেছে নিন — বিভিন্ন হাসপাতালের তালিকাভুক্ত মূল্য পাশাপাশি দেখুন।</p>
+      <div id="cmp-search"></div>
+      <div class="notice warn mt-3" id="q-notice" hidden></div>
+      <div class="chips mt-3" id="service-chips"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <!-- Selected service summary -->
+      <div class="card" id="service-head" style="display:none"></div>
+
+      <div class="grid mt-3" id="layout" style="grid-template-columns:1fr">
+        <!-- Filters -->
+        <aside class="card" id="filters" aria-label="ফিল্টার">
+          <div class="row between items-center"><h3 style="font-size:17px;margin:0" data-i18n="cmp.filters">ফিল্টার</h3><button class="btn ghost sm" type="button" id="reset-filters" data-i18n="cmp.reset">রিসেট</button></div>
+          <hr class="divider">
+          <div class="field"><label for="f-city" data-i18n="cmp.city">শহর</label><select class="select" id="f-city"></select></div>
+          <div class="field"><label for="f-type" data-i18n="cmp.hos_type">হাসপাতালের ধরন</label><select class="select" id="f-type"></select></div>
+          <div class="field"><label for="f-status" data-i18n="cmp.price_status">মূল্যের অবস্থা</label><select class="select" id="f-status">
+            <option value="" data-i18n="cmp.opt_all">সব</option>
+            <option value="hospital_provided" data-i18n="cmp.opt_hospital">হাসপাতাল-প্রদত্ত তথ্য</option>
+            <option value="user_provided" data-i18n="cmp.opt_user">ব্যবহারকারী-প্রদত্ত তথ্য</option>
+            <option value="unverified" data-i18n="cmp.opt_unverified">মূল্য যাচাই করা হয়নি</option>
+          </select></div>
+          <div class="field-row two">
+            <div class="field"><label for="f-min" data-i18n="cmp.min_price">সর্বনিম্ন মূল্য (৳)</label><input class="input" id="f-min" type="number" min="0" inputmode="numeric" placeholder="যেমন ৫০০" data-i18n-ph="cmp.ph_min"></div>
+            <div class="field"><label for="f-max" data-i18n="cmp.max_price">সর্বোচ্চ মূল্য (৳)</label><input class="input" id="f-max" type="number" min="0" inputmode="numeric" placeholder="যেমন ৫০০০" data-i18n-ph="cmp.ph_max"></div>
+          </div>
+          <div class="field"><label for="f-sort" data-i18n="cmp.sort">সাজান</label><select class="select" id="f-sort">
+            <option value="price-asc" data-i18n="cmp.sort_asc">মূল্য: কম থেকে বেশি</option>
+            <option value="price-desc" data-i18n="cmp.sort_desc">মূল্য: বেশি থেকে কম</option>
+            <option value="updated" data-i18n="cmp.sort_updated">সর্বশেষ আপডেট</option>
+          </select></div>
+        </aside>
+
+        <!-- Results -->
+        <div>
+          <div class="row between items-center mb-0" id="result-meta" aria-live="polite"></div>
+          <div class="stack mt-2" id="results"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="compare-bar" id="compare-bar">
+  <div><strong id="cmp-count">০</strong> <span class="muted small" data-i18n="cmp.selected_count">টি হাসপাতাল নির্বাচিত</span></div>
+  <div class="row gap-8">
+    <button class="btn ghost sm" type="button" id="cmp-clear" data-i18n="cmp.clear">মুছুন</button>
+    <button class="btn sm" type="button" id="cmp-show" data-i18n="cmp.show_compare">তুলনা দেখুন</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="cmp-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cmp-modal-title">
+    <div class="modal-head"><h3 id="cmp-modal-title" class="mb-0" data-i18n="cmp.modal_title">মূল্য তুলনা</h3><button class="icon-btn" type="button" aria-label="বন্ধ করুন" data-close>✕</button></div>
+    <div id="cmp-modal-body" class="mt-3"></div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("compare");
+  const params = new URLSearchParams(location.search);
+  let currentService = null;
+  let qNoMatch = null;
+  const selected = new Set();
+
+  // Search box (service/hospital aware)
+  document.getElementById("cmp-search").appendChild(UI.searchBox({
+    onSelect: (value, type) => { if (type === "hospital") location.href = "hospital.html?slug=" + encodeURIComponent(value); else selectServiceBySlug(value); }
+  }));
+  // Support pasted/search links from free-text queries with ?q=…
+  if (params.get("q")) {
+    const q = params.get("q").toLowerCase().trim();
+    const svcTerms = (s) => [s.name_bn, s.name_en, s.slug].concat(s.synonyms).map((x) => String(x).toLowerCase().trim());
+    let found = DB.services.find((s) => svcTerms(s).some((x) => x.includes(q)));
+    if (!found) {
+      found = DB.services.find((s) => q.split(/\s+/).some((tok) => tok && svcTerms(s).some((x) => x.includes(tok))));
+    }
+    if (found) {
+      currentService = found;
+    } else {
+      // Not a service — try hospital names, then redirect to its detail page.
+      const hpTerms = (h) => [h.name_bn, h.name_en, h.area, h.city].map((x) => String(x).toLowerCase().trim());
+      const hp = DB.hospitals.find((h) => hpTerms(h).some((x) => x.includes(q))) ||
+                 (DB.directory || []).find((h) => hpTerms(h).some((x) => x.includes(q)));
+      if (hp) { location.replace("hospital.html?slug=" + encodeURIComponent(hp.slug)); return; }
+      qNoMatch = params.get("q").trim();
+    }
+  }
+  if (params.get("service")) {
+    const s = DB.services.find((x) => x.slug === params.get("service"));
+    if (s) currentService = s;
+  }
+  if (qNoMatch) {
+    const notice = document.getElementById("q-notice");
+    notice.hidden = false;
+    notice.innerHTML = "<strong>\"" + Fmt.escapeHtml(qNoMatch) + "\"</strong> — " + (UI.isEn() ? "No service or hospital found with this name. Use the search below or pick from the service list." : "এই নামে কোনো সেবা/হাসপাতাল পাওয়া যায়নি। নিচের সার্চ ব্যবহার করুন বা সেবার তালিকা থেকে বেছে নিন।");
+  }
+
+  // Service quick-chips
+  document.getElementById("service-chips").innerHTML = DB.services.map((s) =>
+    '<button class="chip" type="button" data-slug="' + s.slug + '" aria-pressed="false">' + Fmt.escapeHtml(UI.isEn() && s.name_en ? s.name_en : s.name_bn) + "</button>").join("");
+  document.getElementById("service-chips").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-slug]"); if (b) selectServiceBySlug(b.dataset.slug);
+  });
+
+  function selectServiceBySlug(slug, silent) {
+    const s = DB.services.find((x) => x.slug === slug);
+    if (!s) return;
+    currentService = s; selected.clear();
+    document.querySelectorAll("#service-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.slug === slug)));
+    renderServiceHead(); renderResults(); if (!silent) UI.toast((UI.isEn() && s.name_en ? s.name_en : s.name_bn) + (UI.isEn() ? " selected" : " নির্বাচিত"));
+  }
+
+  // Filters
+  const fCity = document.getElementById("f-city"), fType = document.getElementById("f-type"),
+    fStatus = document.getElementById("f-status"), fMin = document.getElementById("f-min"),
+    fMax = document.getElementById("f-max"), fSort = document.getElementById("f-sort");
+  fCity.innerHTML = '<option value="">' + (UI.isEn() ? "All cities" : "সব শহর") + '</option>' + DB.cities.map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(UI.cityName(c)) + "</option>").join("");
+  fType.innerHTML = '<option value="">' + (UI.isEn() ? "All types" : "সব ধরন") + '</option>' + DB.hospitalTypes.map((t) => '<option value="' + Fmt.escapeHtml(t) + '">' + Fmt.escapeHtml(UI.typeName(t)) + "</option>").join("");
+  [fCity, fType, fStatus, fSort].forEach((el) => el.addEventListener("change", renderResults));
+  [fMin, fMax].forEach((el) => el.addEventListener("input", renderResults));
+  document.getElementById("reset-filters").addEventListener("click", () => {
+    fCity.value = fType.value = fStatus.value = fSort.value = ""; fMin.value = fMax.value = ""; fSort.value = "price-asc"; renderResults();
+  });
+
+  // Responsive two-column layout
+  function applyLayout() {
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    document.getElementById("layout").style.gridTemplateColumns = wide ? "280px 1fr" : "1fr";
+  }
+  window.addEventListener("resize", applyLayout); applyLayout();
+
+  function renderServiceHead() {
+    const box = document.getElementById("service-head");
+    if (!currentService) { box.style.display = "none"; return; }
+    box.style.display = "block";
+    const cat = DB.categoryById(currentService.category_id);
+    const ps = DB.pricesForService(currentService.id);
+    box.innerHTML =
+      '<div class="row between items-center wrap gap-8">' +
+        "<div><h2 style='font-size:20px;margin:0'>" + Fmt.escapeHtml(UI.isEn() && currentService.name_en ? currentService.name_en : currentService.name_bn) + "</h2>" +
+        '<div class="small muted">' + Fmt.escapeHtml(currentService.name_en) + " · " + Fmt.escapeHtml(cat ? (UI.isEn() && cat.name_en ? cat.name_en : cat.name_bn) : "") + " · " + Fmt.escapeHtml(UI.unitName(currentService.unit || "")) + "</div></div>" +
+        '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+      "</div>" +
+      '<div class="small muted mt-2">' + (UI.isEn() ? ps.length + " hospitals/rate lists have a real price on file." : Fmt.bn(ps.length) + " টি হাসপাতালে/রেট-তালিকায় আসল মূল্য আছে।") + "</div>";
+  }
+
+  function collectRows() {
+    let recs = DB.prices.slice();
+    if (currentService) recs = recs.filter((r) => r.service_id === currentService.id);
+    recs = recs.filter((r) => r.verification_status !== "unavailable");
+    recs = recs.map((r) => ({ rec: r, hosp: DB.hospitalById(r.hospital_id), svc: DB.serviceById(r.service_id) }))
+      .filter((x) => x.hosp && x.svc);
+    if (fCity.value) recs = recs.filter((x) => x.hosp.city === fCity.value);
+    if (fType.value) recs = recs.filter((x) => x.hosp.hospital_type === fType.value);
+    if (fStatus.value) recs = recs.filter((x) => x.rec.verification_status === fStatus.value);
+    const lo = fMin.value ? Number(fMin.value) : null, hi = fMax.value ? Number(fMax.value) : null;
+    const base = (r) => r.rec.price_amount != null ? r.rec.price_amount : (r.rec.price_min != null ? r.rec.price_min : (r.rec.price_max != null ? r.rec.price_max : Infinity));
+    if (lo != null) recs = recs.filter((x) => base(x) >= lo);
+    if (hi != null) recs = recs.filter((x) => base(x) <= hi);
+    const sortKey = fSort.value;
+    recs.sort((a, b) => {
+      if (sortKey === "updated") return String(b.rec.last_checked_at || "").localeCompare(String(a.rec.last_checked_at || ""));
+      const d = base(a) - base(b); return sortKey === "price-desc" ? -d : d;
+    });
+    return recs;
+  }
+
+  function renderResults() {
+    const rows = collectRows();
+    document.getElementById("result-meta").innerHTML =
+      '<p class="small muted mb-0">' + (UI.isEn() ? rows.length + " results" : Fmt.bn(rows.length) + " টি ফলাফল") + (currentService ? " — " + Fmt.escapeHtml(UI.isEn() && currentService.name_en ? currentService.name_en : currentService.name_bn) : "") + "</p>";
+    const box = document.getElementById("results");
+    if (!currentService) {
+      box.innerHTML = '<div class="empty">' + (UI.isEn() ? "Pick a service above or search to see the comparison." : "তুলনা দেখতে উপর থেকে একটি সেবা বেছে নিন বা সার্চ করুন।") + '</div>'; updateCompareBar(); return;
+    }
+    if (!rows.length) {
+      box.innerHTML = '<div class="empty">' + (DB.prices.length
+        ? (UI.isEn() ? "No price found for this filter. Try changing the filters." : "এই ফিল্টারে কোনো মূল্য পাওয়া যায়নি। ফিল্টার পরিবর্তন করে দেখুন।")
+        : (UI.isEn() ? "No real bill has been submitted yet — all prices come from users\u2019 actual bills, never invented ones." : "এখনো কোনো আসল বিল জমা পড়েনি — সব মূল্য ব্যবহারকারীদের আসল বিল থেকে দেখানো হয়, বানানো মূল্য কখনো নয়।")) +
+        ' <div class="mt-2"><a class="btn sm" href="submit-bill.html">' + (UI.isEn() ? "Submit a bill" : "বিল জমা দিন") + '</a></div></div>'; updateCompareBar(); return;
+    }
+    box.innerHTML = rows.map((x, i) => {
+      const key = x.rec.hospital_id + "|" + x.rec.service_id;
+      const checked = selected.has(key) ? "checked" : "";
+      return '<div class="card tight">' +
+        '<div class="row between items-center gap-8">' +
+          "<div class='grow'><h3 style='font-size:17px;margin:0'>" + Fmt.escapeHtml(UI.isEn() && x.hosp.name_en ? x.hosp.name_en : x.hosp.name_bn) + "</h3>" +
+          '<div class="kv small">' + UI.ICONS.pin + "<span>" + Fmt.escapeHtml((x.hosp.area ? x.hosp.area + ", " : "") + (x.hosp.city || "") || (UI.isEn() ? "Location: OpenStreetMap" : "অবস্থান: OpenStreetMap")) + "</span></div></div>" +
+          '<label class="check" style="padding:0"><input type="checkbox" data-key="' + Fmt.escapeHtml(key) + '" ' + checked + ' aria-label="' + (UI.isEn() ? "Select for comparison" : "তুলনার জন্য নির্বাচন") + '"><span class="small muted">' + (UI.isEn() ? "Compare" : "তুলনা") + "</span></label>" +
+        "</div>" +
+        '<div class="row between items-center wrap gap-8 mt-2">' +
+          "<div>" + UI.priceText(x.rec) + '<div class="price-meta">' + Fmt.escapeHtml(x.rec.price_basis || "") + "</div></div>" +
+          "<div>" + UI.statusBadge(x.rec) + "</div>" +
+        "</div>" +
+        '<div class="badge-row">' + UI.sampleBadge() + "</div>" +
+        '<div class="small muted mt-2">' + Fmt.updated(x.rec.last_checked_at, UI.isEn() ? "en" : "bn") + "</div>" +
+        '<div class="row gap-8 mt-2"><a class="btn sm secondary" href="hospital.html?slug=' + encodeURIComponent(x.hosp.slug) + '">' + (UI.isEn() ? "Hospital details" : "হাসপাতালের বিস্তারিত") + "</a></div>" +
+      "</div>";
+    }).join("");
+    box.querySelectorAll("input[type=checkbox][data-key]").forEach((cb) =>
+      cb.addEventListener("change", () => { cb.checked ? selected.add(cb.dataset.key) : selected.delete(cb.dataset.key); updateCompareBar(); }));
+    updateCompareBar();
+  }
+
+  function updateCompareBar() {
+    const bar = document.getElementById("compare-bar");
+    document.getElementById("cmp-count").textContent = UI.isEn() ? String(selected.size) : Fmt.bn(selected.size);
+    bar.classList.toggle("show", selected.size > 0);
+  }
+  document.getElementById("cmp-clear").addEventListener("click", () => { selected.clear(); renderResults(); });
+  document.getElementById("cmp-show").addEventListener("click", showCompare);
+
+  function showCompare() {
+    if (selected.size < 2) { UI.toast(UI.isEn() ? "Select at least 2 hospitals to compare" : "তুলনার জন্য অন্তত ২টি হাসপাতাল নির্বাচন করুন"); return; }
+    const rows = collectRows().filter((x) => selected.has(x.rec.hospital_id + "|" + x.rec.service_id));
+    // Do NOT label cheapest unless consistent basis: check all use same price_basis and are fixed amounts
+    const bases = new Set(rows.map((r) => r.rec.price_basis));
+    const allFixed = rows.every((r) => r.rec.price_amount != null);
+    const canRank = bases.size === 1 && allFixed && rows.length >= 2;
+    let cheapestId = null;
+    if (canRank) cheapestId = rows.reduce((a, b) => (a.rec.price_amount <= b.rec.price_amount ? a : b)).rec.hospital_id;
+
+    const body = document.getElementById("cmp-modal-body");
+    const card = (r) => {
+      const rec = r.rec;
+      return '<div class="card tight">' +
+        '<div class="row between items-center gap-8"><h3 style="font-size:16px;margin:0">' + Fmt.escapeHtml(UI.isEn() && r.hosp.name_en ? r.hosp.name_en : r.hosp.name_bn) + "</h3>" +
+        (cheapestId === rec.hospital_id ? '<span class="badge verified">' + (UI.isEn() ? "Cheapest" : "তুলনায় কম") + "</span>" : "") + "</div>" +
+        "<div class='mt-2'>" + UI.priceText(rec) + "</div>" +
+        '<dl class="small" style="margin:10px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px">' +
+          "<dt class='muted'>" + (UI.isEn() ? "Price basis" : "মূল্য ভিত্তি") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.price_basis || "—") + "</dd>" +
+          "<dt class='muted'>" + (UI.isEn() ? "Inclusions" : "অন্তর্ভুক্ত") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.inclusions || "—") + "</dd>" +
+          "<dt class='muted'>" + (UI.isEn() ? "Extras/Exclusions" : "অতিরিক্ত/বাদ") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(rec.exclusions || "—") + "</dd>" +
+          "<dt class='muted'>" + (UI.isEn() ? "Status" : "অবস্থা") + "</dt><dd style='margin:0'>" + UI.statusBadge(rec) + "</dd>" +
+          "<dt class='muted'>" + (UI.isEn() ? "Updated" : "আপডেট") + "</dt><dd style='margin:0'>" + Fmt.escapeHtml(Fmt.updated(rec.last_checked_at, UI.isEn() ? "en" : "bn")) + "</dd>" +
+        "</dl></div>";
+    };
+    body.innerHTML =
+      (canRank ? '<div class="notice mb-0">' + (UI.isEn() ? "All prices are compared on the same basis, so the lowest price is highlighted." : "মূল্য একই ভিত্তিতে তুলনা করা হয়েছে, তাই কম মূল্য চিহ্নিত করা হয়েছে।") + '</div>'
+        : '<div class="notice warn">' + (UI.isEn() ? "Price bases or ranges differ, so no result is tagged \u201clowest\u201d — read the details below before deciding." : "ভিন্ন মূল্য ভিত্তি বা রেঞ্জ থাকায় \"সবচেয়ে কম\" চিহ্নিত করা হয়নি — নিচের বিস্তারিত দেখে বুঝে সিদ্ধান্ত নিন।") + '</div>') +
+      '<div class="stack mt-3">' + rows.map(card).join("") + "</div>" +
+      '<p class="small muted mt-3">' + (UI.isEn() ? "Consultation fees, taxes, registration fees, consumables, cabin charges and other costs may not be included in this list." : "পরামর্শ ফি, ট্যাক্স, রেজিস্ট্রেশন ফি, consumables, কেবিন চার্জ ও অন্যান্য খরচ এই তালিকায় অন্তর্ভুক্ত নাও থাকতে পারে।") + "</p>" +
+      '<div class="row gap-8 wrap"><a class="btn sm secondary" href="calculator.html">' + (UI.isEn() ? "Estimate costs" : "খরচ হিসাব করুন") + '</a><button class="btn sm ghost" type="button" data-close>' + (UI.isEn() ? "Close" : "বন্ধ করুন") + "</button></div>";
+    UI.openModal(document.getElementById("cmp-modal"));
+  }
+
+  const modal = document.getElementById("cmp-modal");
+  modal.addEventListener("click", (e) => { if (e.target === modal || e.target.closest("[data-close]")) UI.closeModal(modal); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) UI.closeModal(modal); });
+
+  if (currentService) {
+    document.querySelectorAll("#service-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.slug === currentService.slug)));
+  }
+  window.addEventListener("db:realdata", function () { renderServiceHead(); renderResults(); });
+  renderServiceHead(); renderResults();
+})();
+</script>
+</body>
+</html>

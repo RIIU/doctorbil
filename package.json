@@ -1,0 +1,12 @@
+{
+  "name": "doctorbill",
+  "version": "1.0.0",
+  "description": "DoctorBill - হাসপাতালের খরচ জানুন ও তুলনা করুন",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

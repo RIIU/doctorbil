@@ -1,0 +1,14 @@
+# রান-টাইম স্টোর: ব্যবহারকারীর ব্যক্তিগত বিল-ডেটা — রিপোতে যাবে না
+data/bills.json
+data/bills/
+
+# ক্যাশ: পুনরায় তৈরি হয় (OpenStreetMap Overpass প্রক্সি-ক্যাশ, ২৪ঘণ্টা TTL)
+data/osm_cache.json
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS/এডিটর
+Thumbs.db
+.DS_Store

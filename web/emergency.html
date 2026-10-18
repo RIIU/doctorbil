@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="emerg.doc_title">জরুরি তথ্য | DoctorBill</title>
+<meta name="description" content="জরুরি প্রয়োজনে বাংলাদেশের সরকারি জরুরি নম্বর ৯৯৯ এবং এলাকাভিত্তিক হাসপাতালের তথ্য দ্রুত দেখুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/emergency.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="জরুরি তথ্য | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="জরুরি প্রয়োজনে সরকারি জরুরি নম্বর এবং এলাকাভিত্তিক হাসপাতালের তথ্য।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/emergency.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="emerg.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 class="sr-only" data-i18n="emerg.title">জরুরি তথ্য ও জরুরি নম্বর</h1>
+      <div class="call-999" role="region" aria-label="সরকারি জরুরি নম্বর">
+        <div>
+          <div class="small" style="opacity:.9" data-i18n="emerg.call_service">জরুরি সেবা (পুলিশ/অ্যাম্বুলেন্স/ফায়ার)</div>
+          <div class="num" data-i18n="emerg.number">৯৯৯</div>
+          <div class="small" style="opacity:.9" data-i18n="emerg.call_sub">বাংলাদেশের সরকারি জরুরি নম্বর</div>
+        </div>
+        <a class="btn secondary" style="--btn-fg:#d64534;--btn-bg:#fff" href="tel:999" aria-label="৯৯৯ এ কল করুন" data-i18n="emerg.call_now">এখনই কল করুন</a>
+      </div>
+
+      <div class="notice danger mt-3"><strong data-i18n="emerg.warn_strong">গুরুত্বপূর্ণ:</strong> <span data-i18n="emerg.warn_body">এই প্ল্যাটফর্ম জরুরি চিকিৎসা সেবার বিকল্প নয়। জীবনঝুঁকি থাকলে অবিলম্বে ৯৯৯-এ কল করুন বা নিকটস্থ হাসপাতালের জরুরি বিভাগে যান।</span></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:8px">
+    <div class="container">
+      <h2 style="font-size:22px" data-i18n="emerg.by_area">এলাকাভিত্তিক হাসপাতাল</h2>
+      <p class="section-sub" data-i18n="emerg.by_area_sub">শহর/এলাকা বেছে নিন। ঠিকানা ও দিকনির্দেশনা দেখুন। (তালিকা OpenStreetMap থেকে আসল।)</p>
+      <div class="field-row two">
+        <div class="field mb-0"><label for="e-city" data-i18n="emerg.label_city">শহর</label><select class="select" id="e-city"></select></div>
+        <div class="field mb-0"><label for="e-area" data-i18n="emerg.label_area">এলাকা</label><select class="select" id="e-area"><option value="" data-i18n="emerg.all_areas">সব এলাকা</option></select></div>
+      </div>
+      <div class="grid mt-3" id="e-grid" style="grid-template-columns:1fr"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("emergency");
+  const eCity = document.getElementById("e-city"), eArea = document.getElementById("e-area");
+  eCity.innerHTML = '<option value="">' + (UI.isEn() ? "All cities" : "সব শহর") + '</option>' + UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '">' + Fmt.escapeHtml(UI.cityName(c)) + "</option>").join("");
+
+  function fillAreas() {
+    const areas = [...new Set(DB.hospitals.filter((h) => !eCity.value || h.city === eCity.value).map((h) => h.area))];
+    eArea.innerHTML = '<option value="">' + (UI.isEn() ? "All areas" : "সব এলাকা") + '</option>' + areas.map((a) => '<option value="' + Fmt.escapeHtml(a) + '">' + Fmt.escapeHtml(a) + "</option>").join("");
+  }
+
+  function card(hp) {
+    return '<div class="card tight">' +
+      '<div class="row between items-center wrap gap-8">' +
+        "<div class='grow'><h3 style='font-size:17px;margin:0'>" + Fmt.escapeHtml(hp.name_bn) + "</h3>" +
+        '<div class="kv small">' + UI.ICONS.pin + "<span>" + Fmt.escapeHtml(hp.address_bn) + "</span></div></div>" +
+        UI.sampleBadge() +
+      "</div>" +
+      '<div class="badge-row mt-2">' +
+        (hp.emergency_verified
+          ? '<span class="badge verified"><span class="dot"></span>' + (UI.isEn() ? "Emergency dept info verified" : "জরুরি বিভাগ তথ্য যাচাইকৃত") + '</span>'
+          : '<span class="badge unverified"><span class="dot"></span>' + (UI.isEn() ? "Emergency dept info not verified" : "জরুরি বিভাগের তথ্য যাচাই করা হয়নি") + '</span>') +
+      "</div>" +
+      '<div class="small muted mt-2">' + (UI.isEn() ? 'Contact number not yet verified. In an emergency call <strong>999</strong>.' : 'যোগাযোগ নম্বর এখনো যাচাই হয়নি। জরুরি প্রয়োজনে <strong>৯৯৯</strong> এ কল করুন।') + '</div>' +
+      '<div class="row gap-8 wrap mt-2">' +
+        UI.directionsLink(hp) +
+        '<a class="btn sm ghost" href="hospital.html?slug=' + encodeURIComponent(hp.slug) + '">' + (UI.isEn() ? "Details" : "বিস্তারিত") + '</a>' +
+      "</div>" +
+      '<div class="small muted mt-2">' + (UI.isEn() ? "Last verified: not yet verified." : "সর্বশেষ যাচাই: তথ্য এখনো যাচাই করা হয়নি।") + '</div>' +
+    "</div>";
+  }
+
+  function render() {
+    const list = DB.hospitals.filter((h) => !h.is_rate_card && (!eCity.value || h.city === eCity.value) && (!eArea.value || h.area === eArea.value));
+    const pins = list.concat(UI.directoryForCity(eCity.value));
+    const grid = document.getElementById("e-grid");
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    const mapHtml = UI.miniMap(pins, { height: wide ? 380 : 240 });
+    if (!list.length) {
+      grid.style.gridTemplateColumns = "1fr";
+      grid.innerHTML = '<div class="empty">' + (UI.isEn() ? "No listed hospitals found in this area yet. In an emergency call 999." : "এই এলাকায় এখনো তালিকাভুক্ত হাসপাতাল পাওয়া যায়নি। জরুরি প্রয়োজনে ৯৯৯-এ কল করুন।") + '</div><div class="mt-3">' + mapHtml + "</div>";
+      return;
+    }
+    grid.style.gridTemplateColumns = wide ? "1fr 1.1fr" : "1fr";
+    const listHtml = '<div class="stack">' + list.map(card).join("") + "</div>";
+    grid.innerHTML = wide ? "<div>" + listHtml + "</div><div>" + mapHtml + "</div>" : listHtml + '<div class="mt-3">' + mapHtml + "</div>";
+    grid.querySelectorAll("[data-dir]").forEach(() => {});
+  }
+
+  eCity.addEventListener("change", () => { fillAreas(); render(); });
+  eArea.addEventListener("change", render);
+  window.addEventListener("resize", render);
+  window.addEventListener("db:realdata", function () { fillAreas(); render(); });
+  fillAreas(); render();
+
+  // ৯৯৯ call button: mobile dialers open via native tel: link; on devices with
+  // no dialer (most desktops) show the number with a copy fallback instead of
+  // doing nothing.
+  const canDial = ("ontouchstart" in window) || navigator.maxTouchPoints > 0 ||
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const callBtn = document.querySelector('.call-999 a[href="tel:999"]');
+  if (callBtn && !canDial) {
+    callBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const back = document.createElement("div");
+      back.className = "modal-backdrop open";
+      back.innerHTML =
+        '<div class="modal" role="dialog" aria-modal="true" aria-label="' + (UI.isEn() ? "Emergency number" : "জরুরি নম্বর") + '">' +
+          '<div class="modal-head"><h3 class="mb-0">' + (UI.isEn() ? "Emergency number" : "জরুরি নম্বর") + '</h3>' +
+            '<button class="icon-btn" type="button" aria-label="' + (UI.isEn() ? "Close" : "বন্ধ করুন") + '" data-close>✕</button></div>' +
+          '<div class="center mt-3">' +
+            '<div style="font-size:46px;font-weight:800;color:var(--danger);line-height:1">' + (UI.isEn() ? "999" : "৯৯৯") + '</div>' +
+            '<p class="small muted mt-2">' + (UI.isEn() ? 'This device cannot place calls directly. Dial <strong>999</strong> from a mobile, or copy the number.' : 'এই ডিভাইসে সরাসরি কল করার সুবিধা নেই। মোবাইল থেকে <strong>৯৯৯</strong> ডায়াল করুন, অথবা নম্বরটি কপি করুন।') + '</p>' +
+          "</div>" +
+          '<div class="stack mt-3">' +
+            '<a class="btn block" style="--btn-bg:#d64534;--btn-fg:#fff" href="tel:999">📞 ' + (UI.isEn() ? "Try calling anyway" : "তবুও কল করার চেষ্টা করুন") + '</a>' +
+            '<button class="btn secondary block" type="button" id="copy999">' + (UI.isEn() ? "Copy the number (999)" : "নম্বর কপি করুন (999)") + '</button>' +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(back);
+      const close = () => UI.closeModal(back);
+      back.addEventListener("click", (ev) => { if (ev.target === back || ev.target.closest("[data-close]")) close(); });
+      UI.openModal(back);
+      back.querySelector("#copy999").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText("999"); UI.toast(UI.isEn() ? "999 copied" : "৯৯৯ কপি হয়েছে"); }
+        catch (_) { UI.toast(UI.isEn() ? "Dial manually: 999" : "ম্যানুয়ালি ডায়াল করুন: ৯৯৯"); }
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

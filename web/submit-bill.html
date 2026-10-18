@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="bill.doc_title">বিল জমা দিন | DoctorBill</title>
+<meta name="description" content="হাসপাতালের বিল বা রশিদ জমা দিয়ে মূল্য যাচাই ও গবেষণায় সহায়তা করুন। জমাকৃত তথ্য পর্যালোচনার পর প্রকাশ করা হয়।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/submit-bill.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="বিল জমা দিন | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="হাসপাতালের বিল বা রশিদ জমা দিয়ে মূল্য যাচাইয়ে সহায়তা করুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/submit-bill.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="bill.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container" style="max-width:720px">
+      <h1 data-i18n="bill.submit_title">বিল জমা দিন</h1>
+      <p class="section-sub" data-i18n="bill.submit_sub">আপনার হাসপাতালের বিল বা রশিদের তথ্য জমা দিয়ে মূল্য যাচাই ও গবেষণায় সহায়তা করুন।</p>
+
+      <div class="notice warn"><strong data-i18n="bill.privacy_strong">গোপনীয়তা:</strong> <span data-i18n="bill.privacy_body">অপ্রয়োজনীয় ব্যক্তিগত তথ্য আপলোড করবেন না। প্রকাশের আগে রোগীর নাম, ফোন নম্বর, পেশেন্ট আইডি, ঠিকানা ও পেমেন্টের তথ্য মুছে/লুকিয়ে দেওয়া হয়।</span></div>
+
+      <form id="bill-form" class="card mt-3" novalidate>
+        <div class="field">
+          <label for="b-hospital"><span data-i18n="bill.label_hospital">হাসপাতালের নাম</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <select class="select" id="b-hospital" required aria-describedby="e-hospital">
+            <option value="" data-i18n="bill.choose_opt">বেছে নিন…</option>
+          </select>
+          <div class="err" id="e-hospital" data-i18n="bill.err_hospital">হাসপাতাল বেছে নিন।</div>
+        </div>
+
+        <div class="field">
+          <label for="b-service"><span data-i18n="bill.label_service">সেবা বা টেস্টের নাম</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <select class="select" id="b-service" required aria-describedby="e-service">
+            <option value="" data-i18n="bill.choose_opt">বেছে নিন…</option>
+          </select>
+          <div class="err" id="e-service" data-i18n="bill.err_service">সেবা বেছে নিন।</div>
+        </div>
+
+        <div class="field-row two">
+          <div class="field">
+            <label for="b-amount"><span data-i18n="bill.label_amount">বিলের পরিমাণ (৳)</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <input class="input" id="b-amount" type="number" min="1" inputmode="numeric" required placeholder="যেমন ৭০০" aria-describedby="e-amount" data-i18n-ph="bill.ph_amount">
+            <div class="err" id="e-amount" data-i18n="bill.err_amount">সঠিক পরিমাণ লিখুন।</div>
+          </div>
+          <div class="field">
+            <label for="b-date"><span data-i18n="bill.label_date">বিলের তারিখ</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <input class="input" id="b-date" type="date" required aria-describedby="e-date">
+            <div class="err" id="e-date" data-i18n="bill.err_date">তারিখ দিন।</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-details" data-i18n="bill.label_details">অতিরিক্ত বিবরণ (ঐচ্ছিক)</label>
+          <textarea class="textarea" id="b-details" placeholder="প্যাকেজ, কেবিন, কী কী অন্তর্ভুক্ত ছিল ইত্যাদি" data-i18n-ph="bill.ph_details"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="b-file"><span data-i18n="bill.label_file">রশিদ/বিলের ছবি বা PDF</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <input class="input" id="b-file" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" required aria-describedby="file-hint e-file" style="padding:10px">
+          <div class="hint" id="file-hint" data-i18n="bill.file_hint">অনুমোদিত: PNG, JPG, WEBP, PDF · সর্বোচ্চ ৫ এমবি। ফাইলটি গোপন রাখা হয়, পাবলিক লিংকে প্রকাশ হয় না।</div>
+          <div class="err" id="e-file" data-i18n="bill.err_file">গ্রহণযোগ্য ফাইল দিন (PNG/JPG/WEBP/PDF, ≤৫ এমবি)।</div>
+        </div>
+
+        <div class="field">
+          <label for="b-contact" data-i18n="bill.label_contact">যোগাযোগ (কেবল যাচাইয়ের প্রয়োজনে, ঐচ্ছিক)</label>
+          <input class="input" id="b-contact" type="text" placeholder="ফোন বা ইমেইল" autocomplete="off" data-i18n-ph="bill.ph_contact">
+          <div class="hint" data-i18n="bill.hint_contact">প্রকাশ্যে দেখানো হবে না।</div>
+        </div>
+
+        <div class="notice mt-2 small" id="privacy">
+          <strong data-i18n="bill.use_strong">কেন ও কীভাবে ব্যবহার হবে:</strong> <span data-i18n="bill.use_body">মূল্য গবেষণা ও যাচাইয়ের জন্য বিল সংগ্রহ করা হয়। মূল ডকুমেন্ট কেবল অনুমোদিত পর্যালোচকরা দেখতে পারেন। যাচাই শেষে ব্যক্তিগত তথ্য সরিয়ে বেনামি মূল্য তুলনায় ব্যবহার হতে পারে। আপনি যেকোনো সময় সংশোধন বা মুছে ফেলার অনুরোধ করতে পারেন।</span>
+        </div>
+
+        <label class="check mt-3">
+          <input type="checkbox" id="b-consent" required aria-describedby="e-consent">
+          <span><span data-i18n="bill.consent">আমি উপরের শর্তে সম্মত, এবং জমাকৃত তথ্য বেনামি মূল্য তুলনায় ব্যবহার হতে পারে তা বুঝেছি।</span> <span aria-hidden="true" style="color:var(--danger)">*</span></span>
+        </label>
+        <div class="err" id="e-consent" data-i18n="bill.err_consent">জমা দিতে সম্মতি দিন।</div>
+
+        <button class="btn block mt-3" type="submit" id="submit-btn" data-i18n="bill.submit_btn">বিল জমা দিন</button>
+        <p class="small muted center mt-2" data-i18n="bill.review_note">জমা দিলেই মূল্য "যাচাইকৃত" হয় না — নির্ধারিত পর্যালোচনা প্রক্রিয়া শেষ হলে তবেই হয়।</p>
+      </form>
+
+      <div class="card mt-3" id="result" style="display:none" role="status" aria-live="polite"></div>
+
+      <div class="card mt-3">
+        <h3 style="font-size:17px" data-i18n="bill.lookup_title">জমাকৃত বিলের অবস্থা দেখুন</h3>
+        <p class="small muted"><span data-i18n="bill.lookup_hint">জমা দেওয়ার সময় পাওয়া রেফারেন্স আইডি বসিয়ে অবস্থা জানুন — যেমন</span> <code>DB-ABC123-45</code><span data-i18n="bill.lookup_period">।</span></p>
+        <div class="field-row two">
+          <div class="field"><label for="lookup-ref" data-i18n="bill.label_ref">রেফারেন্স আইডি</label>
+            <input class="input" id="lookup-ref" type="text" placeholder="DB-XXXXXX-XX" autocomplete="off">
+          </div>
+          <div class="field"><label>&nbsp;</label>
+            <div><button class="btn" type="button" id="lookup-btn" data-i18n="bill.lookup_btn">অবস্থা দেখুন</button></div>
+          </div>
+        </div>
+        <div id="lookup-out" class="mt-2" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  UI.boot("submit");
+  const MAX = 5 * 1024 * 1024;
+  const OK_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+  // Real hospitals fill this select; refresh when real data lands (db:realdata).
+  const bHospitalSel = document.getElementById("b-hospital");
+  const bServiceSel = document.getElementById("b-service");
+  const bHospitalBase = bHospitalSel.innerHTML;
+  function refillReal() { bHospitalSel.innerHTML = bHospitalBase + DB.hospitals.filter((h) => !h.is_rate_card).map((h) => '<option value="' + h.id + '">' + Fmt.escapeHtml(h.name_bn) + "</option>").join(""); }
+  refillReal();
+  bServiceSel.innerHTML += DB.services.map((s) => '<option value="' + s.id + '">' + Fmt.escapeHtml(s.name_bn) + "</option>").join("");
+  window.addEventListener("db:realdata", refillReal);
+
+  const form = document.getElementById("bill-form");
+  function setErr(id, show) { const e = document.getElementById(id); if (e) e.classList.toggle("show", show); }
+
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const hosp = document.getElementById("b-hospital").value;
+    const svc = document.getElementById("b-service").value;
+    const amount = Number(document.getElementById("b-amount").value);
+    const date = document.getElementById("b-date").value;
+    const details = document.getElementById("b-details").value;
+    const contact = document.getElementById("b-contact").value;
+    const file = document.getElementById("b-file").files[0];
+    const consent = document.getElementById("b-consent").checked;
+
+    let ok = true;
+    setErr("e-hospital", !hosp); if (!hosp) ok = false;
+    setErr("e-service", !svc); if (!svc) ok = false;
+    const badAmt = !(amount > 0); setErr("e-amount", badAmt); if (badAmt) ok = false;
+    setErr("e-date", !date); if (!date) ok = false;
+    const badFile = !file || !OK_TYPES.includes(file.type) || file.size > MAX; setErr("e-file", badFile); if (badFile) ok = false;
+    setErr("e-consent", !consent); if (!consent) ok = false;
+    if (!ok) { UI.toast(UI.isEn() ? "The form has some errors — please fix them and try again." : "ফর্মে কিছু ত্রুটি আছে, ঠিক করে আবার চেষ্টা করুন।"); form.querySelector(".err.show")?.scrollIntoView({ block: "center" }); return; }
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true; btn.textContent = UI.isEn() ? "Submitting…" : "জমা হচ্ছে…";
+    btn.setAttribute("aria-busy", "true");
+
+    const reader = new FileReader();
+    reader.onerror = () => finishFail();
+    reader.onload = () => {
+      const base64 = String(reader.result).split(",")[1] || "";
+      fetch("/api/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hospital_id: hosp, service_id: svc, amount, date, details, contact, consent, file: { type: file.type, data: base64 } })
+      }).then((r) => r.json().then((j) => ({ code: r.status, j })))
+        .then(({ code, j }) => {
+          if (code === 201 && j.ok) return finishSuccess(j.ref);
+          if (code === 429) { return finishFail(UI.isEn() ? "Too many submissions within an hour. Please try again later." : "এক ঘণ্টায় বেশি কিছু জমা দেওয়া হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।"); }
+          if (code === 400 && j.fields) { return finishFail((UI.isEn() ? "The server did not accept some fields: " : "সার্ভার কিছু ঘর মেনে নায়নি: ") + j.fields.join(", ")); }
+          return finishFail();
+        })
+        .catch(() => finishFail());
+    };
+    reader.readAsDataURL(file);
+
+    function finishSuccess(ref) {
+      const res = document.getElementById("result");
+      res.style.display = "block";
+      res.innerHTML =
+        '<div class="row gap-12 items-center"><span class="badge verified" style="font-size:14px">' + (UI.isEn() ? "Submitted" : "জমা হয়েছে") + '</span></div>' +
+        "<h2 style='font-size:20px' class='mt-2'>" + (UI.isEn() ? "Thank you! Your bill has been saved to the server." : "ধন্যবাদ! আপনার বিল সার্ভারে সংরক্ষিত হয়েছে।") + '</h2>' +
+        '<p class="muted small">' + (UI.isEn() ? "Reference ID: <strong>" : "রেফারেন্স আইডি: <strong>") + Fmt.escapeHtml(ref) + "</strong> " + (UI.isEn() ? "Keep this reference number safe — you can use it to check the status." : "এই রেফারেন্স নম্বরটি সংরক্ষণ করুন — এটি দিয়ে অবস্থা জানা যাবে।") + '</p>' +
+        '<div class="stack small mt-2">' +
+          "<div>" + (UI.isEn() ? "Hospital: " : "হাসপাতাল: ") + "<strong>" + Fmt.escapeHtml(DB.hospitalById(hosp).name_bn) + "</strong></div>" +
+          "<div>" + (UI.isEn() ? "Service: " : "সেবা: ") + "<strong>" + Fmt.escapeHtml(DB.serviceById(svc).name_bn) + "</strong></div>" +
+          "<div>" + (UI.isEn() ? "Amount: " : "পরিমাণ: ") + "<strong>" + Fmt.taka(amount) + "</strong></div>" +
+          "<div>" + (UI.isEn() ? "Date: " : "তারিখ: ") + "<strong>" + Fmt.escapeHtml(Fmt.date(date)) + "</strong></div>" +
+        "</div>" +
+        '<div class="notice mt-3 small">' + (UI.isEn()
+          ? 'Current status: <strong>Verification in progress</strong>. An authorized reviewer will examine the bill; after approval the price will count as "user-provided" (never automatically "verified"). Phone/email is used only for verification, not shown publicly.'
+          : 'বর্তমান অবস্থা: <strong>যাচাই চলছে</strong>। অনুমোদিত পর্যালোচক বিলটি পর্যালোচনা করবেন; অনুমোদনের পর মূল্যটি "ব্যবহারকারী-প্রদত্ত" হিসেবে গণ্য হবে (কখনোই স্বয়ংক্রিয় "যাচাইকৃত" নয়)। ফোন/ইমেইল শুধু যাচাইয়ের কাজে, প্রকাশ্যে নয়।') + '</div>' +
+        '<button class="btn secondary mt-3" type="button" id="again">' + (UI.isEn() ? "Submit another bill" : "আরেকটি বিল জমা দিন") + '</button>';
+      res.scrollIntoView({ block: "center" });
+      document.getElementById("again").addEventListener("click", () => { form.reset(); res.style.display = "none"; btn.disabled = false; btn.textContent = UI.isEn() ? "Submit a bill" : "বিল জমা দিন"; window.scrollTo({ top: 0, behavior: "smooth" }); });
+      document.getElementById("lookup-ref").value = ref;
+    }
+
+    function finishFail(msg) {
+      const res = document.getElementById("result");
+      res.style.display = "block";
+      res.innerHTML =
+        '<div class="row gap-12 items-center"><span class="badge unverified" style="font-size:14px">' + (UI.isEn() ? "Not submitted" : "জমা হয়নি") + '</span></div>' +
+        "<h2 style='font-size:20px' class='mt-2'>" + (UI.isEn() ? "The submission did not go through." : "জমা দেওয়া যায়নি।") + '</h2>' +
+        '<div class="notice warn mt-2">' + (msg || (UI.isEn() ? "The server could not be reached. Check your internet connection and try again." : "সার্ভারে পৌঁছানো যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।")) + "</div>" +
+        '<p class="small muted">' + (UI.isEn() ? "Your information has not been lost — the form is still intact; submit it again." : "আপনার তথ্য মোছেনি — ফর্মটি ঠিকই আছে, আবার জমা দিন।") + '</p>' +
+        '<button class="btn secondary mt-3" type="button" id="again">' + (UI.isEn() ? "Try again" : "আবার চেষ্টা করুন") + '</button>';
+      res.scrollIntoView({ block: "center" });
+      document.getElementById("again").addEventListener("click", () => { res.style.display = "none"; btn.disabled = false; btn.textContent = UI.isEn() ? "Submit a bill" : "বিল জমা দিন"; });
+    }
+  });
+
+  // ---- submission status lookup ----
+  document.getElementById("lookup-btn").addEventListener("click", () => {
+    const ref = document.getElementById("lookup-ref").value.trim().toUpperCase();
+    const out = document.getElementById("lookup-out");
+    if (!/^DB-[A-Z0-9-]+$/.test(ref)) { out.innerHTML = '<span class="badge unverified">' + (UI.isEn() ? 'Invalid reference format (example: DB-ABC123-45)' : 'রেফারেন্স ফর্ম্যাট ঠিক নেই (উদাহরণ: DB-ABC123-45)') + '</span>'; return; }
+    out.innerHTML = '<span class="small muted">' + (UI.isEn() ? "Checking…" : "দেখা হচ্ছে…") + '</span>';
+    fetch("/api/bills/status/" + encodeURIComponent(ref))
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          const cls = { queued: "user", more_info: "unverified", approved: "verified", rejected: "unavailable" }[j.status] || "user";
+          out.innerHTML = '<span class="badge ' + cls + '">' + Fmt.escapeHtml(j.label) + "</span>";
+        } else {
+          out.innerHTML = '<span class="badge unavailable">' + (UI.isEn() ? "No submission found for this reference" : "এই রেফারেন্সে কোনো জমা পাওয়া যায়নি") + '</span>';
+        }
+      })
+      .catch(() => { out.innerHTML = '<span class="badge unverified">' + (UI.isEn() ? "The server could not be reached" : "সার্ভারে পৌঁছানো যায়নি") + '</span>'; });
+  });
+})();
+</script>
+</body>
+</html>

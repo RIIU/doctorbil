@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="calc.doc_title">খরচ ক্যালকুলেটর | DoctorBill</title>
+<meta name="description" content="নির্বাচিত সেবার সম্ভাব্য খরচ হিসাব করুন। তালিকাভুক্ত মূল্য, রেঞ্জ ও অতিরিক্ত খরচ যোগ করে আনুমানিক মোট খরচ দেখুন — অন্য হাসপাতালের হিসাবের সাথে তুলনা করুন।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/calculator.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="খরচ ক্যালকুলেটর | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="নির্বাচিত সেবার সম্ভাব্য খরচ হিসাব করুন।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/calculator.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="calc.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container">
+      <h1 data-i18n="calc.h1">খরচ ক্যালকুলেটর</h1>
+      <p class="section-sub" data-i18n="calc.sub">ধাপে ধাপে সেবা বেছে সম্ভাব্য খরচের আনুমানিক হিসাব নিন। মূল্য আসে ব্যবহারকারীদের আসল বিল থেকে।</p>
+
+      <ol class="steps" id="progress" aria-label="হিসাবের ধাপসমূহ"></ol>
+
+      <div class="grid mt-3" id="calc-layout" style="grid-template-columns:1fr">
+        <div class="card" id="calc-panel"></div>
+        <aside class="card" id="summary" aria-live="polite" style="align-self:start"></aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  "use strict";
+  UI.boot(null);
+  const STEPS = UI.isEn() ? ["City", "Hospital", "Services", "Quantity", "Estimate"] : ["শহর", "হাসপাতাল", "সেবা", "পরিমাণ", "হিসাব"];
+  const SAVED_KEY = "db_calc_saved", DRAFT_KEY = "db_calc_draft";
+  let step = 0;
+  const state = { city: UI.getCity(), hospitalId: null, items: {}, extras: { one: 0, cabin: 0, days: 0 } };
+
+  /* ---------- storage helpers ---------- */
+  function dbGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function dbSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+  function dbDel(key) { try { localStorage.removeItem(key); } catch (e) {} }
+  function loadJSON(key, fallback) {
+    try { const v = JSON.parse(dbGet(key) || "null"); return v == null ? fallback : v; } catch (e) { return fallback; }
+  }
+
+  /* ---------- layout ---------- */
+  function applyLayout() {
+    const wide = window.matchMedia("(min-width: 860px)").matches;
+    document.getElementById("calc-layout").style.gridTemplateColumns = wide ? "1.4fr 1fr" : "1fr";
+  }
+  window.addEventListener("resize", applyLayout); applyLayout();
+
+  function renderProgress() {
+    document.getElementById("progress").innerHTML = STEPS.map((s, i) =>
+      '<li class="row gap-8 items-center" style="display:inline-flex;margin-right:14px;color:' + (i <= step ? "var(--brand-700)" : "var(--text-3)") + '"' + (i === step ? ' aria-current="step"' : "") + '>' +
+      '<span style="width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:' +
+      (i <= step ? "var(--brand-600)" : "var(--surface-2)") + ";color:" + (i <= step ? "#fff" : "var(--text-3)") + '">' + (UI.isEn() ? i + 1 : Fmt.bn(i + 1)) + "</span>" +
+      '<span class="small">' + s + "</span></li>").join("");
+  }
+
+  /* ---------- selection model ---------- */
+  function chosenItems() {
+    return Object.keys(state.items).filter((id) => state.items[id] > 0)
+      .map((id) => ({ svc: DB.serviceById(id), qty: state.items[id], rec: DB.prices.find((p) => p.hospital_id === state.hospitalId && p.service_id === id) }));
+  }
+
+  // Unit price bounds from a record: point value, min/max range, or null (no usable price).
+  function unitBounds(rec) {
+    if (!rec) return null;
+    const amt = rec.price_amount;
+    const lo = amt != null ? amt : rec.price_min;
+    const hi = amt != null ? amt : rec.price_max;
+    if (lo == null && hi == null) return null;
+    return { lo: lo != null ? lo : hi, hi: hi != null ? hi : lo };
+  }
+  function boundsText(b) {
+    if (!b) return null;
+    return b.lo === b.hi ? Fmt.taka(b.lo) : Fmt.taka(b.lo) + " – " + Fmt.taka(b.hi);
+  }
+
+  /* ---------- totals engine (range-aware + user extras) ---------- */
+  function computeTotals(items, extras) {
+    extras = extras || state.extras;
+    items = items || chosenItems();
+    let knownLo = 0, knownHi = 0, missing = [];
+    items.forEach((it) => {
+      const b = unitBounds(it.rec);
+      if (!b) { missing.push(it); return; }
+      knownLo += b.lo * it.qty;
+      knownHi += b.hi * it.qty;
+    });
+    const cabin = Number(extras.cabin) > 0 ? Number(extras.cabin) * (Number(extras.days) > 0 ? Number(extras.days) : 1) : 0;
+    const extrasTotal = cabin + (Number(extras.one) > 0 ? Number(extras.one) : 0);
+    return {
+      items, missing, extrasTotal, cabinDays: cabin,
+      lo: knownLo + extrasTotal, hi: knownHi + extrasTotal, knownLo, knownHi, isRange: knownHi > knownLo
+    };
+  }
+
+  /* ---------- same basket at all sample hospitals ---------- */
+  function basketAtOtherHospitals() {
+    const ids = Object.keys(state.items).filter((id) => state.items[id] > 0);
+    if (!ids.length) return [];
+    const rows = [];
+    DB.hospitals.forEach((h) => {
+      let lo = 0, hi = 0, haveAll = true, haveAny = false;
+      ids.forEach((sid) => {
+        const rec = DB.prices.find((p) => p.hospital_id === h.id && p.service_id === sid);
+        const b = unitBounds(rec);
+        if (b) { haveAny = true; lo += b.lo * state.items[sid]; hi += b.hi * state.items[sid]; }
+        else { haveAll = false; }
+      });
+      if (!haveAny) return;
+      rows.push({ h, lo, hi, haveAll });
+    });
+    rows.sort((a, b) => (a.lo - b.lo) || a.h.name_bn.localeCompare(b.h.name_bn, "bn"));
+    return rows;
+  }
+
+  /* ---------- state persistence (draft + share link) ---------- */
+  function persistDraft() {
+    dbSet(DRAFT_KEY, JSON.stringify({ city: state.city, hospitalId: state.hospitalId, items: state.items, extras: state.extras, step: step }));
+  }
+  function validLoaded(l) {
+    return l && l.city && l.hospitalId && DB.hospitalById && DB.hospitals.some((h) => h.id === l.hospitalId) && l.items && Object.keys(l.items).length;
+  }
+  function applyLoaded(l) {
+    state.city = l.city; state.hospitalId = l.hospitalId; state.items = l.items || {};
+    state.extras = Object.assign({ one: 0, cabin: 0, days: 0 }, l.extras || {});
+    step = (typeof l.step === "number") ? Math.max(0, Math.min(4, l.step)) : 4;
+  }
+  // share link (URL hash)
+  (function bootFromHash() {
+    if (location.hash.indexOf("#calc=") !== 0) return;
+    try {
+      const l = JSON.parse(decodeURIComponent(location.hash.slice(6)));
+      if (validLoaded(l)) { applyLoaded(l); UI.toast(UI.isEn() ? "Shared estimate applied" : "শেয়ার করা হিসাব লাগানো হয়েছে"); }
+    } catch (e) {}
+  })();
+  // in-progress draft
+  (function bootFromDraft() {
+    if (state.hospitalId) return; // hash share wins
+    const l = loadJSON(DRAFT_KEY, null);
+    if (validLoaded(l)) { applyLoaded(l); }
+  })();
+
+  function shareLink() {
+    const payload = encodeURIComponent(JSON.stringify({ city: state.city, hospitalId: state.hospitalId, items: state.items, extras: state.extras }));
+    return location.origin + location.pathname + "#calc=" + payload;
+  }
+  function copyShare() {
+    const url = shareLink();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => UI.toast(UI.isEn() ? "Estimate link copied" : "হিসাবের লিংক কপি হয়েছে"), () => { location.hash = url.slice(url.indexOf("#")); UI.toast(UI.isEn() ? "Link created" : "লিংক তৈরি হয়েছে"); });
+    } else { location.hash = url.slice(url.indexOf("#")); UI.toast(UI.isEn() ? "Link created" : "লিংক তৈরি হয়েছে"); }
+  }
+
+  /* ---------- saved estimates ---------- */
+  function savedList() {
+    const l = loadJSON(SAVED_KEY, []); return Array.isArray(l) ? l : [];
+  }
+  function saveEstimate() {
+    const { items } = computeTotals();
+    if (!items.length) { UI.toast(UI.isEn() ? "Choose services first" : "আগে সেবা বেছে নিন"); return; }
+    const t = computeTotals();
+    const entry = {
+      d: new Date().toISOString().slice(0, 10),
+      city: state.city, hospitalId: state.hospitalId, items: state.items, extras: state.extras,
+      t: t.lo === t.hi ? Fmt.taka(t.lo) : Fmt.taka(t.lo) + "–" + Fmt.taka(t.hi)
+    };
+    const list = [entry, ...savedList().filter((e) => !(e.hospitalId === entry.hospitalId && JSON.stringify(e.items) === JSON.stringify(entry.items)))].slice(0, 5);
+    dbSet(SAVED_KEY, JSON.stringify(list));
+    UI.toast(UI.isEn() ? "Estimate saved" : "হিসাব সংরক্ষিত হয়েছে");
+    renderSummary();
+  }
+  function loadSaved(i) {
+    const e = savedList()[i]; if (!e) return;
+    applyLoaded(e); persistDraft(); render();
+  }
+  function deleteSaved(i) {
+    const list = savedList(); list.splice(i, 1); dbSet(SAVED_KEY, JSON.stringify(list)); renderSummary();
+  }
+
+  /* ---------- summary sidebar ---------- */
+  function renderSummary() {
+    const i = computeTotals();
+    let html = "<h3 style='font-size:17px'>" + (UI.isEn() ? "Cost estimate" : "আনুমানিক হিসাব") + "</h3>";
+    if (!i.items.length) {
+      html += '<p class="muted small">' + (UI.isEn() ? "No services selected yet." : "এখনো কোনো সেবা বেছে নেওয়া হয়নি।") + '</p>';
+    } else {
+      html += '<div class="table-wrap"><table class="data"><tbody>';
+      i.items.forEach((it) => {
+        const b = unitBounds(it.rec);
+        html += "<tr><td style='white-space:normal'>" + Fmt.escapeHtml(UI.isEn() && it.svc.name_en ? it.svc.name_en : it.svc.name_bn) + " × " + (UI.isEn() ? it.qty : Fmt.bn(it.qty)) + "</td>" +
+          "<td>" + (b ? (b.lo * it.qty === b.hi * it.qty ? Fmt.taka(b.lo * it.qty) : Fmt.taka(b.lo * it.qty) + "–" + Fmt.taka(b.hi * it.qty)) : '<span class="price-na">' + (UI.isEn() ? "No price" : "মূল্য নেই") + "</span>") + "</td></tr>";
+      });
+      html += "</tbody></table></div>";
+      html += '<div class="row between items-center mt-3"><span class="muted">' + (UI.isEn() ? "Subtotal for listed services" : "তালিকাভুক্ত সেবার সাবটোটাল") + '</span><span class="price lg">' +
+        (i.isRange ? Fmt.taka(i.knownLo) + "–" + Fmt.taka(i.knownHi) : Fmt.taka(i.knownLo)) + "</span></div>";
+      if (i.extrasTotal > 0) {
+        html += '<div class="row between items-center mt-2"><span class="muted small">' + (UI.isEn() ? "Your added extra costs" : "আপনার দেওয়া অতিরিক্ত খরচ") + '</span><span class="price">' + Fmt.taka(i.extrasTotal) + "</span></div>";
+        html += '<div class="row between items-center mt-1"><strong>' + (UI.isEn() ? "Estimated total" : "সম্ভাব্য মোট") + '</strong><span class="price lg" style="font-size:22px">' +
+          (i.lo === i.hi ? Fmt.taka(i.lo) : Fmt.taka(i.lo) + "–" + Fmt.taka(i.hi)) + "</span></div>";
+      } else if (i.isRange) {
+        html += '<div class="notice mt-2 small">' + (UI.isEn() ? "Some services are priced as a range (it varies by doctor/cabin/type), so this estimate is a range." : "কিছু সেবার দাম রেঞ্জভিত্তিক (চিকিৎসক/কেবিন/ধরনভেদে) — তাই হিসাবটি একটি ব্যাপ্তি।") + '</div>';
+      }
+      if (i.missing.length) {
+        html += '<div class="notice warn mt-2"><strong>' + (UI.isEn() ? "Incomplete estimate:" : "অসম্পূর্ণ হিসাব:") + '</strong> ' + (UI.isEn() ? i.missing.length : Fmt.bn(i.missing.length)) +
+          (UI.isEn() ? " services have no listed price (" : " টি সেবার তালিকাভুক্ত মূল্য পাওয়া যায়নি (") + i.missing.map((m) => Fmt.escapeHtml(UI.isEn() && m.svc.name_en ? m.svc.name_en : m.svc.name_bn)).join(", ") +
+          (UI.isEn() ? "). They are not counted as zero — the total cost may be higher for this reason." : ")। এগুলো শূন্য ধরা হয়নি — মোট খরচ এই কারণে আরও বেশি হতে পারে।") + "</div>";
+      }
+    }
+    // saved estimates list
+    const saved = savedList();
+    if (saved.length) {
+      html += '<div class="mt-3"><h4 class="small" style="margin:0 0 6px">' + (UI.isEn() ? "Saved estimates (" + saved.length + ")" : "সংরক্ষিত হিসাব (" + Fmt.bn(saved.length) + ")") + '</h4><div class=\'stack\'>';
+      saved.forEach((e, idx) => {
+        const h = DB.hospitals.find((x) => x.id === e.hospitalId);
+        html += '<div class="card tight row between items-center" style="padding:8px 10px"><span class="small"><strong style="white-space:normal">' +
+          Fmt.escapeHtml(h ? (UI.isEn() && h.name_en ? h.name_en : h.name_bn) : "?") + '</strong><br><span class="muted">' + Fmt.date(e.d) + " · " + e.t + "</span></span>" +
+          '<span class="row gap-4"><button class="btn ghost small" type="button" data-sload="' + idx + '">' + (UI.isEn() ? "Load" : "লোড") + '</button>' +
+          '<button class="btn ghost small" type="button" data-sdel="' + idx + '" aria-label="' + (UI.isEn() ? "Delete" : "মুছুন") + '">✕</button></span></div>';
+      });
+      html += "</div></div>";
+    }
+    html += '<div class="notice mt-3 small">' + (UI.isEn() ? "This estimate is indicative, based on listed prices. The hospital\u2019s final bill, the patient\u2019s condition, the doctor\u2019s advice and extra services may change the actual cost." : "এই হিসাবটি তালিকাভুক্ত মূল্যভিত্তিক আনুমানিক হিসাব। হাসপাতালের চূড়ান্ত বিল, রোগীর অবস্থা, চিকিৎসকের পরামর্শ এবং অতিরিক্ত সেবার কারণে প্রকৃত খরচ ভিন্ন হতে পারে।") + '</div>';
+    html += '<div class="badge-row mt-2">' + UI.sampleBadge() + "</div>";
+    document.getElementById("summary").innerHTML = html;
+    document.getElementById("summary").querySelectorAll("[data-sload]").forEach((b) => b.addEventListener("click", () => loadSaved(Number(b.dataset.sload))));
+    document.getElementById("summary").querySelectorAll("[data-sdel]").forEach((b) => b.addEventListener("click", () => deleteSaved(Number(b.dataset.sdel))));
+  }
+
+  /* ---------- step panels ---------- */
+  function nextBtn() { return '<div class="row gap-8 mt-3"><button class="btn" type="button" data-next>' + (UI.isEn() ? "Next" : "পরবর্তী") + '</button></div>'; }
+  function prevBtn() { return '<div class="row gap-8 mt-3"><button class="btn ghost" type="button" data-prev>' + (UI.isEn() ? "Back" : "পূর্ববর্তী") + '</button></div>'; }
+  function prevNext() { return '<div class="row gap-8 mt-3"><button class="btn ghost" type="button" data-prev>' + (UI.isEn() ? "Back" : "পূর্ববর্তী") + '</button><button class="btn" type="button" data-next>' + (UI.isEn() ? "Next" : "পরবর্তী") + '</button></div>'; }
+
+  function panel() {
+    const p = document.getElementById("calc-panel");
+    if (step === 0) {
+      p.innerHTML = '<h2 style="font-size:20px">' + (UI.isEn() ? "Step 1: City or area" : "ধাপ ১: শহর বা এলাকা") + '</h2>' +
+        '<div class="field"><label for="c-city">' + (UI.isEn() ? "City" : "শহর") + '</label><select class="select" id="c-city">' +
+        UI.allCityNames().map((c) => '<option value="' + Fmt.escapeHtml(c) + '"' + (c === state.city ? " selected" : "") + ">" + Fmt.escapeHtml(UI.cityName(c)) + "</option>").join("") +
+        "</select></div>" + nextBtn();
+      p.querySelector("#c-city").addEventListener("change", (e) => { state.city = e.target.value; UI.setCity(state.city); });
+    } else if (step === 1) {
+      const list = DB.hospitals.filter((h) => h.city === state.city);
+      p.innerHTML = '<h2 style="font-size:20px">' + (UI.isEn() ? "Step 2: Choose a hospital" : "ধাপ ২: হাসপাতাল বেছে নিন") + '</h2>' +
+        (list.length ? '<div class="stack mt-2">' + list.map((h) =>
+          '<div class="card tight"><label class="check">' +
+          '<input type="radio" name="hosp" value="' + h.id + '"' + (state.hospitalId === h.id ? " checked" : "") + ">" +
+          "<span><strong>" + Fmt.escapeHtml(UI.isEn() && h.name_en ? h.name_en : h.name_bn) + "</strong><div class='small muted'>" + Fmt.escapeHtml([h.area, UI.cityName(h.city), UI.typeName(h.hospital_type)].filter(Boolean).join(" · ") || "OpenStreetMap") + "</div></span></label></div>").join("") + "</div>"
+          : '<div class="empty">' + (UI.isEn() ? "No listed hospitals found in this city yet." : "এই শহরে এখনো তালিকাভুক্ত হাসপাতাল পাওয়া যায়নি।") + '</div>') + prevNext();
+      p.querySelectorAll('input[name=hosp]').forEach((r) => r.addEventListener("change", () => { state.hospitalId = r.value; state.items = {}; }));
+    } else if (step === 2) {
+      const recs = DB.pricesForHospital(state.hospitalId);
+      p.innerHTML = '<h2 style="font-size:20px">' + (UI.isEn() ? "Step 3: Choose services" : "ধাপ ৩: সেবা বেছে নিন") + '</h2>' +
+        '<p class="small muted">' + (UI.isEn() ? "Services listed for the chosen hospital. Prices come from users\u2019 actual bills." : "নির্বাচিত হাসপাতালের তালিকাভুক্ত সেবা। মূল্য ব্যবহারকারীদের আসল বিল থেকে আসে।") + '</p>' +
+        (recs.length ? '<div class="stack mt-2">' + recs.map((r) => {
+          const svc = DB.serviceById(r.service_id);
+          const b = unitBounds(r);
+          const chosen = !!state.items[r.service_id];
+          return '<div class="card tight"><label class="check"><input type="checkbox" data-svc="' + r.service_id + '"' + (chosen ? " checked" : "") + ">" +
+            "<span class='grow'><strong>" + Fmt.escapeHtml(UI.isEn() && svc.name_en ? svc.name_en : svc.name_bn) + "</strong><div class='small muted'>" + Fmt.escapeHtml(UI.unitName(svc.unit || "")) + " · " + Fmt.updated(r.last_checked_at, UI.isEn() ? "en" : "bn") + "</div></span>" +
+            "<span>" + UI.priceText(r) + "</span></label>" +
+            '<div class="badge-row">' + UI.statusBadge(r) + UI.sampleBadge() +
+            (b && b.lo !== b.hi ? '<span class="tag">' + (UI.isEn() ? "Range pricing: counted as a range in the estimate" : "রেঞ্জ-মূল্য: হিসাবে ব্যাপ্তি ধরা হবে") + "</span>" : "") + "</div></div>";
+        }).join("") + "</div>" : '<div class="empty">' + (UI.isEn() ? "No real bill has been submitted for this hospital yet. Submit a bill and its prices will show here." : "এই হাসপাতালের জন্য এখনো কোনো আসল বিল জমা পড়েনি। বিল জমা দিলে এখানে মূল্য দেখা যাবে।") + '</div>') + prevNext();
+      p.querySelectorAll("input[data-svc]").forEach((cb) => cb.addEventListener("change", () => {
+        if (cb.checked) state.items[cb.dataset.svc] = state.items[cb.dataset.svc] || 1; else delete state.items[cb.dataset.svc];
+        persistDraft(); renderSummary();
+      }));
+    } else if (step === 3) {
+      const items = chosenItems();
+      p.innerHTML = '<h2 style="font-size:20px">' + (UI.isEn() ? "Step 4: Quantity" : "ধাপ ৪: পরিমাণ") + '</h2>' +
+        (items.length ? '<div class="stack mt-2">' + items.map((it) => {
+          const b = unitBounds(it.rec);
+          return '<div class="card tight row between items-center"><div><strong>' + Fmt.escapeHtml(UI.isEn() && it.svc.name_en ? it.svc.name_en : it.svc.name_bn) + "</strong><div class='small muted'>" + Fmt.escapeHtml(UI.unitName(it.svc.unit || "")) +
+            (b ? (UI.isEn() ? " · Unit price: " : " · একক মূল্য: ") + boundsText(b) : (UI.isEn() ? " · No price" : " · মূল্য নেই")) + "</div></div>" +
+            '<div class="row gap-4 items-center"><button class="btn ghost" type="button" data-step="down" data-for="' + it.svc.id + '" aria-label="' + (UI.isEn() ? "Decrease" : "কমান") + '" style="min-width:36px;padding:8px">−</button>' +
+            '<input class="input" type="number" min="1" inputmode="numeric" value="' + it.qty + '" data-qty="' + it.svc.id + '" style="width:80px;min-height:42px" aria-label="' + Fmt.escapeHtml(UI.isEn() && it.svc.name_en ? it.svc.name_en : it.svc.name_bn) + (UI.isEn() ? " quantity" : " পরিমাণ") + '">' +
+            '<button class="btn ghost" type="button" data-step="up" data-for="' + it.svc.id + '" aria-label="' + (UI.isEn() ? "Increase" : "বাড়ান") + '" style="min-width:36px;padding:8px">+</button></div></div>';
+        }).join("") + "</div>"
+          : '<div class="empty">' + (UI.isEn() ? "Choose services in the previous step." : "আগের ধাপ থেকে সেবা বেছে নিন।") + '</div>') + prevNext();
+      p.querySelectorAll("input[data-qty]").forEach((inp) => inp.addEventListener("input", () => {
+        state.items[inp.dataset.qty] = Math.max(1, Number(inp.value) || 1); persistDraft(); renderSummary();
+      }));
+      p.querySelectorAll("button[data-step]").forEach((btn) => btn.addEventListener("click", () => {
+        const id = btn.dataset.for, cur = state.items[id] || 1;
+        state.items[id] = btn.dataset.step === "up" ? cur + 1 : Math.max(1, cur - 1);
+        const inp = p.querySelector('input[data-qty="' + id + '"]'); if (inp) inp.value = state.items[id];
+        persistDraft(); renderSummary();
+      }));
+    } else {
+      const t = computeTotals();
+      p.innerHTML = '<h2 style="font-size:20px">' + (UI.isEn() ? "Step 5: Review the estimate" : "ধাপ ৫: হিসাব পর্যালোচনা") + '</h2>' +
+        (t.items.length ? '<div class="table-wrap"><table class="data"><thead><tr><th>' + (UI.isEn() ? "Service" : "সেবা") + '</th><th>' + (UI.isEn() ? "Unit price" : "একক মূল্য") + '</th><th>' + (UI.isEn() ? "Qty" : "পরিমাণ") + '</th><th>' + (UI.isEn() ? "Total" : "মোট") + '</th><th>' + (UI.isEn() ? "Status" : "অবস্থা") + '</th></tr></thead><tbody>' +
+          t.items.map((it) => {
+            const b = unitBounds(it.rec);
+            return "<tr><td style='white-space:normal'>" + Fmt.escapeHtml(UI.isEn() && it.svc.name_en ? it.svc.name_en : it.svc.name_bn) + "</td>" +
+              "<td>" + (b ? boundsText(b) : '<span class="price-na">' + (UI.isEn() ? "None" : "নেই") + "</span>") + "</td>" +
+              "<td>" + (UI.isEn() ? it.qty : Fmt.bn(it.qty)) + "</td>" +
+              "<td>" + (b ? (b.lo * it.qty === b.hi * it.qty ? Fmt.taka(b.lo * it.qty) : Fmt.taka(b.lo * it.qty) + "–" + Fmt.taka(b.hi * it.qty)) : '<span class="price-na">' + (UI.isEn() ? "Incomplete" : "অসম্পূর্ণ") + "</span>") + "</td>" +
+              "<td>" + UI.statusBadge(it.rec || { verification_status: "unavailable" }) + "</td></tr>";
+          }).join("") + "</tbody></table></div>" +
+          // optional user extras
+          '<div class="mt-3"><h3 style="font-size:16px">' + (UI.isEn() ? "Extra costs (optional, in ৳)" : "অতিরিক্ত খরচ (ইচ্ছা হলে, টাকায়)") + '</h3>' +
+          '<p class="small muted">' + (UI.isEn() ? "Leave any field blank and it will not be counted in the estimate. No standard values are documented — enter the price you know." : "নিচের ঘরগুলো খালি রাখলে হিসাবে ধরা হবে না। কোনো নির্দিষ্ট মান নথিভুক্ত নয় — আপনার জানা মূল্য বসান।") + '</p>' +
+          '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">' +
+          '<div class="field"><label for="x-one">' + (UI.isEn() ? "Other one-time costs (doctor fee, tests, medicines etc.)" : "অন্যান্য এককালীন (ডাক্তার ফি, টেস্ট, ওষুধ ইত্যাদি)") + '</label><input class="input" type="number" min="0" inputmode="numeric" id="x-one" placeholder="' + (UI.isEn() ? "0" : "০") + '" value="' + (Number(state.extras.one) || "") + '"></div>' +
+          '<div class="field"><label for="x-cabin">' + (UI.isEn() ? "Cabin/bed charges (per day)" : "কেবিন/বেড ভাড়া (দৈনিক)") + '</label><input class="input" type="number" min="0" inputmode="numeric" id="x-cabin" placeholder="' + (UI.isEn() ? "0" : "০") + '" value="' + (Number(state.extras.cabin) || "") + '"></div>' +
+          '<div class="field"><label for="x-days">' + (UI.isEn() ? "Number of days" : "কত দিন") + '</label><input class="input" type="number" min="0" inputmode="numeric" id="x-days" placeholder="' + (UI.isEn() ? "0" : "০") + '" value="' + (Number(state.extras.days) || "") + '"></div>' +
+          "</div>" +
+          '<div class="row between items-center mt-3"><strong><span id="x-total-label">' + (t.isRange ? (UI.isEn() ? "Estimated total (range)" : "সম্ভাব্য মোট (ব্যাপ্তি)") : (UI.isEn() ? "Estimated total" : "সম্ভাব্য মোট")) + '</span></strong><span class="price lg" id="x-total" style="font-size:24px">' +
+          (t.lo === t.hi ? Fmt.taka(t.lo) : Fmt.taka(t.lo) + " – " + Fmt.taka(t.hi)) + "</span></div>" +
+          (t.extrasTotal > 0 && t.isRange ? '<div class="notice mt-2 small">' + (UI.isEn() ? "The range comes only from range-priced listed services; extra costs are added to both ends." : "ব্যাপ্তি শুধু তালিকাভুক্ত সেবার রেঞ্জ-মূল্যের কারণে; অতিরিক্ত খরচ উভয় প্রান্তে যোগ হয়েছে।") + '</div>' : "") +
+          (t.missing.length ? '<div class="notice warn mt-2">' + (UI.isEn() ? t.missing.length : Fmt.bn(t.missing.length)) + (UI.isEn() ? " services have no listed price; they are not counted as zero, so the actual total will be higher." : " টি সেবার মূল্য পাওয়া যায়নি; এগুলো শূন্য ধরা হয়নি, তাই প্রকৃত মোট বেশি হবে।") + '</div>' : "") +
+          basketComparisonHtml() : '<div class="empty">' + (UI.isEn() ? "No services selected." : "কোনো সেবা নির্বাচিত হয়নি।") + '</div>') +
+        '<div class="row gap-8 wrap mt-3"><button class="btn secondary" type="button" data-reset>' + (UI.isEn() ? "Reset" : "রিসেট") + '</button>' +
+        '<button class="btn ghost" type="button" data-back="2">' + (UI.isEn() ? "Edit selections" : "নির্বাচন সম্পাদনা") + '</button>' +
+        '<button class="btn ghost" type="button" data-save>' + (UI.isEn() ? "Save" : "সংরক্ষণ") + '</button>' +
+        '<button class="btn ghost" type="button" data-share>' + (UI.isEn() ? "Copy link" : "লিংক কপি") + '</button>' +
+        '<a class="btn ghost" type="button" data-wa target="_blank" rel="noopener">' + (UI.isEn() ? "Share on WhatsApp" : "WhatsApp শেয়ার") + '</a>' +
+        '<button class="btn ghost" type="button" data-print>' + (UI.isEn() ? "Print" : "প্রিন্ট") + '</button>' +
+        '<a class="btn" href="compare.html">' + (UI.isEn() ? "Compare hospitals" : "হাসপাতাল তুলনা") + '</a></div>' + prevBtn();
+      p.querySelector("[data-reset]").addEventListener("click", () => { state.hospitalId = null; state.items = {}; state.extras = { one: 0, cabin: 0, days: 0 }; dbDel(DRAFT_KEY); step = 0; render(); });
+      p.querySelector("[data-back]").addEventListener("click", () => { step = Number(p.querySelector("[data-back]").dataset.back); render(); });
+      p.querySelector("[data-save]").addEventListener("click", saveEstimate);
+      p.querySelector("[data-share]").addEventListener("click", copyShare);
+      p.querySelector("[data-print]").addEventListener("click", () => window.print());
+      // WhatsApp share: text summary + estimate link
+      (function buildWa() {
+        const wa = p.querySelector("[data-wa]");
+        const h = DB.hospitalById(state.hospitalId) || {};
+        const hName = UI.isEn() && h.name_en ? h.name_en : (h.name_bn || "");
+        const names = t.items.map(function (it) { return (UI.isEn() && it.svc.name_en ? it.svc.name_en : it.svc.name_bn) + " × " + it.qty; }).join(", ");
+        const total = t.lo === t.hi ? Fmt.taka(t.lo) : Fmt.taka(t.lo) + "–" + Fmt.taka(t.hi);
+        const msg = (UI.isEn() ? "DoctorBill cost estimate:\n" : "DoctorBill আনুমানিক খরচ:\n") + hName + "\n" + names + "\n" + (UI.isEn() ? "Total: " : "মোট: ") + total + (UI.isEn() ? " (indicative estimate)\n" : " (আনুমানিক হিসাব)\n") + shareLink();
+        wa.href = "https://wa.me/?text=" + encodeURIComponent(msg);
+      })();
+      ["x-one", "x-cabin", "x-days"].forEach((xid) => {
+        const el = p.querySelector("#" + xid);
+        el.addEventListener("input", () => {
+          state.extras = {
+            one: Math.max(0, Number(p.querySelector("#x-one").value) || 0),
+            cabin: Math.max(0, Number(p.querySelector("#x-cabin").value) || 0),
+            days: Math.max(0, Number(p.querySelector("#x-days").value) || 0)
+          };
+          const t2 = computeTotals();
+          const tot = p.querySelector("#x-total"), lab = p.querySelector("#x-total-label");
+          if (tot) tot.textContent = t2.lo === t2.hi ? Fmt.taka(t2.lo) : Fmt.taka(t2.lo) + " – " + Fmt.taka(t2.hi);
+          if (lab) lab.textContent = t2.isRange ? (UI.isEn() ? "Estimated total (range)" : "সম্ভাব্য মোট (ব্যাপ্তি)") : (UI.isEn() ? "Estimated total" : "সম্ভাব্য মোট");
+          persistDraft();
+          renderSummary();
+        });
+      });
+    }
+    bindNav(p);
+    renderSummary();
+  }
+
+  function basketComparisonHtml() {
+    const rows = basketAtOtherHospitals();
+    if (rows.length < 2) return "";
+    const ids = Object.keys(state.items).filter((id) => state.items[id] > 0);
+    let html = '<div class="mt-3"><h3 style="font-size:16px">' + (UI.isEn() ? "The same selection at other hospitals (" + rows.length + " hospitals)" : "একই সেবা-বাছাই অন্য হাসপাতালে (" + Fmt.bn(rows.length) + "টি হাসপাতালে)") + '</h3>' +
+      '<p class="small muted">' + (UI.isEn() ? "Totals count only listed services where prices exist. \u201cEstimated total\u201d and \u201cextra costs\u201d risk differs — verify at the hospital before a final decision." : "শুধু তালিকাভুক্ত সেবাগুলোর দাম যেখানে আছে সেগুলোর মোট। সাথে \"সম্ভাব্য মোট\" ও \"অতিরিক্ত খরচ\" ঝুঁকি ভিন্ন — চূড়ান্ত সিদ্ধান্তের জন্য হাসপাতালে যাচাই করুন।") + '</p>' +
+      '<div class="table-wrap"><table class="data"><thead><tr><th>' + (UI.isEn() ? "Hospital" : "হাসপাতাল") + '</th><th>' + (UI.isEn() ? "Total for this selection" : "এই বাছাইয়ের মোট") + '</th><th>' + (UI.isEn() ? "Status" : "অবস্থা") + "</th></tr></thead><tbody>";
+    rows.forEach((r) => {
+      const isCur = r.h.id === state.hospitalId;
+      html += "<tr" + (isCur ? " style='background:var(--surface-2)'" : "") + "><td style='white-space:normal'><strong>" + Fmt.escapeHtml(UI.isEn() && r.h.name_en ? r.h.name_en : r.h.name_bn) + "</strong>" + (isCur ? ' <span class="tag">' + (UI.isEn() ? "Current selection" : "বর্তমান নির্বাচন") + "</span>" : "") +
+        "<div class='small muted'>" + Fmt.escapeHtml(r.h.area == null ? "" : r.h.area) + "</div></td>" +
+        "<td>" + (r.lo === r.hi ? Fmt.taka(r.lo) : Fmt.taka(r.lo) + "–" + Fmt.taka(r.hi)) + "</td>" +
+        "<td>" + (r.haveAll ? '<span class="tag">' + (UI.isEn() ? "All services" : "সব সেবা") + '</span>' : '<span class="price-na">' + (UI.isEn() ? "Some service prices missing" : "কিছু সেবার দাম নেই") + "</span>") + "</td></tr>";
+    });
+    html += "</tbody></table></div></div>";
+    return html;
+  }
+
+  function bindNav(p) {
+    const nx = p.querySelector("[data-next]"), pv = p.querySelector("[data-prev]");
+    if (nx) nx.addEventListener("click", () => {
+      if (step === 1 && !state.hospitalId) { UI.toast(UI.isEn() ? "Choose a hospital" : "একটি হাসপাতাল বেছে নিন"); return; }
+      if (step === 2 && !chosenItems().length) { UI.toast(UI.isEn() ? "Select at least one service" : "অন্তত একটি সেবা বেছে নিন"); return; }
+      step = Math.min(4, step + 1); render();
+    });
+    if (pv) pv.addEventListener("click", () => { step = Math.max(0, step - 1); render(); });
+  }
+
+  function render() { renderProgress(); panel(); persistDraft(); }
+  window.addEventListener("db:realdata", function () { render(); });
+  render();
+})();
+</script>
+</body>
+</html>

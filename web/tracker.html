@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<script>/*db-theme-boot*/(function(){try{var t=localStorage.getItem("db_theme");var d=t==="dark";document.documentElement.setAttribute("data-theme",d?"dark":"light");var f=localStorage.getItem("db_font");if(f==="lg"||f==="xl")document.documentElement.setAttribute("data-fontsize",f);var l=localStorage.getItem("db_lang");if(l==="en"||l==="bn")document.documentElement.setAttribute("lang",l);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="track.doc_title">বিল ট্র্যাকার | DoctorBill</title>
+<meta name="description" content="নিজের হাসপাতাল-ডায়াগনস্টিক খরচ লিখে রাখুন। তথ্য আপনার ডিভাইসেই থাকে, কোথাও পাঠানো হয় না।">
+<link rel="canonical" href="https://doctorbill-bd-6ikpiarwyxl.qoder.website/tracker.html">
+<meta property="og:site_name" content="DoctorBill বাংলাদেশ">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:title" content="বিল ট্র্যাকার | DoctorBill বাংলাদেশ">
+<meta property="og:description" content="নিজের চিকিৎসা খরচের খাতা — প্রাইভেট, ডিভাইসেই।">
+<meta property="og:url" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/tracker.html">
+<meta property="og:image" content="https://doctorbill-bd-6ikpiarwyxl.qoder.website/assets/img/icon.svg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/img/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="track.skip">মূল কনটেন্টে যান</a>
+<header id="site-header"></header>
+
+<main id="main">
+  <section class="section" style="padding-top:18px">
+    <div class="container" style="max-width:760px">
+      <h1 data-i18n="track.title">বিল ট্র্যাকার — আপনার খরচের খাতা</h1>
+      <p class="section-sub"><span data-i18n="track.sub">চিকিৎসা, টেস্ট ও ওষুধের খরচ লিখে রাখুন। মোট খরচ দেখে বিল মিলিয়ে নিন। সব তথ্য </span><strong data-i18n="track.subDevice">আপনার ডিভাইসেই</strong><span data-i18n="track.subPost"> থাকে (localStorage), কোথাও পাঠানো বা প্রকাশ হয় না।</span></p>
+
+      <form id="track-form" class="card" novalidate>
+        <div class="field-row two">
+          <div class="field"><label for="t-date"><span data-i18n="track.date">তারিখ</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <input class="input" id="t-date" type="date" required>
+            <div class="err" id="te-date" data-i18n="track.errDate">তারিখ দিন।</div>
+          </div>
+          <div class="field"><label for="t-amount"><span data-i18n="track.amount">পরিমাণ (৳)</span> <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <input class="input" id="t-amount" type="number" min="1" inputmode="numeric" placeholder="যেমন ৫০০" data-i18n-ph="track.phAmount" required>
+            <div class="err" id="te-amount" data-i18n="track.errAmount">সঠিক পরিমাণ লিখুন।</div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field"><label for="t-place" data-i18n="track.place">হাসপাতাল/ডায়াগনস্টিক (ঐচ্ছিক)</label>
+            <input class="input" id="t-place" type="text" maxlength="60" placeholder="যেমন জেলা হাসপাতাল" data-i18n-ph="track.phPlace" autocomplete="off">
+          </div>
+          <div class="field"><label for="t-item" data-i18n="track.item">কী খরচ (ঐচ্ছিক)</label>
+            <input class="input" id="t-item" type="text" maxlength="60" placeholder="যেমন CBC, দেখা, ওষুধ" data-i18n-ph="track.phItem" autocomplete="off">
+          </div>
+        </div>
+        <button class="btn block" type="submit" data-i18n="track.add">খরচ যোগ করুন</button>
+      </form>
+
+      <div class="card mt-3">
+        <div class="row between items-center">
+          <h3 style="font-size:17px;margin:0" data-i18n="track.listTitle">আপনার খরচসমূহ</h3>
+          <div class="row gap-8">
+            <button class="btn sm ghost" type="button" data-print data-i18n="track.print">প্রিন্ট</button>
+            <button class="btn sm ghost" type="button" data-clear data-i18n="track.clear">সব মুছুন</button>
+          </div>
+        </div>
+        <div id="track-list" class="mt-2"></div>
+      </div>
+
+      <div class="notice small mt-3" data-i18n="track.notice">ট্র্যাকারের তথ্য কেবল আপনার ব্রাউজারে সংরক্ষিত। ব্রাউজার ডেটা পরিষ্কার করলে মুছে যায় — গুরুত্বপূর্ণ হলে প্রিন্ট করে রাখুন।</div>
+      <div class="badge-row mt-2"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/format.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  "use strict";
+  UI.boot("tracker");
+  const KEY = "db_tracker";
+  function lsGet() { try { return JSON.parse(localStorage.getItem(KEY) || "[]") || []; } catch (e) { return []; } }
+  function lsSet(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { UI.toast(UI.isEn() ? "Could not save" : "সংরক্ষণ করা গেল না"); } }
+
+  function render() {
+    const list = lsGet();
+    const box = document.getElementById("track-list");
+    if (!list.length) { box.innerHTML = '<p class="muted small">' + (UI.isEn() ? "No expenses added yet." : "এখনো কিছু যোগ করা হয়নি।") + "</p>"; return; }
+    let total = 0;
+    list.forEach((x) => { total += x.a; });
+    const rows = list.slice().sort((a, b) => b.d.localeCompare(a.d)).map((x) =>
+      "<tr><td class='small muted'>" + Fmt.date(x.d) + "</td>" +
+      "<td style='white-space:normal'>" +
+      "<strong>" + (x.i ? Fmt.escapeHtml(x.i) : (UI.isEn() ? "Expense" : "খরচ")) + "</strong>" +
+      (x.p ? "<div class='small muted'>" + Fmt.escapeHtml(x.p) + "</div>" : "") + "</td>" +
+      "<td>" + Fmt.taka(x.a) + "</td>" +
+      "<td><button class='btn sm ghost' type='button' data-del='" + x.id + "' aria-label='" + (UI.isEn() ? "Delete" : "মুছুন") + "'>✕</button></td></tr>").join("");
+    box.innerHTML =
+      '<div class="table-wrap"><table class="data"><thead><tr><th>' + (UI.isEn() ? "Date" : "তারিখ") + '</th><th>' + (UI.isEn() ? "Item" : "খরচ") + '</th><th>' + (UI.isEn() ? "Total" : "মোট") + '</th><th></th></tr></thead><tbody>' +
+      rows +
+      "</tbody></table></div>" +
+      '<div class="row between items-center mt-2"><strong>' + (UI.isEn() ? (list.length + " expenses") : ("মোট " + Fmt.bn(list.length) + " টি খরচ")) + '</strong><span class=\'price lg\'>' + Fmt.taka(total) + "</span></div>";
+    box.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => {
+      lsSet(lsGet().filter((x) => String(x.id) !== b.dataset.del));
+      render();
+    }));
+  }
+
+  const form = document.getElementById("track-form");
+  function err(id, bad) { document.getElementById(id).classList.toggle("show", bad); }
+  form.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const d = document.getElementById("t-date").value;
+    const a = Number(document.getElementById("t-amount").value);
+    const p = document.getElementById("t-place").value.trim().slice(0, 60);
+    const i = document.getElementById("t-item").value.trim().slice(0, 60);
+    err("te-date", !d); err("te-amount", !(a > 0));
+    if (!d || !a) { UI.toast(UI.isEn() ? "Enter a date and amount" : "তারিখ ও পরিমাণ দিন"); return; }
+    const list = lsGet();
+    list.push({ id: Date.now(), d, a: Math.min(a, 99999999), p, i });
+    if (list.length > 200) list.sort((x, y) => y.id - x.id).length = 200;
+    lsSet(list);
+    form.reset();
+    render();
+    UI.toast(UI.isEn() ? "Added" : "যোগ হয়েছে");
+  });
+  document.querySelector("[data-print]").addEventListener("click", () => window.print());
+  document.querySelector("[data-clear]").addEventListener("click", () => {
+    if (!lsGet().length) return;
+    lsSet([]); render(); UI.toast(UI.isEn() ? "All cleared" : "সব মুছে ফেলা হয়েছে");
+  });
+  render();
+})();
+</script>
+</body>
+</html>
